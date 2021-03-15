@@ -8,12 +8,13 @@ function katapult_MetaData()
 {
 	return [
 		'DisplayName' => 'Katapult',
-		'RequiresServer' => true
 	];
 }
 
 function katapult_ConfigOptions()
 {
-	//
+	return [
+		//
+	];
 }
 
