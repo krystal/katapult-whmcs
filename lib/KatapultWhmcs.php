@@ -17,6 +17,7 @@ class KatapultWhmcs
 	const SERVER_MODULE = 'katapult';
 
 	const DS_API_V1_KEY = 'api_v1_key';
+	const DS_PARENT_ORGANIZATION = 'parent_organization';
 	const DS_CONFIG_OPTION_GROUP_ID = 'config_option_group_id';
 	const DS_CONFIG_OPTION_DATACENTER_ID = 'config_option_datacenter_id';
 
@@ -58,9 +59,27 @@ class KatapultWhmcs
 		return \decrypt($value);
 	}
 
-	public static function setApiV1Key(string $apiKey)
+	public static function setApiV1Key(string $apiKey): void
 	{
 		KatapultWhmcs::dataStoreWrite(self::DS_API_V1_KEY, \encrypt($apiKey));
+
+		self::log("Updated API V1 key");
+	}
+
+	public static function setParentOrganization(string $organization): void
+	{
+		if (self::getParentOrganization() === $organization) {
+			return;
+		}
+
+		KatapultWhmcs::dataStoreWrite(self::DS_PARENT_ORGANIZATION, $organization);
+
+		self::log("Updated parent organization to: {$organization}");
+	}
+
+	public static function getParentOrganization(): ? string
+	{
+		return KatapultWhmcs::dataStoreRead(self::DS_PARENT_ORGANIZATION);
 	}
 
 	public static function log(string $message)
