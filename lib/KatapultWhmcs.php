@@ -2,7 +2,6 @@
 
 namespace WHMCS\Module\Server\Katapult;
 
-use Grizzlyware\Salmon\WHMCS\Billing\Currency;
 use Grizzlyware\Salmon\WHMCS\Helpers\DataStore;
 use Grizzlyware\Salmon\WHMCS\Product\ConfigurableOptions\Group as ConfigOptionGroup;
 use Grizzlyware\Salmon\WHMCS\Product\Product;
