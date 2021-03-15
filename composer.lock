@@ -4,8 +4,89 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ed368322ce852b6d1473faa860290197",
+    "content-hash": "2678685d6375801bbcf465fe5a3c0a29",
     "packages": [
+        {
+            "name": "grizzlyware/salmon",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/grizzlyware/salmon.git",
+                "reference": "20277404372b3e594315d5d96e79b9bf58dddb1a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/grizzlyware/salmon/zipball/20277404372b3e594315d5d96e79b9bf58dddb1a",
+                "reference": "20277404372b3e594315d5d96e79b9bf58dddb1a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Grizzlyware\\Salmon\\": "src/Grizzlyware/Salmon"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Grizzlyware Ltd",
+                    "email": "contact@grizzlyware.io"
+                }
+            ],
+            "description": "Grizzly bears eat salmon",
+            "support": {
+                "issues": "https://github.com/grizzlyware/salmon/issues",
+                "source": "https://github.com/grizzlyware/salmon/tree/master"
+            },
+            "time": "2019-06-24T15:27:28+00:00"
+        },
+        {
+            "name": "grizzlyware/salmon-whmcs",
+            "version": "1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/grizzlyware/salmon-whmcs.git",
+                "reference": "69b6ef689c5031fa170c48eb75aec71c0c14ec01"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/grizzlyware/salmon-whmcs/zipball/69b6ef689c5031fa170c48eb75aec71c0c14ec01",
+                "reference": "69b6ef689c5031fa170c48eb75aec71c0c14ec01",
+                "shasum": ""
+            },
+            "require": {
+                "grizzlyware/salmon": "~1",
+                "php": ">=5.6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Grizzlyware\\Salmon\\WHMCS\\": "src/Grizzlyware/Salmon/WHMCS"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Grizzlyware Ltd",
+                    "email": "contact@grizzlyware.io"
+                }
+            ],
+            "description": "Grizzly bears eat salmon",
+            "support": {
+                "issues": "https://github.com/grizzlyware/salmon-whmcs/issues",
+                "source": "https://github.com/grizzlyware/salmon-whmcs/tree/master"
+            },
+            "time": "2020-01-07T12:04:15+00:00"
+        },
         {
             "name": "krystal/katapult",
             "version": "2.0",

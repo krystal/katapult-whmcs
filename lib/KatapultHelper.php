@@ -2,15 +2,13 @@
 
 namespace WHMCS\Module\Server\Katapult;
 
+use Grizzlyware\Salmon\WHMCS\Product\Product;
+
 class KatapultHelper
 {
-	public static function getApiV1Key(): ? string
+	public static function productIdIsKatapult(int $productId): bool
 	{
-		if (!defined('KATAPULT_API_V1_KEY')) {
-			return null;
-		}
-
-		return KATAPULT_API_V1_KEY ?: null;
+		return Product::where('id', $productId)->where('servertype', KatapultWhmcs::SERVER_MODULE)->count() > 0;
 	}
 }
 

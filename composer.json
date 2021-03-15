@@ -3,7 +3,8 @@
     "description": "WHMCS provisioning module for Katapult",
     "type": "project",
     "require": {
-        "krystal/katapult": "^2.0"
+        "krystal/katapult": "^2.0",
+        "grizzlyware/salmon-whmcs": "^1.1"
     },
     "license": "MIT",
     "authors": [
