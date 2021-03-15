@@ -1,0 +1,70 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "ed368322ce852b6d1473faa860290197",
+    "packages": [
+        {
+            "name": "krystal/katapult",
+            "version": "2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/krystal/katapult-php.git",
+                "reference": "cc4bd255fab1f2532cd6882850ca00c0a2caa836"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/krystal/katapult-php/zipball/cc4bd255fab1f2532cd6882850ca00c0a2caa836",
+                "reference": "cc4bd255fab1f2532cd6882850ca00c0a2caa836",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.2",
+                "php": "^7.4"
+            },
+            "require-dev": {
+                "pestphp/pest": "^1.0",
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Krystal\\Katapult\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Josh Bonfield",
+                    "email": "josh@grizzlyware.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "API library for Katapult cloud platform",
+            "homepage": "https://github.com/krystal/katapult",
+            "keywords": [
+                "katapult",
+                "krystal"
+            ],
+            "support": {
+                "issues": "https://github.com/krystal/katapult-php/issues",
+                "source": "https://github.com/krystal/katapult-php/tree/2.0"
+            },
+            "time": "2021-03-01T18:48:58+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.0.0"
+}
