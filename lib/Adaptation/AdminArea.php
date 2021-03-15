@@ -78,7 +78,7 @@ HTML;
 			<small class="text-light">This can either be your Katapult subdomain or the organization's ID, beginning with <code>org_</code></small>
 			<br>
 
-			<label><input class="form-check" type="checkbox" name="katapult_sync_config_options"> Sync configurable options on save (data centers)</label>
+			<label><input class="form-check" type="checkbox" name="katapult_sync_config_options"> Sync configurable options on save (data centers, disk templates etc)</label>
 			
 		</div>
 	
