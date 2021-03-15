@@ -14,6 +14,8 @@ use WHMCS\Database\Capsule;
 
 class KatapultWhmcs
 {
+	private static ? Katapult $katapult = null;
+
 	const SERVER_MODULE = 'katapult';
 
 	const DS_API_V1_KEY = 'api_v1_key';
@@ -23,9 +25,13 @@ class KatapultWhmcs
 
 	public static function getKatapult(): Katapult
 	{
-		return Katapult::make(new KatapultApi(
-			KatapultWhmcs::getApiV1Key()
-		));
+		if (self::$katapult === null) {
+			self::$katapult = Katapult::make(new KatapultApi(
+				KatapultWhmcs::getApiV1Key()
+			));
+		}
+
+		return self::$katapult;
 	}
 
 	public static function dataStoreRead(string $key)
