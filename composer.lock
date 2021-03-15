@@ -89,16 +89,16 @@
         },
         {
             "name": "krystal/katapult",
-            "version": "2.0",
+            "version": "v2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/krystal/katapult-php.git",
-                "reference": "cc4bd255fab1f2532cd6882850ca00c0a2caa836"
+                "reference": "65c8ad7f44de09724a1085e5defcafee5cd24c43"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/krystal/katapult-php/zipball/cc4bd255fab1f2532cd6882850ca00c0a2caa836",
-                "reference": "cc4bd255fab1f2532cd6882850ca00c0a2caa836",
+                "url": "https://api.github.com/repos/krystal/katapult-php/zipball/65c8ad7f44de09724a1085e5defcafee5cd24c43",
+                "reference": "65c8ad7f44de09724a1085e5defcafee5cd24c43",
                 "shasum": ""
             },
             "require": {
@@ -134,9 +134,9 @@
             ],
             "support": {
                 "issues": "https://github.com/krystal/katapult-php/issues",
-                "source": "https://github.com/krystal/katapult-php/tree/2.0"
+                "source": "https://github.com/krystal/katapult-php/tree/v2.1"
             },
-            "time": "2021-03-01T18:48:58+00:00"
+            "time": "2021-03-15T18:14:12+00:00"
         }
     ],
     "packages-dev": [],

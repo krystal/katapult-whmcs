@@ -8,6 +8,8 @@ use Grizzlyware\Salmon\WHMCS\Product\Product;
 use Krystal\Katapult\Katapult;
 use Krystal\Katapult\API\RestfulKatapultApiV1 as KatapultApi;
 use Krystal\Katapult\Resources\DataCenter;
+use Krystal\Katapult\Resources\Organization;
+use Krystal\Katapult\Resources\Organization\DiskTemplate;
 use WHMCS\Module\Server\Katapult\Helpers\WhmcsHelper;
 
 class KatapultWhmcs
@@ -20,6 +22,7 @@ class KatapultWhmcs
 	const DS_PARENT_ORGANIZATION = 'parent_organization';
 	const DS_CONFIG_OPTION_GROUP_ID = 'config_option_group_id';
 	const DS_CONFIG_OPTION_DATACENTER_ID = 'config_option_datacenter_id';
+	const DS_CONFIG_OPTION_DISK_TEMPLATE_ID = 'config_option_disk_template_id';
 
 	public static function getKatapult(): Katapult
 	{
@@ -81,9 +84,30 @@ class KatapultWhmcs
 		self::log("Updated parent organization to: {$organization}");
 	}
 
-	public static function getParentOrganization(): ? string
+	public static function getParentOrganizationIdentifier(): ? string
 	{
 		return KatapultWhmcs::dataStoreRead(self::DS_PARENT_ORGANIZATION);
+	}
+
+	public static function getParentOrganization(): ? Organization
+	{
+		$orgIdentifier = self::getParentOrganizationIdentifier();
+
+		if (!$orgIdentifier) {
+			return null;
+		}
+
+		$spec = [];
+
+		if(strpos($orgIdentifier, 'org_') === 0) {
+			$spec['id'] = $orgIdentifier;
+		} else {
+			$spec['subdomain'] = $orgIdentifier;
+		}
+
+		return Organization::instantiateFromSpec(
+			(object)$spec
+		);
 	}
 
 	public static function log(string $message)
@@ -127,6 +151,10 @@ class KatapultWhmcs
 		// This will fetch DCs, disk templates from Katapult and sync them with WHMCS configurable options.
 		// If there is no existing config option, it will create all elements as visible, else it will add new ones as hidden for an admin to un-hide as required.
 
+		/**
+		 * Data center option
+		 */
+
 		// Fetch the DC option
 		$dataCenterOption = WhmcsHelper::getOrCreateConfigOption($configOptionGroup, 'Data Center', 1, self::DS_CONFIG_OPTION_DATACENTER_ID);
 
@@ -140,17 +168,47 @@ class KatapultWhmcs
 			}
 
 			// Create the option
-			$currentDcOption = new ConfigOptionGroup\Option\SubOption();
-			$currentDcOption->optionname = "{$dataCenter->permalink}|{$dataCenter->name}";
-			$currentDcOption->hidden = $dataCenterOption->wasRecentlyCreated ? 0 : 1;
+			$currentOption = new ConfigOptionGroup\Option\SubOption();
+			$currentOption->optionname = "{$dataCenter->permalink}|{$dataCenter->name}";
+			$currentOption->hidden = $dataCenterOption->wasRecentlyCreated ? 0 : 1;
 
 			// Persist the option
-			if (!$dataCenterOption->subOptions()->save($currentDcOption)) {
+			if (!$dataCenterOption->subOptions()->save($currentOption)) {
 				throw new \Exception('Could not save data center: ' . $dataCenter->name);
 			}
 
 			// Create free pricing for the new option
-			WhmcsHelper::createFreePricingForObject('configoptions', $dataCenterOption->id);
+			WhmcsHelper::createFreePricingForObject('configoptions', $currentOption->id);
+		}
+
+		/**
+		 * Disk template option
+		 */
+
+		// Fetch the DC option
+		$diskTemplateOption = WhmcsHelper::getOrCreateConfigOption($configOptionGroup, 'Disk Template', 1, self::DS_CONFIG_OPTION_DISK_TEMPLATE_ID);
+
+		// Create options for the templates
+		/** @var DiskTemplate $diskTemplate */
+		foreach(\katapult()->resource(DiskTemplate::class, katapultOrg())->all() as $diskTemplate) {
+
+			// Already got it, skip
+			if ($diskTemplateOption->subOptions()->where('optionname', 'LIKE', "{$diskTemplate->permalink}|%")->count() > 0) {
+				continue;
+			}
+
+			// Create the option
+			$currentOption = new ConfigOptionGroup\Option\SubOption();
+			$currentOption->optionname = "{$diskTemplate->permalink}|{$diskTemplate->name}";
+			$currentOption->hidden = $diskTemplateOption->wasRecentlyCreated ? 0 : 1;
+
+			// Persist the option
+			if (!$diskTemplateOption->subOptions()->save($currentOption)) {
+				throw new \Exception('Could not save disk template: ' . $diskTemplate->name);
+			}
+
+			// Create free pricing for the new option
+			WhmcsHelper::createFreePricingForObject('configoptions', $currentOption->id);
 		}
 	}
 }

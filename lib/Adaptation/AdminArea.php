@@ -21,7 +21,7 @@ class AdminArea
 		}
 
 		$baseUrl = WebHelper::getBaseUrl();
-		$parentOrganizationEscaped = htmlentities(KatapultWhmcs::getParentOrganization() ?: '');
+		$parentOrganizationEscaped = htmlentities(KatapultWhmcs::getParentOrganizationIdentifier() ?: '');
 
 		$katapultLogo = <<<HTML
 <img src="{$baseUrl}/modules/servers/katapult/assets/katapult_logo_white_strapline.svg" alt="" style="max-width: 200px;">

@@ -6,11 +6,7 @@ use WHMCS\Module\Server\Katapult\Adaptation\System as SystemAdaptation;
 use WHMCS\Module\Server\Katapult\KatapultWhmcs;
 
 require_once 'vendor/autoload.php';
-
-function katapult(): Katapult
-{
-	return KatapultWhmcs::getKatapult();
-}
+require_once 'helpers.php';
 
 // System
 \add_hook('DailyCronJob', 0, [SystemAdaptation::class, 'syncConfigOptions']);
