@@ -2,7 +2,8 @@
 
 namespace WHMCS\Module\Server\Katapult\Adaptation;
 
-use WHMCS\Module\Server\Katapult\KatapultHelper;
+use WHMCS\Module\Server\Katapult\Helpers\GeneralHelper;
+use WHMCS\Module\Server\Katapult\Helpers\WhmcsHelper;
 use WHMCS\Module\Server\Katapult\KatapultWhmcs;
 use WHMCS\Utility\Environment\WebHelper;
 
@@ -10,7 +11,7 @@ class AdminArea
 {
 	public static function addConfigurationPaneToProductSettings($vars): array
 	{
-		if (!KatapultHelper::productIdIsKatapult($vars['pid'])) {
+		if (!WhmcsHelper::productIdIsKatapult($vars['pid'])) {
 			return [];
 		}
 
@@ -31,7 +32,7 @@ HTML;
 			$noteMessage = 'Enter your Katapult API key here to connect to Katapult';
 		}
 
-		$apiKeyInput = <<<HTML
+		$configurationGui = <<<HTML
 <div class="row">
 	<div class="col-md-12 col-lg-6">
 	
@@ -40,6 +41,9 @@ HTML;
 			{$katapultLogo} <br>
 			<input type="password" style="background-color: #170030; padding: 2rem; margin: 1rem 0; color: #fff" name="katapult_api_v1_key" class="form-control" placeholder="Enter your Katapult API token here" autocomplete="off" />
 			<small class="text-light"><b>Note:</b> {$noteMessage}</small>
+			<br>
+			<label for="katapult_sync_config_options"><input class="form-check" type="checkbox" name="katapult_sync_config_options" id="katapult_sync_config_options" style="filter: invert(100%) hue-rotate(18deg) brightness(1.7); top: 3px; position: relative;"> Sync configurable options on save (data centers)</label>
+			
 		</div>
 	
 	</div>
@@ -47,21 +51,26 @@ HTML;
 HTML;
 
 		return [
-			'' => $apiKeyInput
+			'' => $configurationGui
 		];
 	}
 
 	public static function updateKatapultConfiguration($vars): void
 	{
-		if (!KatapultHelper::productIdIsKatapult($vars['pid'])) {
+		if (!WhmcsHelper::productIdIsKatapult($vars['pid'])) {
 			return;
 		}
 
-		if (!isset($_POST['katapult_api_v1_key']) || !$_POST['katapult_api_v1_key']) {
-			return;
+		$syncConfigOptions = false;
+
+		if (isset($_POST['katapult_api_v1_key']) && $_POST['katapult_api_v1_key']) {
+			KatapultWhmcs::setApiV1Key($_POST['katapult_api_v1_key']);
+			$syncConfigOptions = true;
 		}
 
-		KatapultWhmcs::setApiV1Key($_POST['katapult_api_v1_key']);
+		if ($syncConfigOptions || isset($_POST['katapult_sync_config_options'])) {
+			GeneralHelper::attempt([KatapultWhmcs::class, 'syncConfigurableOptions'], 'Sync config options');
+		}
 	}
 }
 
