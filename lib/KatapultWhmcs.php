@@ -10,7 +10,6 @@ use Krystal\Katapult\Katapult;
 use Krystal\Katapult\API\RestfulKatapultApiV1 as KatapultApi;
 use Krystal\Katapult\Resources\DataCenter;
 use WHMCS\Module\Server\Katapult\Helpers\WhmcsHelper;
-use WHMCS\Database\Capsule;
 
 class KatapultWhmcs
 {
@@ -126,8 +125,8 @@ class KatapultWhmcs
 			);
 		}
 
-		// This will fetch DCs from Katapult and sync them with WHMCS configurable options.
-		// If there is no existing config option, it will create all DCs as visible, else it will add new ones as hidden for an admin to un-hide as required.
+		// This will fetch DCs, disk templates from Katapult and sync them with WHMCS configurable options.
+		// If there is no existing config option, it will create all elements as visible, else it will add new ones as hidden for an admin to un-hide as required.
 
 		// Fetch the DC option
 		$dataCenterOption = WhmcsHelper::getOrCreateConfigOption($configOptionGroup, 'Data Center', 1, self::DS_CONFIG_OPTION_DATACENTER_ID);
@@ -151,28 +150,8 @@ class KatapultWhmcs
 				throw new \Exception('Could not save data center: ' . $dataCenter->name);
 			}
 
-			// Set free pricing for it
-			Capsule::table('tblpricing')->insert(
-				Currency::all()->map(function(Currency $currency) use($currentDcOption) {
-					return [
-						'type' => 'configoptions',
-						'relid' => $currentDcOption->id,
-						'currency' => $currency->id,
-						'msetupfee' => 0,
-						'qsetupfee' => 0,
-						'ssetupfee' => 0,
-						'asetupfee' => 0,
-						'bsetupfee' => 0,
-						'tsetupfee' => 0,
-						'monthly' => 0,
-						'quarterly' => 0,
-						'semiannually' => 0,
-						'annually' => 0,
-						'biennially' => 0,
-						'triennially' => 0
-					];
-				})->toArray()
-			);
+			// Create free pricing for the new option
+			WhmcsHelper::createFreePricingForObject('configoptions', $dataCenterOption->id);
 		}
 	}
 }

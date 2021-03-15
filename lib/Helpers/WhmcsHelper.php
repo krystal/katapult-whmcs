@@ -2,9 +2,11 @@
 
 namespace WHMCS\Module\Server\Katapult\Helpers;
 
+use Grizzlyware\Salmon\WHMCS\Billing\Currency;
 use Grizzlyware\Salmon\WHMCS\Product\ConfigurableOptions\Group as ConfigOptionGroup;
 use Grizzlyware\Salmon\WHMCS\Product\Product;
 use WHMCS\Module\Server\Katapult\KatapultWhmcs;
+use WHMCS\Database\Capsule;
 
 class WhmcsHelper
 {
@@ -34,5 +36,30 @@ class WhmcsHelper
 		}
 
 		return $configOption;
+	}
+
+	public static function createFreePricingForObject(string $type, int $relId): void
+	{
+		Capsule::table('tblpricing')->insert(
+			Currency::all()->map(function(Currency $currency) use($type, $relId) {
+				return [
+					'type' => $type,
+					'relid' => $relId,
+					'currency' => $currency->id,
+					'msetupfee' => 0,
+					'qsetupfee' => 0,
+					'ssetupfee' => 0,
+					'asetupfee' => 0,
+					'bsetupfee' => 0,
+					'tsetupfee' => 0,
+					'monthly' => 0,
+					'quarterly' => 0,
+					'semiannually' => 0,
+					'annually' => 0,
+					'biennially' => 0,
+					'triennially' => 0
+				];
+			})->toArray()
+		);
 	}
 }
