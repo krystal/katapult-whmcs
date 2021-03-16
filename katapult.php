@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Str;
-use Krystal\Katapult\Resources\Organization\VirtualMachine;
+use Krystal\Katapult\Resources\Organization\VirtualMachine as KatapultVirtualMachine;
 use WHMCS\Module\Server\Katapult\ServerModuleParams;
-use WHMCS\Module\Server\Katapult\WHMCS\Service\Service;
+use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 
 if (!defined('WHMCS')) {
 	die('This file cannot be accessed directly');
@@ -48,7 +48,7 @@ function katapult_CreateAccount(array $params): string
 		}
 
 		// Build a VM
-		$response = katapult()->resource(VirtualMachine::class, $params->client->managed_organization)->build([
+		$response = katapult()->resource(KatapultVirtualMachine::class, $params->client->managed_organization)->build([
 			'package' => ['permalink' => $params->package],
 			'data_center' => ['permalink' => $params->dataCenter],
 			'disk_template' => ['permalink' => $params->diskTemplate],
@@ -56,13 +56,13 @@ function katapult_CreateAccount(array $params): string
 		]);
 
 		// Persist the build ID
-		$params->service->dataStoreWrite(Service::DS_VM_BUILD_ID, $response->build->id, $response->build->id);
+		$params->service->dataStoreWrite(VirtualMachine::DS_VM_BUILD_ID, $response->build->id, $response->build->id);
 
 		// Log it
 		$params->service->log("Started VM build: {$response->build->id}");
 
 		// Trigger a hook
-		$params->service->triggerHook(Service::HOOK_BUILD_REQUESTED);
+		$params->service->triggerHook(VirtualMachine::HOOK_BUILD_REQUESTED);
 
 		return 'success';
 	} catch (\Throwable $e) {

@@ -24,9 +24,9 @@ This module exposes some hooks for you to interact with at key lifecycle events 
 Fires when a VM build has been created with Katapult.
 
 ```php
-use \WHMCS\Module\Server\Katapult\WHMCS\Service\Service;
+use \WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 
-\add_hook('KatapultVirtualMachineBuildRequested', 0, function(Service $service) {
+\add_hook('KatapultVirtualMachineBuildRequested', 0, function(VirtualMachine $service) {
     \sendMessage('Katapult Server Building Email', $service->id);
 });
 ```
@@ -35,9 +35,9 @@ use \WHMCS\Module\Server\Katapult\WHMCS\Service\Service;
 Fires when a VM has finished building and has been persisted to the WHMCS database.
 
 ```php
-use \WHMCS\Module\Server\Katapult\WHMCS\Service\Service;
+use \WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 
-\add_hook('KatapultVirtualMachineBuilt', 0, function(Service $service) {
+\add_hook('KatapultVirtualMachineBuilt', 0, function(VirtualMachine $service) {
     \sendMessage('Katapult Server Ready Email', $service->id);
 });
 ```

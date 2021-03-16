@@ -11,7 +11,7 @@ use Krystal\Katapult\Resources\DataCenter;
 use Krystal\Katapult\Resources\Organization;
 use Krystal\Katapult\Resources\Organization\DiskTemplate;
 use WHMCS\Module\Server\Katapult\Helpers\WhmcsHelper;
-use WHMCS\Module\Server\Katapult\WHMCS\Service\Service;
+use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 
 class KatapultWhmcs
 {
@@ -209,7 +209,7 @@ class KatapultWhmcs
 
 	public static function syncVmBuilds(): void
 	{
-		$log = function($message, Service $service = null) {
+		$log = function($message, VirtualMachine $service = null) {
 			$message = "[SyncVmBuilds]: {$message}";
 
 			if($service) {
@@ -253,8 +253,8 @@ SQL;
 
 		while($row = $sql->fetch(\PDO::FETCH_ASSOC)) {
 			try {
-				/** @var Service $service */
-				$service = Service::findOrFail($row['id']);
+				/** @var VirtualMachine $service */
+				$service = VirtualMachine::findOrFail($row['id']);
 				$log("Starting", $service);
 				if($service->checkForExistingBuildAttempt()) {
 					$log("Provisioned successfully", $service);

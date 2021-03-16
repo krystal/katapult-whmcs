@@ -2,7 +2,7 @@
 
 namespace WHMCS\Module\Server\Katapult\WHMCS\Service;
 
-use Krystal\Katapult\Resources\Organization\VirtualMachine;
+use Krystal\Katapult\Resources\Organization\VirtualMachine as KatapultVirtualMachine;
 use WHMCS\Module\Server\Katapult\Concerns\HasDataStoreValues;
 use WHMCS\Module\Server\Katapult\WHMCS\User\Client;
 
@@ -13,7 +13,7 @@ use WHMCS\Module\Server\Katapult\WHMCS\User\Client;
  * @property-read string|null $vm_id
  * @property-read string|null $vm_build_id
  */
-class Service extends \Grizzlyware\Salmon\WHMCS\Service\Service
+class VirtualMachine extends \Grizzlyware\Salmon\WHMCS\Service\Service
 {
 	use HasDataStoreValues;
 
@@ -59,7 +59,7 @@ class Service extends \Grizzlyware\Salmon\WHMCS\Service\Service
 		}
 
 		// Fetch the build state
-		$virtualMachineBuild = katapult()->resource(VirtualMachine\VirtualMachineBuild::class)->get($buildId);
+		$virtualMachineBuild = katapult()->resource(KatapultVirtualMachine\VirtualMachineBuild::class)->get($buildId);
 
 		// Do we have a VM?
 		if(!$virtualMachineBuild->virtual_machine) {
@@ -72,7 +72,7 @@ class Service extends \Grizzlyware\Salmon\WHMCS\Service\Service
 
 		// Get the VM
 		/** @var VirtualMachine $vm */
-		$vm = katapult()->resource(VirtualMachine::class)->get($virtualMachineBuild->virtual_machine->id);
+		$vm = katapult()->resource(KatapultVirtualMachine::class)->get($virtualMachineBuild->virtual_machine->id);
 
 		// Do we have a root pw?
 		if(!$vm->initial_root_password) {
@@ -101,7 +101,7 @@ class Service extends \Grizzlyware\Salmon\WHMCS\Service\Service
 		return true;
 	}
 
-	protected function populateServiceWithVm(VirtualMachine $virtualMachine): void
+	protected function populateServiceWithVm(KatapultVirtualMachine $virtualMachine): void
 	{
 		$this->username = 'root';
 		$this->password = \encrypt($virtualMachine->initial_root_password);

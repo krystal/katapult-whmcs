@@ -4,7 +4,7 @@ namespace WHMCS\Module\Server\Katapult;
 
 use Krystal\Katapult\Resources\VirtualMachinePackage;
 use WHMCS\Module\Server\Katapult\WHMCS\Product\Product;
-use WHMCS\Module\Server\Katapult\WHMCS\Service\Service;
+use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 use WHMCS\Module\Server\Katapult\WHMCS\User\Client;
 use Illuminate\Support\Str;
 
@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
  *
  * @property-read Client $client
  * @property-read Product $product
- * @property-read Service $service
+ * @property-read VirtualMachine $service
  *
  * @property-read string $package
  * @property-read string $dataCenter
@@ -25,7 +25,7 @@ class ServerModuleParams
 	protected array $rawParams;
 	protected array $configuration;
 
-	protected Service $service;
+	protected VirtualMachine $service;
 	protected Client $client;
 	protected Product $product;
 
@@ -39,7 +39,7 @@ class ServerModuleParams
 			$this->configuration[$option['camelName']] = $option;
 		}
 
-		$this->service = Service::findOrFail($params['serviceid']);
+		$this->service = VirtualMachine::findOrFail($params['serviceid']);
 		$this->client = Client::findOrFail($params['userid']);
 		$this->product = Product::findOrFail($params['packageid']);
 	}
