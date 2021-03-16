@@ -19,6 +19,9 @@ class Service extends \Grizzlyware\Salmon\WHMCS\Service\Service
 		return $this->belongsTo(Client::class, 'userid');
 	}
 
+	/**
+	 * @todo test these work
+	 */
 	public function triggerHook(string $hook): void
 	{
 		try {

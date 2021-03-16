@@ -54,10 +54,6 @@ class KatapultWhmcs
 
 	public static function getApiV1Key(): ? string
 	{
-		if (defined('KATAPULT_API_V1_KEY') && KATAPULT_API_V1_KEY) {
-			return KATAPULT_API_V1_KEY;
-		}
-
 		$value = KatapultWhmcs::dataStoreRead(self::DS_API_V1_KEY);
 
 		if (!$value) {

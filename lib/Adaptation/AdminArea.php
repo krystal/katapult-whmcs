@@ -15,11 +15,6 @@ class AdminArea
 			return [];
 		}
 
-		// Do not show this GUI if we're using a constant
-		if(defined('KATAPULT_API_V1_KEY') && KATAPULT_API_V1_KEY) {
-			return [];
-		}
-
 		$baseUrl = WebHelper::getBaseUrl();
 		$parentOrganizationEscaped = htmlentities(KatapultWhmcs::getParentOrganizationIdentifier() ?: '');
 
