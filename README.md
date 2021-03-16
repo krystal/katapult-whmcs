@@ -55,7 +55,9 @@ use \WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 
 ## Reference
 
-The `\WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine` class ultimately extends from the WHMCS service model, `WHMCS\Service\Service`, which is a [Laravel](https://laravel.com/docs/8.x/eloquent) model, which references `tblhosting` in the database. This module uses the [Salmon](https://github.com/grizzlyware/salmon-whmcs) datastore to persist data to WHMCS, outside the default tables, using `mod_salmon_data_store_items`. Data such as VM ID, build ID, organization ID and the encrypted API key are stored in this table.
+The `\WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine` class ultimately extends from the WHMCS service model, `WHMCS\Service\Service`, which is a [Laravel](https://laravel.com/docs/8.x/eloquent) model, which references `tblhosting` in the database.
+
+This module uses the [Salmon](https://github.com/grizzlyware/salmon-whmcs) datastore to persist data to WHMCS, outside the default tables, using `mod_salmon_data_store_items`. Data such as VM ID, build ID, organization ID and the encrypted API key are stored in this table.
 
 Because of its parentage, you can instantiate a Katapult service like this:
 
