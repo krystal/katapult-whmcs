@@ -2,6 +2,7 @@
 
 namespace WHMCS\Module\Server\Katapult;
 
+use GuzzleHttp\Exception\ClientException;
 use Grizzlyware\Salmon\WHMCS\Helpers\DataStore;
 use Grizzlyware\Salmon\WHMCS\Product\ConfigurableOptions\Group as ConfigOptionGroup;
 use Grizzlyware\Salmon\WHMCS\Product\Product;
@@ -13,6 +14,7 @@ use Krystal\Katapult\Resources\Organization\DiskTemplate;
 use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 use WHMCS\Module\Server\Katapult\Helpers\WhmcsHelper;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
+use WHMCS\Module\Server\Katapult\Helpers\KatapultApiV1Helper;
 
 class KatapultWhmcs
 {
@@ -266,6 +268,30 @@ SQL;
 					$log("Error: Service ID: " . $row['id'] . ": {$e->getMessage()}");
 				}
 			}
+		}
+	}
+
+	public static function runModuleCommandOnVm(array $params, callable $command): string
+	{
+		try {
+			$params = new ServerModuleParams($params);
+
+			// Check there is a VM..
+			if (!$params->service->vm_id) {
+				throw new Exception('There is no VM ID set for this service');
+			}
+
+			$return = $command($params);
+
+			if ($return) {
+				return $return;
+			}
+
+			return 'success';
+		} catch (ClientException $e) {
+			return implode(', ', KatapultApiV1Helper::humaniseHttpError($e));
+		} catch (\Throwable $e) {
+			return $e->getMessage();
 		}
 	}
 }

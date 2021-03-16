@@ -27,49 +27,25 @@ function katapult_ConfigOptions(): array
 
 function katapult_TerminateAccount(array $params): string
 {
-	try {
-		$params = new ServerModuleParams($params);
-
-		// Check there is a VM..
-		if (!$params->service->vm_id) {
-			throw new Exception('There is no VM ID set for this service');
-		}
-
+	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(ServerModuleParams $params)
+	{
 		// Delete the VM
 		$params->service->vm->delete();
 
 		// Wipe all data store values for this service
 		$params->service->clearAllDataStoreValues();
-
-		return 'success';
-	} catch (ClientException $e) {
-		return implode(', ', KatapultApiV1Helper::humaniseHttpError($e));
-	} catch (\Throwable $e) {
-		return $e->getMessage();
-	}
+	});
 }
 
 function katapult_ChangePackage(array $params): string
 {
-	try {
-		$params = new ServerModuleParams($params);
-
-		// Check there is a VM..
-		if (!$params->service->vm_id) {
-			throw new Exception('There is no VM ID set for this service');
-		}
-
-		// Delete the VM
+	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(ServerModuleParams $params)
+	{
+		// Change the VM package
 		$params->service->vm->changePackage([
 			'permalink' => $params->package
 		]);
-
-		return 'success';
-	} catch (ClientException $e) {
-		return implode(', ', KatapultApiV1Helper::humaniseHttpError($e));
-	} catch (\Throwable $e) {
-		return $e->getMessage();
-	}
+	});
 }
 
 function katapult_CreateAccount(array $params): string
