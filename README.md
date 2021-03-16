@@ -52,3 +52,10 @@ use \WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
     // Send a notification to an admin or open a ticket
 });
 ```
+
+## Requirements
+* PHP >= 7.4
+* WHMCS >= 8.0
+* A Katapult account with access to managed organizations
+
+
