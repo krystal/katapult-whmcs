@@ -15,6 +15,11 @@ use WHMCS\Module\Server\Katapult\WHMCS\User\Client;
  */
 class VirtualMachine extends Service
 {
+	/**
+	 * Build timeout in seconds
+	 */
+	const BUILD_TIMEOUT = 300;
+
 	const DS_VM_BUILD_ID = 'vm_build_id';
 	const DS_VM_ID = 'vm_id';
 
