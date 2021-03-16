@@ -3,12 +3,10 @@
 namespace WHMCS\Module\Server\Katapult\WHMCS\Service;
 
 use Krystal\Katapult\Resources\Organization\VirtualMachine as KatapultVirtualMachine;
-use WHMCS\Module\Server\Katapult\Concerns\HasDataStoreValues;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuilding;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildTimeout;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineExists;
-use WHMCS\Module\Server\Katapult\WHMCS\User\Client;
 use Carbon\Carbon;
 
 /**
@@ -37,15 +35,6 @@ class VirtualMachine extends Service
 	const HOOK_VM_BUILT = 'KatapultVirtualMachineBuilt';
 	const HOOK_BUILD_TIMED_OUT = 'KatapultVirtualMachineBuildTimedOut';
 
-	public function silentlyCheckForExistingBuildAttempt(): void
-	{
-		try {
-			$this->checkForExistingBuildAttempt();
-		} catch (\Throwable $e) {
-			// TODO?
-		}
-	}
-
 	public function getVmIdAttribute(): ? string
 	{
 		return $this->dataStoreRead(self::DS_VM_ID);
@@ -61,11 +50,21 @@ class VirtualMachine extends Service
 		return $this->dataStoreRead(self::DS_VM_BUILD_STARTED_AT);
 	}
 
+	public function silentlyCheckForExistingBuildAttempt(): void
+	{
+		try {
+			$this->checkForExistingBuildAttempt();
+		} catch (\Throwable $e) {
+			// We don't care
+		}
+	}
+
 	/**
 	 * Will check for an existing VM build and persist it to WHMCS if is has finished building in Katapult
 	 * @throws VirtualMachineBuildNotFound
 	 * @throws VirtualMachineBuilding
 	 * @throws VirtualMachineExists
+	 * @throws VirtualMachineBuildTimeout
 	 */
 	public function checkForExistingBuildAttempt(): void
 	{
