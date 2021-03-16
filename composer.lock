@@ -48,16 +48,16 @@
         },
         {
             "name": "grizzlyware/salmon-whmcs",
-            "version": "1.1",
+            "version": "V1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/grizzlyware/salmon-whmcs.git",
-                "reference": "69b6ef689c5031fa170c48eb75aec71c0c14ec01"
+                "reference": "344a34bb97a4276bc26d8f1729c4febeb413de2a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/grizzlyware/salmon-whmcs/zipball/69b6ef689c5031fa170c48eb75aec71c0c14ec01",
-                "reference": "69b6ef689c5031fa170c48eb75aec71c0c14ec01",
+                "url": "https://api.github.com/repos/grizzlyware/salmon-whmcs/zipball/344a34bb97a4276bc26d8f1729c4febeb413de2a",
+                "reference": "344a34bb97a4276bc26d8f1729c4febeb413de2a",
                 "shasum": ""
             },
             "require": {
@@ -83,9 +83,9 @@
             "description": "Grizzly bears eat salmon",
             "support": {
                 "issues": "https://github.com/grizzlyware/salmon-whmcs/issues",
-                "source": "https://github.com/grizzlyware/salmon-whmcs/tree/master"
+                "source": "https://github.com/grizzlyware/salmon-whmcs/tree/V1.1.1"
             },
-            "time": "2020-01-07T12:04:15+00:00"
+            "time": "2021-03-16T10:50:19+00:00"
         },
         {
             "name": "krystal/katapult",

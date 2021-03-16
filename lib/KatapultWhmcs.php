@@ -37,13 +37,7 @@ class KatapultWhmcs
 
 	public static function dataStoreRead(string $key)
 	{
-		$value = DataStore::get('module_setting', 'katapult', $key);
-
-		if($value === DataStore::EMPTY_VALUE_INDEX) {
-			return null;
-		}
-
-		return $value;
+		return DataStore::get('module_setting', 'katapult', $key);
 	}
 
 	public static function dataStoreWrite(string $key, $value)
