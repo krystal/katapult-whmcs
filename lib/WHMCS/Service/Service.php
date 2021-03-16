@@ -13,6 +13,14 @@ class Service extends \Grizzlyware\Salmon\WHMCS\Service\Service
 	const DS_VM_BUILD_ID = 'vm_build_id';
 	const DS_VM_ID = 'vm_id';
 
+	const HOOK_BUILD_REQUESTED = 'KatapultVirtualMachineBuildRequested';
+	const HOOK_VM_BUILT = 'KatapultVirtualMachineBuilt';
+
+	protected function dataStoreRelType(): string
+	{
+		return 'service';
+	}
+
 	public function client()
 	{
 		return $this->belongsTo(Client::class, 'userid');
@@ -80,7 +88,9 @@ class Service extends \Grizzlyware\Salmon\WHMCS\Service\Service
 		// Go..
 		$this->populateServiceWithVm($vm);
 
-		// If complete, set the services password, hostname, send the welcome email (if required and not $duringCreate)
+		// Fire a hook!
+		$this->triggerHook(self::HOOK_VM_BUILT);
+
 		return true;
 	}
 
@@ -102,7 +112,18 @@ class Service extends \Grizzlyware\Salmon\WHMCS\Service\Service
 
 		// Save the details
 		$this->save();
-		$this->dataStoreWrite(self::DS_VM_ID, $virtualMachine->id);
+		$this->dataStoreWrite(self::DS_VM_ID, $virtualMachine->id, $virtualMachine->id);
+	}
+
+	public function triggerHook(string $hook): void
+	{
+		try {
+			\run_hook($hook, [
+				'service' => $this,
+			]);
+		} catch (\Throwable $e) {
+			$this->log("Failed to run hook: {$hook}: {$e->getMessage()}");
+		}
 	}
 }
 

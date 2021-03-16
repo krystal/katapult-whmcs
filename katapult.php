@@ -21,12 +21,6 @@ function katapult_ConfigOptions(): array
 	return ServerModuleParams::getWhmcsServerConfiguration();
 }
 
-/**
- * @todo root password, hostname
- * @todo check build hasn't been started before
- * @todo persist VM details to the service once it's built
- * @todo stop the welcome email sending at this point, as the VM is not ready
- */
 function katapult_CreateAccount(array $params): string
 {
 	try {
@@ -62,10 +56,13 @@ function katapult_CreateAccount(array $params): string
 		]);
 
 		// Persist the build ID
-		$params->service->dataStoreWrite(Service::DS_VM_BUILD_ID, $response->build->id);
+		$params->service->dataStoreWrite(Service::DS_VM_BUILD_ID, $response->build->id, $response->build->id);
 
 		// Log it
 		$params->service->log("Started VM build: {$response->build->id}");
+
+		// Trigger a hook
+		$params->service->triggerHook(Service::HOOK_BUILD_REQUESTED);
 
 		return 'success';
 	} catch (\Throwable $e) {
@@ -89,6 +86,12 @@ function katapult_AdminServicesTabFields(array $params): array
 	}
 }
 
+/**
+ * @param array $params
+ * @return array
+ *
+ * @todo show VM details in the client area
+ */
 function katapult_ClientArea(array $params): array
 {
 	try {

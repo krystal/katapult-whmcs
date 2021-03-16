@@ -62,4 +62,9 @@ class WhmcsHelper
 			})->toArray()
 		);
 	}
+
+	public static function getPdo(): \PDO
+	{
+		return \Illuminate\Database\Capsule\Manager::connection()->getPdo();
+	}
 }

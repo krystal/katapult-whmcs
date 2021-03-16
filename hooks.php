@@ -10,6 +10,7 @@ require(__DIR__ . '/helpers.php');
 
 // System
 \add_hook('DailyCronJob', 0, [SystemAdaptation::class, 'syncConfigOptions']);
+\add_hook('AfterCronJob', 0, [SystemAdaptation::class, 'syncVmBuilds']);
 
 // Admin
 \add_hook('AdminProductConfigFields', 0, [AdminAreaAdaptation::class, 'addConfigurationPaneToProductSettings']);

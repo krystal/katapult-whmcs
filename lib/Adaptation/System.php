@@ -11,5 +11,10 @@ class System
 	{
 		GeneralHelper::attempt([KatapultWhmcs::class, 'syncConfigurableOptions'], 'Sync config options');
 	}
+
+	public static function syncVmBuilds(): void
+	{
+		GeneralHelper::attempt([KatapultWhmcs::class, 'syncVmBuilds'], 'Syncing VM builds');
+	}
 }
 

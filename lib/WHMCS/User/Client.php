@@ -18,6 +18,11 @@ class Client extends \Grizzlyware\Salmon\WHMCS\User\Client
 
 	const DS_MANAGED_ORG_ID = 'managed_org_id';
 
+	protected function dataStoreRelType(): string
+	{
+		return 'client';
+	}
+
 	protected function getManagedOrganizationAttribute(): Organization
 	{
 		$existingOrgId = $this->dataStoreRead(self::DS_MANAGED_ORG_ID);
@@ -42,7 +47,7 @@ class Client extends \Grizzlyware\Salmon\WHMCS\User\Client
 
 		// Send it home
 		return Organization::instantiateFromSpec((object)[
-			'id' => $existingOrgId
+			'id' => $managedOrg
 		]);
 	}
 

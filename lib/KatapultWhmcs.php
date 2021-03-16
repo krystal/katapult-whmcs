@@ -11,6 +11,7 @@ use Krystal\Katapult\Resources\DataCenter;
 use Krystal\Katapult\Resources\Organization;
 use Krystal\Katapult\Resources\Organization\DiskTemplate;
 use WHMCS\Module\Server\Katapult\Helpers\WhmcsHelper;
+use WHMCS\Module\Server\Katapult\WHMCS\Service\Service;
 
 class KatapultWhmcs
 {
@@ -203,6 +204,70 @@ class KatapultWhmcs
 
 			// Create free pricing for the new option
 			WhmcsHelper::createFreePricingForObject('configoptions', $currentOption->id);
+		}
+	}
+
+	public static function syncVmBuilds(): void
+	{
+		$log = function($message, Service $service = null) {
+			$message = "[SyncVmBuilds]: {$message}";
+
+			if($service) {
+				$service->log($message);
+			} else {
+				self::log($message);
+			}
+		};
+
+		// Find Katapult services with a build ID but not a VM ID, and sync them.
+		$sql = <<<SQL
+SELECT DISTINCT tblhosting.id as id
+FROM tblhosting
+         INNER JOIN tblproducts ON tblproducts.id = tblhosting.packageid
+
+WHERE domainstatus = 'Active'
+  AND tblproducts.servertype = 'katapult'
+  AND EXISTS(SELECT id
+             FROM mod_salmon_data_store_items
+             WHERE rel_id = tblhosting.id
+               AND rel_type = 'service'
+               AND `key` = 'vm_build_id'
+               AND value_index IS NOT NULL)
+
+  AND NOT EXISTS(SELECT id
+                 FROM mod_salmon_data_store_items
+                 WHERE rel_id = tblhosting.id
+                   AND rel_type = 'service'
+                   AND `key` = 'vm_id'
+                   AND value_index IS NOT NULL);
+SQL;
+
+		$sql = WhmcsHelper::getPdo()->query($sql);
+
+		// Nothing to do..
+		if ($sql->rowCount() < 1) {
+			return;
+		}
+
+		$log(sprintf("Found %d VM builds", $sql->rowCount()));
+
+		while($row = $sql->fetch(\PDO::FETCH_ASSOC)) {
+			try {
+				/** @var Service $service */
+				$service = Service::findOrFail($row['id']);
+				$log("Starting", $service);
+				if($service->checkForExistingBuildAttempt()) {
+					$log("Provisioned successfully", $service);
+				} else {
+					$log("Nothing to do", $service);
+				}
+			} catch (\Throwable $e) {
+				if(isset($service) && $service) {
+					$log("Error: {$e->getMessage()}", $service);
+				} else {
+					$log("Error: Service ID: " . $row['id'] . ": {$e->getMessage()}");
+				}
+			}
 		}
 	}
 }
