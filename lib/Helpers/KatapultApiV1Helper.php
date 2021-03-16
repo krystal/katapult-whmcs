@@ -26,9 +26,14 @@ class KatapultApiV1Helper
 
 		$primaryError = $responseBody->error->description;
 
-		// Add the details..
+		// Add the errors..
 		if(isset($responseBody->error->detail) && isset($responseBody->error->detail->errors) && count($responseBody->error->detail->errors) > 0) {
 			$primaryError .= " - " . implode(', ', $responseBody->error->detail->errors);
+		}
+
+		// Add the details..
+		if(isset($responseBody->error->detail) && isset($responseBody->error->detail->details)) {
+			$primaryError .= " - " . $responseBody->error->detail->details;
 		}
 
 		return [$primaryError];
