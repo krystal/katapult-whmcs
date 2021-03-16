@@ -2,7 +2,6 @@
 
 namespace WHMCS\Module\Server\Katapult;
 
-use Krystal\Katapult\Resources\Organization\ManagedOrganization;
 use Krystal\Katapult\Resources\VirtualMachinePackage;
 use WHMCS\Module\Server\Katapult\WHMCS\Product\Product;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\Service;
