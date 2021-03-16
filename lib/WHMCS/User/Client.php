@@ -47,7 +47,7 @@ class Client extends \Grizzlyware\Salmon\WHMCS\User\Client
 
 		// Send it home
 		return Organization::instantiateFromSpec((object)[
-			'id' => $managedOrg
+			'id' => $managedOrg->id
 		]);
 	}
 

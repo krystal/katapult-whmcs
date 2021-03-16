@@ -16,8 +16,6 @@ use Carbon\Carbon;
  * @property-read string|null $vm_id
  * @property-read string|null $vm_build_id
  * @property-read Carbon|null $vm_build_started_at
- *
- * @todo Clear all the DS values when a service is terminated. Handle on the service class.
  */
 class VirtualMachine extends Service
 {
@@ -104,7 +102,7 @@ class VirtualMachine extends Service
 				throw new VirtualMachineBuilding('The VM is awaiting IP address assignment');
 			}
 		} catch(VirtualMachineBuilding $e) {
-			// Has it timed out?
+			// Has it timed out? // TODO test this
 			if($this->vm_build_started_at->diffInSeconds(Carbon::now()) > self::BUILD_TIMEOUT) {
 
 				// Fire the hook, just once..

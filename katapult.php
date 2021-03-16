@@ -1,8 +1,10 @@
 <?php
 
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Str;
 use Krystal\Katapult\Resources\Organization\VirtualMachine as KatapultVirtualMachine;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
+use WHMCS\Module\Server\Katapult\Helpers\KatapultApiV1Helper;
 use WHMCS\Module\Server\Katapult\ServerModuleParams;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 use Carbon\Carbon;
@@ -21,6 +23,20 @@ function katapult_MetaData(): array
 function katapult_ConfigOptions(): array
 {
 	return ServerModuleParams::getWhmcsServerConfiguration();
+}
+
+function katapult_TerminateAccount(array $params): string
+{
+	try {
+		$params = new ServerModuleParams($params);
+
+		// Wipe all data store values for this service
+		$params->service->clearAllDataStoreValues();
+
+		return 'success';
+	} catch (\Throwable $e) {
+		return $e->getMessage();
+	}
 }
 
 function katapult_CreateAccount(array $params): string
@@ -73,6 +89,8 @@ function katapult_CreateAccount(array $params): string
 		$params->service->triggerHook(VirtualMachine::HOOK_BUILD_REQUESTED);
 
 		return 'success';
+	} catch (ClientException $e) {
+		return implode(', ', KatapultApiV1Helper::humaniseHttpError($e));
 	} catch (\Throwable $e) {
 		return $e->getMessage();
 	}

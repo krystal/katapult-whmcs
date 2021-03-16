@@ -10,6 +10,7 @@ use Krystal\Katapult\API\RestfulKatapultApiV1 as KatapultApi;
 use Krystal\Katapult\Resources\DataCenter;
 use Krystal\Katapult\Resources\Organization;
 use Krystal\Katapult\Resources\Organization\DiskTemplate;
+use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 use WHMCS\Module\Server\Katapult\Helpers\WhmcsHelper;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 
@@ -28,6 +29,11 @@ class KatapultWhmcs
 	public static function getKatapult(): Katapult
 	{
 		if (self::$katapult === null) {
+
+			if (!KatapultWhmcs::getApiV1Key()) {
+				throw new Exception('No API key set');
+			}
+
 			self::$katapult = Katapult::make(new KatapultApi(
 				KatapultWhmcs::getApiV1Key()
 			));

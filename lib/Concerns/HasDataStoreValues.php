@@ -17,6 +17,11 @@ trait HasDataStoreValues
 	{
 		return DataStore::get($this->dataStoreRelType(), $this->id, $key);
 	}
+
+	public function clearAllDataStoreValues(): void
+	{
+		DataStore\Item::relType($this->dataStoreRelType())->relId($this->id)->delete();
+	}
 }
 
 
