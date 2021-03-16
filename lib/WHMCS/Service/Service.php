@@ -6,6 +6,13 @@ use Krystal\Katapult\Resources\Organization\VirtualMachine;
 use WHMCS\Module\Server\Katapult\Concerns\HasDataStoreValues;
 use WHMCS\Module\Server\Katapult\WHMCS\User\Client;
 
+/**
+ * Class Service
+ * @package WHMCS\Module\Server\Katapult\WHMCS\Service
+ *
+ * @property-read string|null $vm_id
+ * @property-read string|null $vm_build_id
+ */
 class Service extends \Grizzlyware\Salmon\WHMCS\Service\Service
 {
 	use HasDataStoreValues;
@@ -35,7 +42,7 @@ class Service extends \Grizzlyware\Salmon\WHMCS\Service\Service
 	public function checkForExistingBuildAttempt(bool $duringCreate = false): bool
 	{
 		// Existing VM ID?
-		if ($this->dataStoreRead(self::DS_VM_ID)) {
+		if ($this->vm_id) {
 			if ($duringCreate) {
 				throw new \Exception('There is a VM ID set for this service already, build previously completed');
 			}
@@ -44,7 +51,7 @@ class Service extends \Grizzlyware\Salmon\WHMCS\Service\Service
 		}
 
 		// Existing build ID?
-		$buildId = $this->dataStoreRead(self::DS_VM_BUILD_ID);
+		$buildId = $this->vm_build_id;
 
 		// No build?
 		if (!$buildId) {
