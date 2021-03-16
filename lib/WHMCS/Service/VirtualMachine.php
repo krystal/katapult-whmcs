@@ -16,6 +16,7 @@ use Carbon\Carbon;
  * @property-read string|null $vm_id
  * @property-read string|null $vm_build_id
  * @property-read Carbon|null $vm_build_started_at
+ * @property-read KatapultVirtualMachine $vm
  */
 class VirtualMachine extends Service
 {
@@ -33,6 +34,8 @@ class VirtualMachine extends Service
 	const HOOK_VM_BUILT = 'KatapultVirtualMachineBuilt';
 	const HOOK_BUILD_TIMED_OUT = 'KatapultVirtualMachineBuildTimedOut';
 
+	protected ? KatapultVirtualMachine $virtualMachine = null;
+
 	public function getVmIdAttribute(): ? string
 	{
 		return $this->dataStoreRead(self::DS_VM_ID);
@@ -46,6 +49,19 @@ class VirtualMachine extends Service
 	public function getVmBuildStartedAtAttribute(): ? Carbon
 	{
 		return $this->dataStoreRead(self::DS_VM_BUILD_STARTED_AT);
+	}
+
+	public function getVmAttribute(): ? KatapultVirtualMachine
+	{
+		if($this->virtualMachine) {
+			return $this->virtualMachine;
+		}
+
+		if($this->vm_id) {
+			$this->virtualMachine = katapult()->resource(KatapultVirtualMachine::class)->get($this->vm_id);
+		}
+
+		return $this->virtualMachine;
 	}
 
 	public function silentlyCheckForExistingBuildAttempt(): void

@@ -30,10 +30,15 @@ function katapult_TerminateAccount(array $params): string
 	try {
 		$params = new ServerModuleParams($params);
 
+		// Delete the VM
+		$params->service->vm->delete();
+
 		// Wipe all data store values for this service
 		$params->service->clearAllDataStoreValues();
 
 		return 'success';
+	} catch (ClientException $e) {
+		return implode(', ', KatapultApiV1Helper::humaniseHttpError($e));
 	} catch (\Throwable $e) {
 		return $e->getMessage();
 	}
