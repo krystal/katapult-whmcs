@@ -4,7 +4,12 @@ namespace WHMCS\Module\Server\Katapult\WHMCS\Service;
 
 use Krystal\Katapult\Resources\Organization\VirtualMachine as KatapultVirtualMachine;
 use WHMCS\Module\Server\Katapult\Concerns\HasDataStoreValues;
+use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuilding;
+use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
+use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildTimeout;
+use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineExists;
 use WHMCS\Module\Server\Katapult\WHMCS\User\Client;
+use Carbon\Carbon;
 
 /**
  * Class Service
@@ -12,35 +17,61 @@ use WHMCS\Module\Server\Katapult\WHMCS\User\Client;
  *
  * @property-read string|null $vm_id
  * @property-read string|null $vm_build_id
+ * @property-read Carbon|null $vm_build_started_at
+ *
+ * @todo Clear all the DS values when a service is terminated. Handle on the service class.
  */
 class VirtualMachine extends Service
 {
 	/**
 	 * Build timeout in seconds
 	 */
-	const BUILD_TIMEOUT = 300;
+	const BUILD_TIMEOUT = 900;
 
 	const DS_VM_BUILD_ID = 'vm_build_id';
+	const DS_VM_BUILD_STARTED_AT = 'vm_build_started_at';
+	const DS_VM_BUILD_TIMEOUT_REACHED_AT = 'vm_build_timeout_reached_at';
 	const DS_VM_ID = 'vm_id';
 
 	const HOOK_BUILD_REQUESTED = 'KatapultVirtualMachineBuildRequested';
 	const HOOK_VM_BUILT = 'KatapultVirtualMachineBuilt';
+	const HOOK_BUILD_TIMED_OUT = 'KatapultVirtualMachineBuildTimedOut';
+
+	public function silentlyCheckForExistingBuildAttempt(): void
+	{
+		try {
+			$this->checkForExistingBuildAttempt();
+		} catch (\Throwable $e) {
+			// TODO?
+		}
+	}
+
+	public function getVmIdAttribute(): ? string
+	{
+		return $this->dataStoreRead(self::DS_VM_ID);
+	}
+
+	public function getVmBuildIdAttribute(): ? string
+	{
+		return $this->dataStoreRead(self::DS_VM_BUILD_ID);
+	}
+
+	public function getVmBuildStartedAtAttribute(): ? Carbon
+	{
+		return $this->dataStoreRead(self::DS_VM_BUILD_STARTED_AT);
+	}
 
 	/**
-	 * @param bool $duringCreate
-	 * @return bool
-	 * @throws \Exception Returns true if it successfully finished provisioning a service, or false if there is no pending build and nothing to do.
-	 * @todo invoke this as frequently as possible
+	 * Will check for an existing VM build and persist it to WHMCS if is has finished building in Katapult
+	 * @throws VirtualMachineBuildNotFound
+	 * @throws VirtualMachineBuilding
+	 * @throws VirtualMachineExists
 	 */
-	public function checkForExistingBuildAttempt(bool $duringCreate = false): bool
+	public function checkForExistingBuildAttempt(): void
 	{
 		// Existing VM ID?
 		if ($this->vm_id) {
-			if ($duringCreate) {
-				throw new \Exception('There is a VM ID set for this service already, build previously completed');
-			}
-
-			return false;
+			throw new VirtualMachineExists('There is a VM ID set for this service already, build previously completed');
 		}
 
 		// Existing build ID?
@@ -48,41 +79,49 @@ class VirtualMachine extends Service
 
 		// No build?
 		if (!$buildId) {
-			return false;
+			throw new VirtualMachineBuildNotFound('There is no build ID set for this service');
 		}
 
 		// Fetch the build state
 		$virtualMachineBuild = katapult()->resource(KatapultVirtualMachine\VirtualMachineBuild::class)->get($buildId);
 
-		// Do we have a VM?
-		if(!$virtualMachineBuild->virtual_machine) {
-			if ($duringCreate) {
-				throw new \Exception('The VM is still building');
+		try {
+			// Do we have a VM?
+			if(!$virtualMachineBuild->virtual_machine) {
+				throw new VirtualMachineBuilding('The VM build is queued with Katapult');
 			}
 
-			return false;
-		}
+			// Get the VM
+			/** @var VirtualMachine $vm */
+			$vm = katapult()->resource(KatapultVirtualMachine::class)->get($virtualMachineBuild->virtual_machine->id);
 
-		// Get the VM
-		/** @var VirtualMachine $vm */
-		$vm = katapult()->resource(KatapultVirtualMachine::class)->get($virtualMachineBuild->virtual_machine->id);
-
-		// Do we have a root pw?
-		if(!$vm->initial_root_password) {
-			if ($duringCreate) {
-				throw new \Exception('The VM is awaiting a root password');
+			// Do we have a root pw?
+			if(!$vm->initial_root_password) {
+				throw new VirtualMachineBuilding('The VM is awaiting a root password');
 			}
 
-			return false;
-		}
+			// Does it have IPs?
+			if(count($vm->ip_addresses) < 1) {
+				throw new VirtualMachineBuilding('The VM is awaiting IP address assignment');
+			}
+		} catch(VirtualMachineBuilding $e) {
+			// Has it timed out?
+			if($this->vm_build_started_at->diffInSeconds(Carbon::now()) > self::BUILD_TIMEOUT) {
 
-		// Does it have IPs?
-		if(count($vm->ip_addresses) < 1) {
-			if ($duringCreate) {
-				throw new \Exception('The VM is awaiting IP address assignment');
+				// Fire the hook, just once..
+				if (!$this->dataStoreRead(self::DS_VM_BUILD_TIMEOUT_REACHED_AT)) {
+					$this->triggerHook(self::HOOK_BUILD_TIMED_OUT);
+				}
+
+				// So we don't trigger it again.
+				$this->dataStoreWrite(self::DS_VM_BUILD_TIMEOUT_REACHED_AT, Carbon::now());
+
+				// Throw it back out
+				throw new VirtualMachineBuildTimeout("Virtual machine build has timed out");
 			}
 
-			return false;
+			// No? Rethrow
+			throw $e;
 		}
 
 		// Go..
@@ -90,8 +129,6 @@ class VirtualMachine extends Service
 
 		// Fire a hook!
 		$this->triggerHook(self::HOOK_VM_BUILT);
-
-		return true;
 	}
 
 	protected function populateServiceWithVm(KatapultVirtualMachine $virtualMachine): void
@@ -113,6 +150,9 @@ class VirtualMachine extends Service
 		// Save the details
 		$this->save();
 		$this->dataStoreWrite(self::DS_VM_ID, $virtualMachine->id, $virtualMachine->id);
+
+		// Log
+		$this->log("Successfully provisioned");
 	}
 }
 

@@ -38,6 +38,17 @@ Fires when a VM has finished building and has been persisted to the WHMCS databa
 use \WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 
 \add_hook('KatapultVirtualMachineBuilt', 0, function(VirtualMachine $service) {
-    \sendMessage('Katapult Server Ready Email', $service->id);
+    \sendMessage('Katapult Server Built Email', $service->id);
+});
+```
+
+#### KatapultVirtualMachineBuildTimedOut
+Fires when a VM build has timed out. The module will continue to check for the build, but this hook will only be fired once. The timeout is set to 15 minutes.
+
+```php
+use \WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
+
+\add_hook('KatapultVirtualMachineBuildTimedOut', 0, function(VirtualMachine $service) {
+    // Send a notification to an admin or open a ticket
 });
 ```

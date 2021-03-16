@@ -2,8 +2,10 @@
 
 use Illuminate\Support\Str;
 use Krystal\Katapult\Resources\Organization\VirtualMachine as KatapultVirtualMachine;
+use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
 use WHMCS\Module\Server\Katapult\ServerModuleParams;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
+use Carbon\Carbon;
 
 if (!defined('WHMCS')) {
 	die('This file cannot be accessed directly');
@@ -27,8 +29,13 @@ function katapult_CreateAccount(array $params): string
 		$params = new ServerModuleParams($params);
 
 		// Do we have an existing build running? Is it done?
-		if ($params->service->checkForExistingBuildAttempt(true)) {
+		try {
+			$params->service->checkForExistingBuildAttempt();
+
+			// Great, it's done!
 			return 'success';
+		} catch (VirtualMachineBuildNotFound $e) {
+			// This is fine, and normal behaviour.
 		}
 
 		// Hostname?
@@ -57,6 +64,7 @@ function katapult_CreateAccount(array $params): string
 
 		// Persist the build ID
 		$params->service->dataStoreWrite(VirtualMachine::DS_VM_BUILD_ID, $response->build->id, $response->build->id);
+		$params->service->dataStoreWrite(VirtualMachine::DS_VM_BUILD_STARTED_AT, Carbon::now());
 
 		// Log it
 		$params->service->log("Started VM build: {$response->build->id}");
@@ -76,7 +84,7 @@ function katapult_AdminServicesTabFields(array $params): array
 		$params = new ServerModuleParams($params);
 
 		// Do we have an existing build running? Is it done?
-		$params->service->checkForExistingBuildAttempt();
+		$params->service->silentlyCheckForExistingBuildAttempt();
 
 		return [];
 	} catch (\Throwable $e) {
@@ -98,7 +106,7 @@ function katapult_ClientArea(array $params): array
 		$params = new ServerModuleParams($params);
 
 		// Do we have an existing build running? Is it done?
-		$params->service->checkForExistingBuildAttempt();
+		$params->service->silentlyCheckForExistingBuildAttempt();
 
 		return [];
 	} catch (\Throwable $e) {

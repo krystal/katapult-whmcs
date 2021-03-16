@@ -256,11 +256,12 @@ SQL;
 				/** @var VirtualMachine $service */
 				$service = VirtualMachine::findOrFail($row['id']);
 				$log("Starting", $service);
-				if($service->checkForExistingBuildAttempt()) {
-					$log("Provisioned successfully", $service);
-				} else {
-					$log("Nothing to do", $service);
-				}
+
+				try {
+					$service->checkForExistingBuildAttempt();
+				} catch (Vi)
+
+
 			} catch (\Throwable $e) {
 				if(isset($service) && $service) {
 					$log("Error: {$e->getMessage()}", $service);
