@@ -48,6 +48,38 @@ function katapult_ChangePackage(array $params): string
 	});
 }
 
+function katapult_StopVm(array $params): string
+{
+	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(ServerModuleParams $params)
+	{
+		$params->service->vm->stop();
+	});
+}
+
+function katapult_ResetVm(array $params): string
+{
+	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(ServerModuleParams $params)
+	{
+		$params->service->vm->reset();
+	});
+}
+
+function katapult_StartVm(array $params): string
+{
+	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(ServerModuleParams $params)
+	{
+		$params->service->vm->start();
+	});
+}
+
+function katapult_ShutdownVm(array $params): string
+{
+	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(ServerModuleParams $params)
+	{
+		$params->service->vm->shutdown();
+	});
+}
+
 function katapult_CreateAccount(array $params): string
 {
 	try {
@@ -103,6 +135,16 @@ function katapult_CreateAccount(array $params): string
 	} catch (\Throwable $e) {
 		return $e->getMessage();
 	}
+}
+
+function katapult_AdminCustomButtonArray(): array
+{
+	return [
+		'Start VM' => 'StartVm',
+		'Shutdown VM' => 'ShutdownVm',
+		'Stop VM' => 'StopVm',
+		'Reset VM' => 'ResetVm',
+	];
 }
 
 function katapult_AdminServicesTabFields(array $params): array
