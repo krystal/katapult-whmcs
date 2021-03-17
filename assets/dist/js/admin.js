@@ -13,6 +13,7 @@ if(typeof katapultVmService === 'object') {
                 case 'stopped':
                     elementsToDisable.push(document.getElementById('btnCreate'))
                     elementsToDisable.push(document.getElementById('btnStop_VM'))
+                    elementsToDisable.push(document.getElementById('btnShutdown_VM'))
                     elementsToDisable.push(document.getElementById('btnReset_VM'))
                     break;
 

@@ -1,7 +1,18 @@
 if(typeof kvmService === 'object') {
     (function(vmService) {
 
-        let passwordToggling = () => {
+        let actionElements = [];
+
+        actionElements.push(document.getElementById('Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Shutdown_VM'))
+        actionElements.push(document.getElementById('Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Stop_VM'))
+        actionElements.push(document.getElementById('Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Start_VM'))
+        actionElements.push(document.getElementById('Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Reset_VM'))
+
+        actionElements = actionElements.filter(element => {
+            return !!element;
+        })
+
+        const passwordToggling = () => {
             const passwordEl = document.getElementById('kvm_password')
             const passwordToggleEl = document.getElementById('kvm_password_toggle')
             const revealDuration = 15;
@@ -37,7 +48,7 @@ if(typeof kvmService === 'object') {
             });
         };
 
-        let disableElements = () => {
+        const disableElements = () => {
             let elementsToDisable = [];
 
             switch(vmService.vm.state) {
@@ -48,6 +59,7 @@ if(typeof kvmService === 'object') {
                 case 'stopped':
                     elementsToDisable.push(document.getElementById('Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Stop_VM'))
                     elementsToDisable.push(document.getElementById('Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Reset_VM'))
+                    elementsToDisable.push(document.getElementById('Primary_Sidebar-Service_Details_Actions-Custom_Module_Button_Shutdown_VM'))
                     break;
 
                 case 'building':
@@ -73,8 +85,27 @@ if(typeof kvmService === 'object') {
             })
         };
 
+        const confirmUserActions = () => {
+            actionElements.forEach(element => {
+                element.addEventListener('click', (e) => {
+                    if (element.disabled || !confirm('Are you sure?')) {
+                        e.preventDefault();
+                        return false;
+                    }
+                })
+            })
+        };
+
+        const addReplayTokensToActionButtons = () => {
+            actionElements.forEach(element => {
+                element.href += (element.href.indexOf('?') !== -1 ? '&' : '?') + 'knrp=' + knrpToken
+            })
+        };
+
         disableElements();
         passwordToggling();
+        confirmUserActions();
+        addReplayTokensToActionButtons();
 
     })(kvmService);
 }

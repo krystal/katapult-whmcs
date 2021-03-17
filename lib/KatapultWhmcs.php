@@ -11,6 +11,7 @@ use Krystal\Katapult\API\RestfulKatapultApiV1 as KatapultApi;
 use Krystal\Katapult\Resources\DataCenter;
 use Krystal\Katapult\Resources\Organization;
 use Krystal\Katapult\Resources\Organization\DiskTemplate;
+use WHMCS\Module\Server\Katapult\Adaptation\System as SystemAdaptation;
 use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 use WHMCS\Module\Server\Katapult\Helpers\WhmcsHelper;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
@@ -302,6 +303,8 @@ SQL;
 		};
 
 		try {
+			SystemAdaptation::validateNoReplayTokenForClientArea();
+
 			$params = new VmServerModuleParams($params);
 
 			// Check there is a VM..
