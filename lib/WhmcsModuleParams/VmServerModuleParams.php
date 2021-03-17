@@ -21,7 +21,7 @@ use Illuminate\Support\Str;
  * @property-read string $dataCenter
  * @property-read string $diskTemplate
  */
-class ServerModuleParams
+class VmServerModuleParams
 {
 	protected array $rawParams;
 	protected array $configuration;

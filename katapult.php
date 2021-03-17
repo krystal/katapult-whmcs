@@ -5,7 +5,7 @@ use Illuminate\Support\Str;
 use Krystal\Katapult\Resources\Organization\VirtualMachine as KatapultVirtualMachine;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
 use WHMCS\Module\Server\Katapult\Helpers\KatapultApiV1Helper;
-use WHMCS\Module\Server\Katapult\WhmcsModuleParams\ServerModuleParams;
+use WHMCS\Module\Server\Katapult\WhmcsModuleParams\VmServerModuleParams;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 use Carbon\Carbon;
 
@@ -22,12 +22,12 @@ function katapult_MetaData(): array
 
 function katapult_ConfigOptions(): array
 {
-	return ServerModuleParams::getWhmcsServerConfiguration();
+	return VmServerModuleParams::getWhmcsServerConfiguration();
 }
 
 function katapult_TerminateAccount(array $params): string
 {
-	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(ServerModuleParams $params)
+	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		// Delete the VM
 		$params->service->vm->delete();
@@ -39,7 +39,7 @@ function katapult_TerminateAccount(array $params): string
 
 function katapult_ChangePackage(array $params): string
 {
-	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(ServerModuleParams $params)
+	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		// Change the VM package
 		$params->service->vm->changePackage([
@@ -50,7 +50,7 @@ function katapult_ChangePackage(array $params): string
 
 function katapult_StopVm(array $params): string
 {
-	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(ServerModuleParams $params)
+	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		$params->service->vm->stop();
 	});
@@ -58,7 +58,7 @@ function katapult_StopVm(array $params): string
 
 function katapult_ResetVm(array $params): string
 {
-	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(ServerModuleParams $params)
+	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		$params->service->vm->reset();
 	});
@@ -66,7 +66,7 @@ function katapult_ResetVm(array $params): string
 
 function katapult_StartVm(array $params): string
 {
-	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(ServerModuleParams $params)
+	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		$params->service->vm->start();
 	});
@@ -74,7 +74,7 @@ function katapult_StartVm(array $params): string
 
 function katapult_ShutdownVm(array $params): string
 {
-	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(ServerModuleParams $params)
+	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		$params->service->vm->shutdown();
 	});
@@ -83,7 +83,7 @@ function katapult_ShutdownVm(array $params): string
 function katapult_CreateAccount(array $params): string
 {
 	try {
-		$params = new ServerModuleParams($params);
+		$params = new VmServerModuleParams($params);
 
 		// Do we have an existing build running? Is it done?
 		try {
@@ -150,7 +150,7 @@ function katapult_AdminCustomButtonArray(): array
 function katapult_AdminServicesTabFields(array $params): array
 {
 	try {
-		$params = new ServerModuleParams($params);
+		$params = new VmServerModuleParams($params);
 
 		// Do we have an existing build running? Is it done?
 		$params->service->silentlyCheckForExistingBuildAttempt();
@@ -172,7 +172,7 @@ function katapult_AdminServicesTabFields(array $params): array
 function katapult_ClientArea(array $params): array
 {
 	try {
-		$params = new ServerModuleParams($params);
+		$params = new VmServerModuleParams($params);
 
 		// Do we have an existing build running? Is it done?
 		$params->service->silentlyCheckForExistingBuildAttempt();
