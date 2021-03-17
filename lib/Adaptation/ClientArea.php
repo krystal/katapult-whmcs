@@ -2,6 +2,7 @@
 
 namespace WHMCS\Module\Server\Katapult\Adaptation;
 
+use WHMCS\Module\Server\Katapult\Helpers\OverrideHelper;
 use WHMCS\Module\Server\Katapult\Helpers\Replay;
 use WHMCS\Utility\Environment\WebHelper;
 
@@ -12,9 +13,12 @@ class ClientArea
 		$baseUrl = htmlentities(WebHelper::getBaseUrl());
 		$replayToken = htmlentities(Replay::getToken());
 
+		$cssPath = OverrideHelper::asset('dist/css/client.css');
+		$jsPath = OverrideHelper::asset('dist/js/client.js');
+
 		return <<<HTML
-<link href="{$baseUrl}/modules/servers/katapult/assets/dist/css/client.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" defer src="{$baseUrl}/modules/servers/katapult/assets/dist/js/client.js"></script>
+<link href="{$baseUrl}/modules/servers/katapult/{$cssPath}" rel="stylesheet" type="text/css" />
+<script type="text/javascript" defer src="{$baseUrl}/modules/servers/katapult/{$jsPath}"></script>
 <script type="text/javascript">const knrpToken = "{$replayToken}";</script>
 HTML;
 	}

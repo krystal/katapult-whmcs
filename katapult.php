@@ -224,7 +224,7 @@ function katapult_ClientArea(array $params): array
 		$params->service->silentlyCheckForExistingBuildAttempt();
 
 		return [
-			'templatefile' => 'views/client/virtual_machines/overview',
+			'templatefile' => \WHMCS\Module\Server\Katapult\Helpers\OverrideHelper::view('client/virtual_machines/overview.tpl'),
 			'vars' => [
 				'katapultVmService' => $params->service->toPublicArray()
 			]

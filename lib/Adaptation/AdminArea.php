@@ -3,6 +3,8 @@
 namespace WHMCS\Module\Server\Katapult\Adaptation;
 
 use WHMCS\Module\Server\Katapult\Helpers\GeneralHelper;
+use WHMCS\Module\Server\Katapult\Helpers\OverrideHelper;
+use WHMCS\Module\Server\Katapult\Helpers\Replay;
 use WHMCS\Module\Server\Katapult\Helpers\WhmcsHelper;
 use WHMCS\Module\Server\Katapult\KatapultWhmcs;
 use WHMCS\Utility\Environment\WebHelper;
@@ -87,9 +89,12 @@ HTML;
 	{
 		$baseUrl = htmlentities(WebHelper::getBaseUrl());
 
+		$cssPath = OverrideHelper::asset('dist/css/admin.css');
+		$jsPath = OverrideHelper::asset('dist/js/admin.js');
+
 		return <<<HTML
-<link href="{$baseUrl}/modules/servers/katapult/assets/dist/css/admin.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" defer src="{$baseUrl}/modules/servers/katapult/assets/dist/js/admin.js"></script>
+<link href="{$baseUrl}/modules/servers/katapult/{$cssPath}" rel="stylesheet" type="text/css" />
+<script type="text/javascript" defer src="{$baseUrl}/modules/servers/katapult/{$jsPath}"></script>
 HTML;
 	}
 }
