@@ -15,6 +15,9 @@ Your override file will then be used instead of the default. Overrides can be us
 
 ## Notes
 
+### Logging
+Operations on the VM are logged against the service via the client's activity log. This is the case for both admins and clients, for complete traceability.
+
 ### Replay protection
 The module's client area actions are protected by a no replay token, which is automatically appended to action URLs. This prevents the end user from bookmarking the shutdown URL and shutting their VM down everytime they view it in their client area via their bookmark.
 

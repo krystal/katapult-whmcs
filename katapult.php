@@ -33,9 +33,14 @@ function katapult_ServiceSingleSignOn(array $params): array
 	return KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		// Create a console session
+		$consoleSession = $params->service->vm->createConsoleSession();
+
+		// Log it
+		$params->service->log('Created console session for VM');
+
 		return [
 			'success' => true,
-			'redirectTo' => $params->service->vm->createConsoleSession()->url
+			'redirectTo' => $consoleSession->url
 		];
 	}, KatapultWhmcs::MRT_SSO);
 }
@@ -49,6 +54,9 @@ function katapult_TerminateAccount(array $params): string
 
 		// Wipe all data store values for this service
 		$params->service->clearAllDataStoreValues();
+
+		// Log it
+		$params->service->log('VM deleted and local data store cleared');
 	});
 }
 
@@ -60,6 +68,9 @@ function katapult_ChangePackage(array $params): string
 		$params->service->vm->changePackage([
 			'permalink' => $params->package
 		]);
+
+		// Log it
+		$params->service->log('VM package changed to ' . $params->package);
 	});
 }
 
@@ -68,6 +79,9 @@ function katapult_StopVm(array $params): string
 	return KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		$params->service->vm->stop();
+
+		// Log it
+		$params->service->log('VM stopped');
 	});
 }
 
@@ -76,6 +90,9 @@ function katapult_ResetVm(array $params): string
 	return KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		$params->service->vm->reset();
+
+		// Log it
+		$params->service->log('VM reset');
 	});
 }
 
@@ -84,6 +101,9 @@ function katapult_StartVm(array $params): string
 	return KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		$params->service->vm->start();
+
+		// Log it
+		$params->service->log('VM started');
 	});
 }
 
@@ -92,6 +112,9 @@ function katapult_ShutdownVm(array $params): string
 	return KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		$params->service->vm->shutdown();
+
+		// Log it
+		$params->service->log('VM shutdown');
 	});
 }
 
