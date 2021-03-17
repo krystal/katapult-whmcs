@@ -214,8 +214,6 @@ HTML
 /**
  * @param array $params
  * @return array
- *
- * @todo show VM details in the client area
  */
 function katapult_ClientArea(array $params): array
 {
