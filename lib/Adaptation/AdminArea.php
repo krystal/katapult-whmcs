@@ -29,46 +29,20 @@ HTML;
 		}
 
 		$configurationGui = <<<HTML
-
-<style>
-
-.katapult_configuration {
-	padding: 2rem;
-	background: #1f003f; 
-	border-radius: 4px; 
-	color: #fff;
-}
-
-.katapult_configuration input[type="text"], .katapult_configuration input[type="password"] {
-	background-color: #170030;
-	padding: 2rem; 
-	margin: 0.5rem 0; 
-	color: #fff;
-}
-
-.katapult_configuration input[type="checkbox"] {
-	filter: invert(100%) hue-rotate(18deg) brightness(1.7); 
-	position: relative;
-	top: 3px; 
-}
-
-.katapult_configuration label {
-	margin-top: 2rem;
-}
-
-</style>
-
 <div class="row">
+
 	<div class="col-md-12 col-lg-6">
 	
 		<div style=" " class="katapult_configuration">
 		
 			{$katapultLogo}<br>
+			
 			<label>API Key</label>
 			<input type="password" name="katapult_api_v1_key" class="form-control" placeholder="Enter your Katapult API token here" autocomplete="off" />
 			<small class="text-light"><b>Note:</b> {$apiKeyNoteMessage}</small>
+			<br>
 			
-			<br><label>Parent Organization</label>
+			<label>Parent Organization</label>
 			<input type="text" value="{$parentOrganizationEscaped}" name="katapult_parent_organization" class="form-control" placeholder="Enter the organization to use when interacting with Katapult" />
 			<small class="text-light">This can either be your Katapult subdomain or the organization's ID, beginning with <code>org_</code></small>
 			<br>
@@ -78,6 +52,7 @@ HTML;
 		</div>
 	
 	</div>
+	
 </div>
 HTML;
 
@@ -106,6 +81,16 @@ HTML;
 		if ($syncConfigOptions || isset($_POST['katapult_sync_config_options'])) {
 			GeneralHelper::attempt([KatapultWhmcs::class, 'syncConfigurableOptions'], 'Sync config options');
 		}
+	}
+
+	public function addAssetsToHead(): string
+	{
+		$baseUrl = WebHelper::getBaseUrl();
+
+		return <<<HTML
+    <link href="{$baseUrl}/modules/servers/katapult/assets/dist/css/admin.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" defer src="{$baseUrl}/modules/servers/katapult/assets/dist/js/admin.js"></script>
+HTML;
 	}
 }
 

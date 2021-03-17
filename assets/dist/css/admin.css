@@ -1,0 +1,24 @@
+.katapult_configuration {
+    padding: 2rem;
+    background: #1f003f;
+    border-radius: 4px;
+    color: #fff;
+}
+
+.katapult_configuration input[type="text"], .katapult_configuration input[type="password"] {
+    background-color: #170030;
+    padding: 2rem;
+    margin: 0.5rem 0;
+    color: #fff;
+}
+
+.katapult_configuration input[type="checkbox"] {
+    filter: invert(100%) hue-rotate(18deg) brightness(1.7);
+    position: relative;
+    top: 3px;
+}
+
+.katapult_configuration label {
+    margin-top: 2rem;
+}
+

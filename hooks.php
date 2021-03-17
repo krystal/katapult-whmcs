@@ -15,5 +15,6 @@ require(__DIR__ . '/helpers.php');
 // Admin
 \add_hook('AdminProductConfigFields', 0, [AdminAreaAdaptation::class, 'addConfigurationPaneToProductSettings']);
 \add_hook('AdminProductConfigFieldsSave', 0, [AdminAreaAdaptation::class, 'updateKatapultConfiguration']);
+\add_hook('AdminAreaHeadOutput', 0, [AdminAreaAdaptation::class, 'addAssetsToHead']);
 
 
