@@ -23,6 +23,13 @@ class KatapultWhmcs
 
 	const SERVER_MODULE = 'katapult';
 
+	/**
+	 * Module return types
+	 * WHMCS expects inconsistent return types from module functions. These are used by KatapultWhmcs::runModuleCommandOnVm() to allow it to return the correct response in the event of an error.
+	 */
+	const MRT_STRING = 'string';
+	const MRT_SSO = 'sso';
+
 	const DS_API_V1_KEY = 'api_v1_key';
 	const DS_PARENT_ORGANIZATION = 'parent_organization';
 
@@ -273,8 +280,27 @@ SQL;
 		}
 	}
 
-	public static function runModuleCommandOnVm(array $params, callable $command): string
+	/**
+	 * @param array $params
+	 * @param callable $command
+	 * @param string $returnType
+	 * @return string|array
+	 */
+	public static function runModuleCommandOnVm(array $params, callable $command, string $returnType = self::MRT_STRING)
 	{
+		$formatErrorResponse = function(string $error) use($returnType) {
+			switch($returnType) {
+				case self::MRT_STRING:
+					return $error;
+
+				case self::MRT_SSO:
+					return [
+						'success' => false,
+						'errorMsg' => $error
+					];
+			}
+		};
+
 		try {
 			$params = new VmServerModuleParams($params);
 
@@ -291,9 +317,9 @@ SQL;
 
 			return 'success';
 		} catch (ClientException $e) {
-			return implode(', ', KatapultApiV1Helper::humaniseHttpError($e));
+			return $formatErrorResponse(implode(', ', KatapultApiV1Helper::humaniseHttpError($e)));
 		} catch (\Throwable $e) {
-			return $e->getMessage();
+			return $formatErrorResponse($e->getMessage());
 		}
 	}
 }

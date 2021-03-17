@@ -5,6 +5,7 @@ use Illuminate\Support\Str;
 use Krystal\Katapult\Resources\Organization\VirtualMachine as KatapultVirtualMachine;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
 use WHMCS\Module\Server\Katapult\Helpers\KatapultApiV1Helper;
+use WHMCS\Module\Server\Katapult\KatapultWhmcs;
 use WHMCS\Module\Server\Katapult\WhmcsModuleParams\VmServerModuleParams;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 use Carbon\Carbon;
@@ -17,6 +18,7 @@ function katapult_MetaData(): array
 {
 	return [
 		'DisplayName' => 'Katapult',
+		'ServiceSingleSignOnLabel' => 'Open Console'
 	];
 }
 
@@ -25,9 +27,21 @@ function katapult_ConfigOptions(): array
 	return VmServerModuleParams::getWhmcsServerConfiguration();
 }
 
+function katapult_ServiceSingleSignOn(array $params): array
+{
+	return KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
+	{
+		// Create a console session
+		return [
+			'success' => true,
+			'redirectTo' => $params->service->vm->createConsoleSession()->url
+		];
+	}, KatapultWhmcs::MRT_SSO);
+}
+
 function katapult_TerminateAccount(array $params): string
 {
-	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
+	return KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		// Delete the VM
 		$params->service->vm->delete();
@@ -39,7 +53,7 @@ function katapult_TerminateAccount(array $params): string
 
 function katapult_ChangePackage(array $params): string
 {
-	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
+	return KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		// Change the VM package
 		$params->service->vm->changePackage([
@@ -50,7 +64,7 @@ function katapult_ChangePackage(array $params): string
 
 function katapult_StopVm(array $params): string
 {
-	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
+	return KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		$params->service->vm->stop();
 	});
@@ -58,7 +72,7 @@ function katapult_StopVm(array $params): string
 
 function katapult_ResetVm(array $params): string
 {
-	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
+	return KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		$params->service->vm->reset();
 	});
@@ -66,7 +80,7 @@ function katapult_ResetVm(array $params): string
 
 function katapult_StartVm(array $params): string
 {
-	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
+	return KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		$params->service->vm->start();
 	});
@@ -74,7 +88,7 @@ function katapult_StartVm(array $params): string
 
 function katapult_ShutdownVm(array $params): string
 {
-	return \WHMCS\Module\Server\Katapult\KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
+	return KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
 		$params->service->vm->shutdown();
 	});
