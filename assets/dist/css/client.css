@@ -1,7 +1,13 @@
+/**
+This is used to inform the user that certain actions may not be available. Ie starting the VM when it's already started.
+ */
 a.k_disabled {
     cursor: not-allowed;
 }
 
+/**
+This is a badge displaying the VM's state, ie 'started', 'stopped', 'unknown'
+ */
 .kvm-state {
     padding: 0.5rem 0.8rem 0.5rem 2.2rem;
     border-radius: 4px;
@@ -13,10 +19,9 @@ a.k_disabled {
     position: relative;
 }
 
-.kvm-state.for-template--six {
-    padding-left: 2.7rem;
-}
-
+/**
+This is a dot next to the text in the badge, intended to look like an indicating LED, some states below may pulse with an animation
+ */
 .kvm-state::before {
     content: ' ';
     position: absolute;
@@ -30,7 +35,14 @@ a.k_disabled {
 }
 
 /**
-States for the VMs
+Some templates may need special adjustments for the dot
+ */
+.kvm-state.for-template--six {
+    padding-left: 2.7rem;
+}
+
+/**
+Specific VM state badges for the VMs
  */
 
 /**

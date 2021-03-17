@@ -1,3 +1,6 @@
+/**
+Used to display the configuration panel on the 'Other' tab of WHMCS product settings
+ */
 .katapult_configuration {
     padding: 2rem;
     background: #1f003f;
@@ -22,6 +25,9 @@
     margin-top: 2rem;
 }
 
+/**
+This is a badge displaying the VM's state, ie 'started', 'stopped', 'unknown'
+ */
 .katapult-vm-state {
     padding: 1rem 1rem 1rem 2.7rem;
     border-radius: 4px;
@@ -33,6 +39,9 @@
     position: relative;
 }
 
+/**
+This is a dot next to the text in the badge, intended to look like an indicating LED, some states below may pulse with an animation
+ */
 .katapult-vm-state::before {
     content: ' ';
     position: absolute;
@@ -46,7 +55,7 @@
 }
 
 /**
-States for the VMs
+Specific VM state badges for the VMs
  */
 
 /**
