@@ -20,8 +20,10 @@ class AdminArea
 		$baseUrl = htmlentities(WebHelper::getBaseUrl());
 		$parentOrganizationEscaped = htmlentities(KatapultWhmcs::getParentOrganizationIdentifier() ?: '');
 
+		$katapultLogoPath = OverrideHelper::asset('katapult_logo_white_strapline.svg');
+
 		$katapultLogo = <<<HTML
-<img src="{$baseUrl}/modules/servers/katapult/assets/katapult_logo_white_strapline.svg" alt="" style="max-width: 200px;">
+<img src="{$baseUrl}/modules/servers/katapult/{$katapultLogoPath}" alt="" style="max-width: 200px;">
 HTML;
 
 		if (KatapultWhmcs::getApiV1Key()) {

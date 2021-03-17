@@ -2,6 +2,17 @@
 
 You can set the Katapult API key in a products settings under the 'Other' tab, after selecting the product as 'Katapult'. This key will be used for all products.
 
+## Template and asset overrides
+The module comes with whitelabel defaults for the client area. You can however override the template, JS and CSS files with your own. The defaults are neither pre-compiled nor minified for ease of editing.
+
+To override a default file, simply copy the default into `overrides` and then apply your changes to that file:
+
+```shell
+cp views/client/virtual_machines/overview.tpl overrides/views/client/virtual_machines/overview.tpl
+```
+
+Your override file will then be used instead of the default. Overrides can be used for any files in `assets` or `views`.
+
 ## Notes
 
 ### VM Builds
