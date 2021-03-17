@@ -88,7 +88,7 @@ HTML;
 		$baseUrl = WebHelper::getBaseUrl();
 
 		return <<<HTML
-    <link href="{$baseUrl}/modules/servers/katapult/assets/dist/css/admin.css" rel="stylesheet" type="text/css" />
+<link href="{$baseUrl}/modules/servers/katapult/assets/dist/css/admin.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" defer src="{$baseUrl}/modules/servers/katapult/assets/dist/js/admin.js"></script>
 HTML;
 	}

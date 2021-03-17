@@ -18,7 +18,8 @@ function katapult_MetaData(): array
 {
 	return [
 		'DisplayName' => 'Katapult',
-		'ServiceSingleSignOnLabel' => 'Open Console'
+		'ServiceSingleSignOnLabel' => 'Open Console',
+		'RequiresServer' => false,
 	];
 }
 
@@ -161,6 +162,16 @@ function katapult_AdminCustomButtonArray(): array
 	];
 }
 
+function katapult_ClientAreaCustomButtonArray(): array
+{
+	return [
+		'Start VM' => 'StartVm',
+		'Shutdown VM' => 'ShutdownVm',
+		'Stop VM' => 'StopVm',
+		'Reset VM' => 'ResetVm',
+	];
+}
+
 function katapult_AdminServicesTabFields(array $params): array
 {
 	try {
@@ -207,7 +218,12 @@ function katapult_ClientArea(array $params): array
 		// Do we have an existing build running? Is it done?
 		$params->service->silentlyCheckForExistingBuildAttempt();
 
-		return [];
+		return [
+			'templatefile' => 'views/client/virtual_machines/overview',
+			'vars' => [
+				'katapultVmService' => $params->service->toPublicArray()
+			]
+		];
 	} catch (\Throwable $e) {
 		return [];
 	}
