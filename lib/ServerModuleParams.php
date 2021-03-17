@@ -105,12 +105,12 @@ class ServerModuleParams
 
 			case 'dataCenter':
 				return $this->getBasicConfigOptionValueForService(
-					KatapultWhmcs::dataStoreRead(KatapultWhmcs::DS_CONFIG_OPTION_DATACENTER_ID)
+					KatapultWhmcs::dataStoreRead(KatapultWhmcs::DS_VM_CONFIG_OPTION_DATACENTER_ID)
 				);
 
 			case 'diskTemplate':
 				return $this->getBasicConfigOptionValueForService(
-					KatapultWhmcs::dataStoreRead(KatapultWhmcs::DS_CONFIG_OPTION_DISK_TEMPLATE_ID)
+					KatapultWhmcs::dataStoreRead(KatapultWhmcs::DS_VM_CONFIG_OPTION_DISK_TEMPLATE_ID)
 				);
 		}
 

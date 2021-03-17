@@ -24,9 +24,10 @@ class KatapultWhmcs
 
 	const DS_API_V1_KEY = 'api_v1_key';
 	const DS_PARENT_ORGANIZATION = 'parent_organization';
-	const DS_CONFIG_OPTION_GROUP_ID = 'config_option_group_id';
-	const DS_CONFIG_OPTION_DATACENTER_ID = 'config_option_datacenter_id';
-	const DS_CONFIG_OPTION_DISK_TEMPLATE_ID = 'config_option_disk_template_id';
+
+	const DS_VM_CONFIG_OPTION_GROUP_ID = 'vm_config_option_group_id';
+	const DS_VM_CONFIG_OPTION_DATACENTER_ID = 'vm_config_option_datacenter_id';
+	const DS_VM_CONFIG_OPTION_DISK_TEMPLATE_ID = 'vm_config_option_disk_template_id';
 
 	public static function getKatapult(): Katapult
 	{
@@ -127,7 +128,7 @@ class KatapultWhmcs
 	{
 		// Have we already created a config option group for Katapult?
 		$configOptionGroup = ConfigOptionGroup::find(
-			KatapultWhmcs::dataStoreRead(self::DS_CONFIG_OPTION_GROUP_ID)
+			KatapultWhmcs::dataStoreRead(self::DS_VM_CONFIG_OPTION_GROUP_ID)
 		);
 
 		// Nope? Create it..
@@ -139,7 +140,7 @@ class KatapultWhmcs
 				throw new \Exception('Could not save config option group');
 			}
 
-			KatapultWhmcs::dataStoreWrite(self::DS_CONFIG_OPTION_GROUP_ID, $configOptionGroup->id);
+			KatapultWhmcs::dataStoreWrite(self::DS_VM_CONFIG_OPTION_GROUP_ID, $configOptionGroup->id);
 
 			// Assign it to all of the Katapult products
 			$configOptionGroup->products()->attach(
@@ -155,7 +156,7 @@ class KatapultWhmcs
 		 */
 
 		// Fetch the DC option
-		$dataCenterOption = WhmcsHelper::getOrCreateConfigOption($configOptionGroup, 'Data Center', 1, self::DS_CONFIG_OPTION_DATACENTER_ID);
+		$dataCenterOption = WhmcsHelper::getOrCreateConfigOption($configOptionGroup, 'Data Center', 1, self::DS_VM_CONFIG_OPTION_DATACENTER_ID);
 
 		// Create options for the DCs
 		/** @var DataCenter $dataCenter */
@@ -185,7 +186,7 @@ class KatapultWhmcs
 		 */
 
 		// Fetch the DC option
-		$diskTemplateOption = WhmcsHelper::getOrCreateConfigOption($configOptionGroup, 'Disk Template', 1, self::DS_CONFIG_OPTION_DISK_TEMPLATE_ID);
+		$diskTemplateOption = WhmcsHelper::getOrCreateConfigOption($configOptionGroup, 'Disk Template', 1, self::DS_VM_CONFIG_OPTION_DISK_TEMPLATE_ID);
 
 		// Create options for the templates
 		/** @var DiskTemplate $diskTemplate */
