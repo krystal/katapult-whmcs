@@ -1,8 +1,9 @@
 <?php
 
-namespace WHMCS\Module\Server\Katapult;
+namespace WHMCS\Module\Server\Katapult\WhmcsModuleParams;
 
 use Krystal\Katapult\Resources\VirtualMachinePackage;
+use WHMCS\Module\Server\Katapult\KatapultWhmcs;
 use WHMCS\Module\Server\Katapult\WHMCS\Product\Product;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 use WHMCS\Module\Server\Katapult\WHMCS\User\Client;
@@ -20,28 +21,17 @@ use Illuminate\Support\Str;
  * @property-read string $dataCenter
  * @property-read string $diskTemplate
  */
-class ServerModuleParams
+class VmServerModuleParams extends ServerModuleParams
 {
-	protected array $rawParams;
-	protected array $configuration;
-
 	protected VirtualMachine $service;
 	protected Client $client;
 	protected Product $product;
 
-	public function __construct(array $params)
+	public function boot(): void
 	{
-		$this->rawParams = $params;
-
-		$this->configuration = [];
-
-		foreach(self::getWhmcsServerConfiguration() as $option) {
-			$this->configuration[$option['camelName']] = $option;
-		}
-
-		$this->service = VirtualMachine::findOrFail($params['serviceid']);
-		$this->client = Client::findOrFail($params['userid']);
-		$this->product = Product::findOrFail($params['packageid']);
+		$this->service = VirtualMachine::findOrFail($this->rawParams['serviceid']);
+		$this->client = Client::findOrFail($this->rawParams['userid']);
+		$this->product = Product::findOrFail($this->rawParams['packageid']);
 	}
 
 	public static function getWhmcsServerConfiguration(): array
@@ -84,24 +74,13 @@ class ServerModuleParams
 		return $options;
 	}
 
-	protected function getBasicConfigOptionValueForService(int $optionId): ? string
+	public function __get(string $propertyName)
 	{
-		$value = $this->service->configurableOptionValues()->where('configid', $optionId)->first();
-
-		if (!$value) {
-			return null;
-		}
-
-		return explode('|', $value->value, 2)[0] ?? null;
-	}
-
-	public function __get($name)
-	{
-		switch ($name) {
+		switch ($propertyName) {
 			case 'service':
 			case 'client':
 			case 'product':
-				return $this->{$name};
+				return $this->{$propertyName};
 
 			case 'dataCenter':
 				return $this->getBasicConfigOptionValueForService(
@@ -114,11 +93,7 @@ class ServerModuleParams
 				);
 		}
 
-		if (isset($this->configuration[$name])) {
-			return $this->rawParams['configoption' . $this->configuration[$name]['optionIndex']];
-		}
-
-		return isset($this->rawParams[$name]) ? $this->rawParams[$name] : null;
+		return $this->defaultGetter($propertyName);
 	}
 }
 
