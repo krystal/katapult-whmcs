@@ -307,6 +307,11 @@ SQL;
 
 			$params = new VmServerModuleParams($params);
 
+			// Check the service is active
+			if ($params->service->domainstatus != 'Active') {
+				throw new Exception('This service is not currently active');
+			}
+
 			// Check there is a VM..
 			if (!$params->service->vm_id) {
 				throw new Exception('There is no VM ID set for this service');

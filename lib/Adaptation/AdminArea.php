@@ -15,7 +15,7 @@ class AdminArea
 			return [];
 		}
 
-		$baseUrl = WebHelper::getBaseUrl();
+		$baseUrl = htmlentities(WebHelper::getBaseUrl());
 		$parentOrganizationEscaped = htmlentities(KatapultWhmcs::getParentOrganizationIdentifier() ?: '');
 
 		$katapultLogo = <<<HTML
@@ -85,7 +85,7 @@ HTML;
 
 	public function addAssetsToHead(): string
 	{
-		$baseUrl = WebHelper::getBaseUrl();
+		$baseUrl = htmlentities(WebHelper::getBaseUrl());
 
 		return <<<HTML
 <link href="{$baseUrl}/modules/servers/katapult/assets/dist/css/admin.css" rel="stylesheet" type="text/css" />

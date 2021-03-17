@@ -1,10 +1,8 @@
 <?php
 
-use Krystal\Katapult\Katapult;
 use WHMCS\Module\Server\Katapult\Adaptation\AdminArea as AdminAreaAdaptation;
 use WHMCS\Module\Server\Katapult\Adaptation\ClientArea as ClientAreaAdaptation;
 use WHMCS\Module\Server\Katapult\Adaptation\System as SystemAdaptation;
-use WHMCS\Module\Server\Katapult\KatapultWhmcs;
 
 require(__DIR__ . '/vendor/autoload.php');
 require(__DIR__ . '/helpers.php');

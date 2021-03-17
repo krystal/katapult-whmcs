@@ -7,30 +7,62 @@
 
     </script>
 
+    <hr>
+
     <div class="row">
 
-        <div class="col-md-12">
+        <div class="col-md-6 col-sm-12">
 
-            <hr>
+            <h5>Server state</h5>
+            <span class="kvm-state state--{$katapultVmService['vm']['state']|htmlentities} for-template--{$template|htmlentities}">{$katapultVmService['vm']['state']|replace:'_':' '|htmlentities}</span>
 
-            <form>
+            {if $dedicatedip}
 
-                <div class="form-group">
+                <h5 style="margin-top: 2rem">SSH access</h5>
 
-                    <label for="kvm_username">Username</label>
-                    <input type="text" class="form-control" id="kvm_username" placeholder="Username" value="{$username|htmlentities}" readonly>
+                <code>ssh -l {$username|htmlentities} {$dedicatedip|htmlentities}</code>
 
-                </div>
+                <br>
 
-                <div class="form-group">
+                <small>SSH is available on most servers, and is the preferred way to login.</small>
 
-                    <label for="kvm_password">Password</label>
-                    <input type="password" class="form-control" id="kvm_password" placeholder="Password" value="{$password|htmlentities}" readonly>
-                    <button class="btn btn-primary btn-sm" type="button" id="kvm_password_toggle" style="margin-top: 0.5rem"></button>
+            {/if}
 
-                </div>
+            <h5 style="margin-top: 2rem">Console access</h5>
+
+            <form method="get">
+
+                <input type="hidden" name="action" value="productdetails">
+                <input type="hidden" name="id" value="{$id|htmlentities}">
+                <input type="hidden" name="dosinglesignon" value="1">
+                <input type="hidden" name="knrp" value="{WHMCS\Module\Server\Katapult\Helpers\Replay::getToken()|htmlentities}">
+
+                <button class="btn btn-primary">Launch console</button>
 
             </form>
+
+            <small>The console can be used to access the server when the network is unavailable.</small>
+
+        </div>
+
+        <div class="col-md-6 col-sm-12">
+
+            <h5>Login details</h5>
+
+            <div class="form-group">
+
+                <label for="kvm_username">Username</label>
+                <input type="text" class="form-control" id="kvm_username" placeholder="Username" value="{$username|htmlentities}" readonly>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="kvm_password">Password</label>
+                <input type="password" class="form-control" id="kvm_password" placeholder="Password" value="{$password|htmlentities}" readonly>
+                <button class="btn btn-secondary btn-sm" type="button" id="kvm_password_toggle" style="margin-top: 0.5rem"></button>
+
+            </div>
 
         </div>
 

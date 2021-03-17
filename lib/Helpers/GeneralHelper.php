@@ -14,7 +14,6 @@ class GeneralHelper
 			KatapultWhmcs::log("Error running task: {$taskName}: {$e->getMessage()}");
 		}
 	}
-
 }
 
 

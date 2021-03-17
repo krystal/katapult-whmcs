@@ -2,3 +2,82 @@ a.k_disabled {
     cursor: not-allowed;
 }
 
+.kvm-state {
+    padding: 0.5rem 0.8rem 0.5rem 2.2rem;
+    border-radius: 4px;
+    background-color: #1f003f;
+    color: #fff;
+    display: inline-block;
+    text-transform: uppercase;
+    font-weight: bold;
+    position: relative;
+}
+
+.kvm-state.for-template--six {
+    padding-left: 2.7rem;
+}
+
+.kvm-state::before {
+    content: ' ';
+    position: absolute;
+    top: calc(50% - 5px);
+    left: 1rem;
+    height: 10px;
+    width: 10px;
+    background-color: #cecece;
+    display: block;
+    border-radius: 10px;
+}
+
+/**
+States for the VMs
+ */
+
+/**
+Started
+ */
+.kvm-state.state--started {
+    background-color: #112b00;
+}
+
+.kvm-state.state--started::before {
+    background-color: #2a7500;
+    animation: kvmBlinkStateStarted 2s infinite;
+}
+
+@keyframes kvmBlinkStateStarted {
+    from { background-color: #2a7500; }
+    50% { background-color: #39ab00; }
+    to { background-color: #2a7500; }
+}
+
+/**
+Stopped
+ */
+.kvm-state.state--stopped {
+    background-color: #7d0000;
+}
+
+.kvm-state.state--stopped::before {
+    background-color: #d10000;
+}
+
+/**
+Building
+ */
+.kvm-state.state--building {
+    background-color: #001741;
+}
+
+.kvm-state.state--building::before {
+    background-color: #0043b3;
+    animation: kvmBlinkStateBuilding 2s infinite ease-in-out;
+}
+
+@keyframes kvmBlinkStateBuilding {
+    from { background-color: #0043b3; }
+    50% { background-color: #ffffff; }
+    to { background-color: #0043b3; }
+}
+
+

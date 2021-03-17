@@ -9,7 +9,7 @@ class ClientArea
 {
 	public function addAssetsToHead(): string
 	{
-		$baseUrl = WebHelper::getBaseUrl();
+		$baseUrl = htmlentities(WebHelper::getBaseUrl());
 		$replayToken = htmlentities(Replay::getToken());
 
 		return <<<HTML

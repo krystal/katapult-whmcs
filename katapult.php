@@ -186,7 +186,14 @@ function katapult_AdminServicesTabFields(array $params): array
 		);
 
 		// State with spaces
-		$humanState = str_replace('_', ' ', $params->service->vm_state);
+		$humanState = htmlentities(
+			str_replace('_', ' ', $params->service->vm_state)
+		);
+
+		// State escaped. This is unnecessary, until it's not.
+		$vmStateHtml = htmlentities(
+			$params->service->vm_state
+		);
 
 		return [
 			'Virtual Machine State' => <<<HTML
@@ -194,7 +201,7 @@ function katapult_AdminServicesTabFields(array $params): array
 let katapultVmService = {$publicServiceJson};
 </script>
 
-<span class="katapult-vm-state state--{$params->service->vm_state}">{$humanState}</span>
+<span class="katapult-vm-state state--{$vmStateHtml}">{$humanState}</span>
 HTML
 		];
 	} catch (\Throwable $e) {
