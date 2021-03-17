@@ -1,8 +1,9 @@
 <?php
 
-namespace WHMCS\Module\Server\Katapult;
+namespace WHMCS\Module\Server\Katapult\WhmcsModuleParams;
 
 use Krystal\Katapult\Resources\VirtualMachinePackage;
+use WHMCS\Module\Server\Katapult\KatapultWhmcs;
 use WHMCS\Module\Server\Katapult\WHMCS\Product\Product;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 use WHMCS\Module\Server\Katapult\WHMCS\User\Client;

@@ -15,6 +15,7 @@ use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 use WHMCS\Module\Server\Katapult\Helpers\WhmcsHelper;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 use WHMCS\Module\Server\Katapult\Helpers\KatapultApiV1Helper;
+use WHMCS\Module\Server\Katapult\WhmcsModuleParams\ServerModuleParams;
 
 class KatapultWhmcs
 {

@@ -5,7 +5,7 @@ use Illuminate\Support\Str;
 use Krystal\Katapult\Resources\Organization\VirtualMachine as KatapultVirtualMachine;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
 use WHMCS\Module\Server\Katapult\Helpers\KatapultApiV1Helper;
-use WHMCS\Module\Server\Katapult\ServerModuleParams;
+use WHMCS\Module\Server\Katapult\WhmcsModuleParams\ServerModuleParams;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 use Carbon\Carbon;
 
