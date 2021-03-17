@@ -174,13 +174,16 @@ function katapult_AdminServicesTabFields(array $params): array
 			$params->service->toPublicArray()
 		);
 
+		// State with spaces
+		$humanState = str_replace('_', ' ', $params->service->vm_state);
+
 		return [
 			'Virtual Machine State' => <<<HTML
 <script>
 let katapultVmService = {$publicServiceJson};
 </script>
 
-<span class="katapult-vm-state state--{$params->service->vm_state}">{$params->service->vm_state}</span>
+<span class="katapult-vm-state state--{$params->service->vm_state}">{$humanState}</span>
 HTML
 		];
 	} catch (\Throwable $e) {
