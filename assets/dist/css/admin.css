@@ -22,3 +22,78 @@
     margin-top: 2rem;
 }
 
+.katapult-vm-state {
+    padding: 1rem 1rem 1rem 2.7rem;
+    border-radius: 4px;
+    background-color: #1f003f;
+    color: #fff;
+    display: inline-block;
+    text-transform: uppercase;
+    font-weight: bold;
+    position: relative;
+}
+
+.katapult-vm-state::before {
+    content: ' ';
+    position: absolute;
+    top: calc(50% - 5px);
+    left: 1rem;
+    height: 10px;
+    width: 10px;
+    background-color: #cecece;
+    display: block;
+    border-radius: 10px;
+}
+
+/**
+States for the VMs
+ */
+
+/**
+Started
+ */
+.katapult-vm-state.state--started {
+    background-color: #112b00;
+}
+
+.katapult-vm-state.state--started::before {
+    background-color: #2a7500;
+    animation: katapultBlinkStateStarted 2s infinite;
+}
+
+@keyframes katapultBlinkStateStarted {
+    from { background-color: #2a7500; }
+    50% { background-color: #39ab00; }
+    to { background-color: #2a7500; }
+}
+
+/**
+Stopped
+ */
+.katapult-vm-state.state--stopped {
+    background-color: #7d0000;
+}
+
+.katapult-vm-state.state--stopped::before {
+    background-color: #d10000;
+}
+
+/**
+Building
+ */
+.katapult-vm-state.state--building {
+    background-color: #001741;
+}
+
+.katapult-vm-state.state--building::before {
+    background-color: #0043b3;
+    animation: katapultBlinkStateBuilding 2s infinite ease-in-out;
+}
+
+@keyframes katapultBlinkStateBuilding {
+    from { background-color: #0043b3; }
+    50% { background-color: #ffffff; }
+    to { background-color: #0043b3; }
+}
+
+

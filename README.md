@@ -65,6 +65,7 @@ $katapultService->vm_build_id; // string|null - The build ID Katapult created fo
 $katapultService->vm_build_started_at; // \Carbon\Carbon|null - When WHMCS requested the VM build
 $katapultService->vm_id; // string|null - The VM ID. This is only available once the VM has been built.
 $katapultService->vm; // KatapultVirtualMachine|null - the live VM instance from Katapult. It is cached per request lifecycle.
+$katapultService->vm_state; // string - note, this will be 'unknown' if the VM does not exist
 
 /** @var KatapultVirtualMachine|null $virtualMachine */
 $virtualMachine = $katapultService->vm;
@@ -78,7 +79,6 @@ $virtualMachine->createConsoleSession();
 ```
 
 More details about interacting with the Katapult VM instance can be found in the [Katault PHP library](https://github.com/krystal/katapult-php).
-
 
 ## Requirements
 * PHP >= 7.4

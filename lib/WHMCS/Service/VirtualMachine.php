@@ -17,6 +17,7 @@ use Carbon\Carbon;
  * @property-read string|null $vm_build_id
  * @property-read Carbon|null $vm_build_started_at
  * @property-read KatapultVirtualMachine $vm
+ * @property-read string $vm_state
  */
 class VirtualMachine extends Service
 {
@@ -33,6 +34,9 @@ class VirtualMachine extends Service
 	const HOOK_BUILD_REQUESTED = 'KatapultVirtualMachineBuildRequested';
 	const HOOK_VM_BUILT = 'KatapultVirtualMachineBuilt';
 	const HOOK_BUILD_TIMED_OUT = 'KatapultVirtualMachineBuildTimedOut';
+
+	const STATE_UNKNOWN = 'unknown';
+	const STATE_BUILDING = 'building';
 
 	protected ? KatapultVirtualMachine $virtualMachine = null;
 
@@ -62,6 +66,26 @@ class VirtualMachine extends Service
 		}
 
 		return $this->virtualMachine;
+	}
+
+	public function getVmStateAttribute(): string
+	{
+		if ($this->vm) {
+			switch($this->vm->state) {
+				case KatapultVirtualMachine::STATE_STARTED:
+				case KatapultVirtualMachine::STATE_STOPPED:
+					return $this->vm->state;
+
+				default:
+					self::STATE_UNKNOWN;
+			}
+		}
+
+		if ($this->vm_build_id && !$this->vm_id) {
+			return self::STATE_BUILDING;
+		}
+
+		return self::STATE_UNKNOWN;
 	}
 
 	public function silentlyCheckForExistingBuildAttempt(): void
@@ -166,6 +190,17 @@ class VirtualMachine extends Service
 
 		// Log
 		$this->log("Successfully provisioned");
+	}
+
+	public function toPublicArray(): array
+	{
+		return [
+			'id' => $this->id,
+			'vm_id' => $this->vm_id,
+			'vm' => [
+				'state' => $this->vm_state
+			]
+		];
 	}
 }
 

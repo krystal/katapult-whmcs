@@ -169,7 +169,20 @@ function katapult_AdminServicesTabFields(array $params): array
 		// Do we have an existing build running? Is it done?
 		$params->service->silentlyCheckForExistingBuildAttempt();
 
-		return [];
+		// Generate the public VM JSON
+		$publicServiceJson = \GuzzleHttp\Utils::jsonEncode(
+			$params->service->toPublicArray()
+		);
+
+		return [
+			'Virtual Machine State' => <<<HTML
+<script>
+let katapultVmService = {$publicServiceJson};
+</script>
+
+<span class="katapult-vm-state state--{$params->service->vm_state}">{$params->service->vm_state}</span>
+HTML
+		];
 	} catch (\Throwable $e) {
 		return [
 			'Error' => $e->getMessage()
