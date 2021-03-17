@@ -18,7 +18,7 @@ Your override file will then be used instead of the default. Overrides can be us
 ### Replay protection
 The module's client area actions are protected by a no replay token, which is automatically appended to action URLs. This prevents the end user from bookmarking the shutdown URL and shutting their VM down everytime they view it in their client area via their bookmark.
 
-WHMCS does not protect module actions by default, so be aware that a page can't be refreshed to re-run an action on a VM, which may be possible with other modules. For more information see #8.
+WHMCS does not protect module actions by default, so be aware that a page can't be refreshed to re-run an action on a VM, which may be possible with other modules. For more information see [this issue](https://github.com/krystal/katapult-whmcs/issues/8).
 
 ### VM Builds
 VMs are built asynchronously on Katapult. This means when a service is created in WHMCS, it will call to Katapult and ask it to build a VM. At this point, there is no VM, but the service is considered active. There is a task which runs on the WHMCS cron (which should be called as often as possible, usually every 5 minutes) which will call back to Katapult to check if the VM is built. When the VM is built, the initial root password, hostname, IP addresses and VM ID will be persisted to the WHMCS database.
