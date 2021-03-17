@@ -7,6 +7,7 @@ use Grizzlyware\Salmon\WHMCS\Product\ConfigurableOptions\Group as ConfigOptionGr
 use Grizzlyware\Salmon\WHMCS\Product\Product;
 use WHMCS\Module\Server\Katapult\KatapultWhmcs;
 use WHMCS\Database\Capsule;
+use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 
 class WhmcsHelper
 {
@@ -29,7 +30,7 @@ class WhmcsHelper
 			$configOption->optiontype = $optionType;
 
 			if (!$group->options()->save($configOption)) {
-				throw new \Exception('Could not save config option');
+				throw new Exception('Could not save config option');
 			}
 
 			KatapultWhmcs::dataStoreWrite($persistedOptionIdKey, $configOption->id);

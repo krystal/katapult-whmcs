@@ -8,6 +8,7 @@ use WHMCS\Module\Server\Katapult\WHMCS\Product\Product;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 use WHMCS\Module\Server\Katapult\WHMCS\User\Client;
 use Illuminate\Support\Str;
+use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 
 /**
  * Class ServerModuleParams
@@ -42,7 +43,7 @@ class VmServerModuleParams extends ServerModuleParams
 				return $task();
 			} catch(\Throwable $e) {
 				KatapultWhmcs::log("Error: {$e->getMessage()}");
-				throw new \Exception('Error connecting to Katapult. Have you configured your API key? Set the module to Katapult, save the product and then set your key on the \'Other\' tab.');
+				throw new Exception('Error connecting to Katapult. Have you configured your API key? Set the module to Katapult, save the product and then set your key on the \'Other\' tab.');
 			}
 		};
 

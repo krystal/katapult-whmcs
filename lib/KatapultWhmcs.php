@@ -123,7 +123,7 @@ class KatapultWhmcs
 
 	/**
 	 * Creates a config option group called Katapult, and assigns it to the Katapult products.
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public static function syncConfigurableOptions(): void
 	{
@@ -138,7 +138,7 @@ class KatapultWhmcs
 			$configOptionGroup->name = 'Katapult';
 
 			if (!$configOptionGroup->save()) {
-				throw new \Exception('Could not save config option group');
+				throw new Exception('Could not save config option group');
 			}
 
 			KatapultWhmcs::dataStoreWrite(self::DS_VM_CONFIG_OPTION_GROUP_ID, $configOptionGroup->id);
@@ -175,7 +175,7 @@ class KatapultWhmcs
 
 			// Persist the option
 			if (!$dataCenterOption->subOptions()->save($currentOption)) {
-				throw new \Exception('Could not save data center: ' . $dataCenter->name);
+				throw new Exception('Could not save data center: ' . $dataCenter->name);
 			}
 
 			// Create free pricing for the new option
@@ -205,7 +205,7 @@ class KatapultWhmcs
 
 			// Persist the option
 			if (!$diskTemplateOption->subOptions()->save($currentOption)) {
-				throw new \Exception('Could not save disk template: ' . $diskTemplate->name);
+				throw new Exception('Could not save disk template: ' . $diskTemplate->name);
 			}
 
 			// Create free pricing for the new option

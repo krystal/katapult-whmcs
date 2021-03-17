@@ -2,8 +2,6 @@
 
 namespace WHMCS\Module\Server\Katapult\Helpers;
 
-use Grizzlyware\Salmon\WHMCS\Product\ConfigurableOptions\Group as ConfigOptionGroup;
-use Grizzlyware\Salmon\WHMCS\Product\Product;
 use WHMCS\Module\Server\Katapult\KatapultWhmcs;
 
 class GeneralHelper
