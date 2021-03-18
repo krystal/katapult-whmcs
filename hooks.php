@@ -5,7 +5,6 @@ use WHMCS\Module\Server\Katapult\Adaptation\ClientArea as ClientAreaAdaptation;
 use WHMCS\Module\Server\Katapult\Adaptation\System as SystemAdaptation;
 
 require(__DIR__ . '/vendor/autoload.php');
-require(__DIR__ . '/helpers.php');
 
 // System
 \add_hook('DailyCronJob', 0, [SystemAdaptation::class, 'syncConfigOptions']);

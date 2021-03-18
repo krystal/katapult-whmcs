@@ -14,6 +14,12 @@
         }
     ],
 
+    "autoload": {
+        "files": [
+            "helpers.php"
+        ]
+    },
+
     "autoload-dev": {
         "psr-4": {
             "Krystal\\Katapult\\WHMCS\\Dev\\": "dev/"
@@ -25,6 +31,7 @@
         "symfony/console": "^5.2",
         "illuminate/support": "^8.33",
         "symfony/filesystem": "^5.2",
-        "symfony/process": "^5.2"
+        "composer/composer": "^2.0",
+        "ext-zip": "*"
     }
 }
