@@ -17,6 +17,7 @@ use Symfony\Component\Filesystem\Filesystem;
  *
  * Quick implementation to package up the module for distribution.
  * Copies the module into a temp dir, removes unnecessary files, adds some files (ie, .htaccess in vendor), installs Composer dependencies without Guzzle and then ZIPs it all up into katapult.zip
+ * If the need ever arises for pre-compiled JS/CSS then this could also handle doing that, using something like Laravel mix.
  */
 class BuildWhmcsServerModule extends Command
 {
