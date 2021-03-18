@@ -22,13 +22,3 @@ function katapultOrg(Client $client = null)
 
 	return KatapultWhmcs::getParentOrganization();
 }
-
-if (!function_exists('dd')) {
-	function dd(...$x)
-	{
-		echo '<pre>';
-		print_r($x);
-		echo '</pre>';
-		exit;
-	}
-}

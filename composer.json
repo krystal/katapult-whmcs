@@ -14,7 +14,17 @@
         }
     ],
 
+    "autoload-dev": {
+        "psr-4": {
+            "Krystal\\Katapult\\WHMCS\\Dev\\": "dev/"
+        }
+    },
+
     "require-dev": {
-        "nesbot/carbon": "^2.46"
+        "nesbot/carbon": "^2.46",
+        "symfony/console": "^5.2",
+        "illuminate/support": "^8.33",
+        "symfony/filesystem": "^5.2",
+        "symfony/process": "^5.2"
     }
 }
