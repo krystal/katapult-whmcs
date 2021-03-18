@@ -18,6 +18,8 @@ Your override file will then be used instead of the default. Overrides can be us
 ### Logging
 Operations on the VM are logged against the service via the client's activity log. This is the case for both admins and clients, for complete traceability.
 
+For debugging purposes, all HTTP requests to the Katapult API can also be logged in detail by enabling the [WHMCS module debug log](https://docs.whmcs.com/Troubleshooting_Module_Problems).
+
 ### Replay protection
 The module's client area actions are protected by a no replay token, which is automatically appended to action URLs. This prevents the end user from bookmarking the shutdown URL and shutting their VM down everytime they view it in their client area via their bookmark.
 
