@@ -106,3 +106,7 @@ More details about interacting with the Katapult VM instance can be found in the
 
 ## Versioning
 This module follows [semantic versioning](https://semver.org/).
+
+## Security
+If you discover any security related issues, please email contact@krystal.uk instead of using the issue tracker.
+
