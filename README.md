@@ -110,16 +110,11 @@ More details about interacting with the Katapult VM instance can be found in the
 This module follows [semantic versioning](https://semver.org/).
 
 ## Running locally for development
-```shell
-git clone git@github.com:krystal/katapult-whmcs.git
-cd katapult-whmcs
-composer install
-```
+You can clone this repository directly into your development WHMCS installation, for example using [this Vagrant box](https://github.com/grizzlyware/whmcs-dev/):
 
-You could also set this up as a sub repository, though this should not be done for production use, just for development purposes.
 ```shell
-# Assuming you're WHMCS installation is at `/home/user/public_html/whmcs`
-cd /home/user/public_html/whmcs/modules/servers
+# Assuming you're WHMCS installation is at `/var/www/html/whmcs`
+cd /var/www/html/whmcs/modules/servers
 git clone git@github.com:krystal/katapult-whmcs.git katapult
 cd katapult
 composer install
