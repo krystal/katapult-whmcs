@@ -109,6 +109,38 @@ More details about interacting with the Katapult VM instance can be found in the
 ## Versioning
 This module follows [semantic versioning](https://semver.org/).
 
+## Running locally for development
+You can clone this repository directly into your development WHMCS installation, for example using [this Vagrant box](https://github.com/grizzlyware/whmcs-dev/):
+
+```shell
+# Assuming you're WHMCS installation is at `/var/www/html/whmcs`
+# This would normally be run on your host machine, not in the Vagrant VM
+cd /var/www/html/whmcs/modules/servers
+git clone git@github.com:krystal/katapult-whmcs.git katapult
+cd katapult
+composer install
+```
+
+## Building the module for distribution
+When changes have been made to the module, and a new release is being published, a new ZIP file will need to be created to attach to the release. These ZIP files are used to distribute and install the module into WHMCS.
+
+The module has a few require-dev dependencies which aren't required for use within WHMCS. Guzzle being one which has been known to cause conflicts with WHMCS, and is required by [krystal/katapult-php](https://github.com/krystal/katapult-php). Because WHMCS has Guzzle installed, we don't need to include it the distribution of this module.
+
+Things to consider when packaging the module up:
+
+* Installing the required Composer dependencies
+* Removing untracked files
+* Adding special files such as `.htaccess` in `/vendor` (WHMCS restriction with it being in the docroot)
+* Zipping it up consistently between versions.
+
+To build the module automatically:
+
+```shell
+$ ./bin/katapult build:server-module
+```
+
+This will result in a `katapult.zip` file in your `build` directory, the full path will be outputted by the command.
+
 ## Security
 If you discover any security related issues, please email contact@krystal.uk instead of using the issue tracker.
 
