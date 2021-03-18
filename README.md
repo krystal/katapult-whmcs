@@ -104,4 +104,5 @@ More details about interacting with the Katapult VM instance can be found in the
 * WHMCS >= 8.0
 * A Katapult account with access to managed organizations
 
-
+## Versioning
+This module follows [semantic versioning](https://semver.org/).
