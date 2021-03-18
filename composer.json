@@ -13,9 +13,7 @@
             "email": "josh@grizzlyware.com"
         }
     ],
-    "replace": {
-        "guzzlehttp/guzzle": "*"
-    },
+
     "require-dev": {
         "nesbot/carbon": "^2.46"
     }

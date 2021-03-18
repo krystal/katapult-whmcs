@@ -6,6 +6,9 @@ use GuzzleHttp\Exception\ClientException;
 use Grizzlyware\Salmon\WHMCS\Helpers\DataStore;
 use Grizzlyware\Salmon\WHMCS\Product\ConfigurableOptions\Group as ConfigOptionGroup;
 use Grizzlyware\Salmon\WHMCS\Product\Product;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\MessageFormatter;
+use GuzzleHttp\Middleware;
 use Krystal\Katapult\Katapult;
 use Krystal\Katapult\API\RestfulKatapultApiV1 as KatapultApi;
 use Krystal\Katapult\Resources\DataCenter;
@@ -14,6 +17,7 @@ use Krystal\Katapult\Resources\Organization\DiskTemplate;
 use WHMCS\Module\Server\Katapult\Adaptation\System as SystemAdaptation;
 use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 use WHMCS\Module\Server\Katapult\Helpers\WhmcsHelper;
+use WHMCS\Module\Server\Katapult\Katapult\ApiV1Logger;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 use WHMCS\Module\Server\Katapult\Helpers\KatapultApiV1Helper;
 use WHMCS\Module\Server\Katapult\WhmcsModuleParams\VmServerModuleParams;
@@ -38,6 +42,32 @@ class KatapultWhmcs
 	const DS_VM_CONFIG_OPTION_DATACENTER_ID = 'vm_config_option_datacenter_id';
 	const DS_VM_CONFIG_OPTION_DISK_TEMPLATE_ID = 'vm_config_option_disk_template_id';
 
+	public static function isUsingProductionApiV1(): bool
+	{
+		return true;
+	}
+
+	protected static function createApiV1HandlerStack(): HandlerStack
+	{
+		$handlerStack = HandlerStack::create();
+
+		$handlerStack->push(Middleware::log(
+			new ApiV1Logger(), new MessageFormatter(<<<EOF
+{method} {target}
+
+__KATAPULT_REQUEST__
+{ts}
+{request}
+
+__KATAPULT_RESPONSE__
+{response}
+EOF
+)
+		));
+
+		return $handlerStack;
+	}
+
 	public static function getKatapult(): Katapult
 	{
 		if (self::$katapult === null) {
@@ -47,7 +77,7 @@ class KatapultWhmcs
 			}
 
 			self::$katapult = Katapult::make(new KatapultApi(
-				KatapultWhmcs::getApiV1Key()
+				KatapultWhmcs::getApiV1Key(), self::isUsingProductionApiV1(), self::createApiV1HandlerStack()
 			));
 		}
 
@@ -126,7 +156,7 @@ class KatapultWhmcs
 
 	public static function moduleLog(string $action, $request, $response)
 	{
-		\logModuleCall(KatapultWhmcs::SERVER_MODULE, $action, $request, $response);
+		\logModuleCall(KatapultWhmcs::SERVER_MODULE, $action, $request, $response, '', [self::getApiV1Key()]);
 	}
 
 	/**
