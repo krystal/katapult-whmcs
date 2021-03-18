@@ -114,6 +114,7 @@ You can clone this repository directly into your development WHMCS installation,
 
 ```shell
 # Assuming you're WHMCS installation is at `/var/www/html/whmcs`
+# This would normally be run on your host machine, not in the Vagrant VM
 cd /var/www/html/whmcs/modules/servers
 git clone git@github.com:krystal/katapult-whmcs.git katapult
 cd katapult
