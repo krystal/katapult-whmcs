@@ -5,19 +5,27 @@ namespace Krystal\Katapult\WHMCS\Dev\Console\Commands;
 use Composer\Console\Application as Composer;
 use GuzzleHttp\Utils;
 use Illuminate\Support\Str;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use \Exception;
 use Symfony\Component\Filesystem\Filesystem;
 
+/**
+ * Class BuildWhmcsServerModule
+ * @package Krystal\Katapult\WHMCS\Dev\Console\Commands
+ *
+ * Quick implementation to package up the module for distribution.
+ * Copies the module into a temp dir, removes unnecessary files, adds some files (ie, .htaccess in vendor), installs Composer dependencies without Guzzle and then ZIPs it all up into katapult.zip
+ */
 class BuildWhmcsServerModule extends Command
 {
 	protected static $defaultName = 'build:server-module';
 
 	protected ? string $buildDirectory = '';
 	protected ? string $tmpBuildDirectory = '';
+
+	const ZIP_FILENAME = 'katapult.zip';
 	
 	protected function configure()
 	{
@@ -27,9 +35,14 @@ class BuildWhmcsServerModule extends Command
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		try {
-			$filesystem = new Filesystem();
+			$this->input = $input;
+			$this->output = $output;
 
-			$output->writeln('<info>Creating server module ZIP file</info>');
+			$this->logo();
+			$this->line();
+			$this->info('Starting Katapult WHMCS server module build process');
+
+			$filesystem = new Filesystem();
 
 			// Find the build dir
 			$this->buildDirectory = realpath(__DIR__ . '/../../../build');
@@ -45,9 +58,11 @@ class BuildWhmcsServerModule extends Command
 			$tmpBuildFile = $filesystem->tempnam($this->buildDirectory, 'tmp_katapult_');
 			$filesystem->remove($tmpBuildFile);
 			$this->tmpBuildDirectory = Str::finish($tmpBuildFile, '/');
+			$this->info("Building module from temp build directory: {$this->tmpBuildDirectory}");
 
 			// Create a temp directory to store the module
 			$filesystem->mirror($this->buildDirectory . '../', $this->tmpBuildDirectory);
+			$this->info("Copied module over to build directory");
 
 			// Remove files we don't want in the final build
 			$this->removeTempFiles(
@@ -61,6 +76,7 @@ class BuildWhmcsServerModule extends Command
 			);
 
 			// Fetch the composer.json file
+			$this->info("Modifying composer.json to satisfy WHMCS issue with Guzzle being pre-installed");
 			$composerJson = Utils::jsonDecode(file_get_contents($this->tmpBuildDirectory . 'composer.json'));
 
 			// Modify the composer.json file to exclude Guzzle
@@ -72,26 +88,31 @@ class BuildWhmcsServerModule extends Command
 			file_put_contents($this->tmpBuildDirectory . 'composer.json', Utils::jsonEncode($composerJson));
 
 			// This updates the lockfile with a version happy without Guzzle.
+			$this->info("Removing Guzzle as dependency to force removal from composer.lock");
 			$this->runComposer([
 				'command' => 'remove',
 				'packages' =>['guzzlehttp/guzzle'],
 				'--no-install' => true
 			]);
 
-			$output->writeln("Installing composer dependencies");
 
 			// Install composer dependencies
+			$this->info("Installing composer dependencies");
 			$this->runComposer([
 				'command' => 'install',
 				'--no-dev' => true
 			]);
 
 			// Add .htaccess to vendor dir as WHMCS has it in the doc root
+			$this->info("Adding .htaccess deny file to vendor directory");
 			$filesystem->appendToFile($this->tmpBuildDirectory . 'vendor/.htaccess', 'deny from all');
 
 			// Zip it up!
+			$this->info("Starting ZIP archive");
 			$zip = new \ZipArchive();
-			$zipFilename = $this->buildDirectory . 'katapult.zip';
+			$zipFilename = $this->buildDirectory . self::ZIP_FILENAME;
+			$this->info("Removing final ZIP file if it already exists");
+			$this->removeBuildFiles(self::ZIP_FILENAME);
 
 			// Can we open it?
 			if ($zip->open($zipFilename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
@@ -104,6 +125,9 @@ class BuildWhmcsServerModule extends Command
 				\RecursiveIteratorIterator::LEAVES_ONLY
 			);
 
+			// Loop the files and build the ZIP
+			$this->info("Looping files and adding them to the ZIP");
+			$filesAdded = 0;
 			foreach($files as $name => $file) {
 				// Skip directories
 				if (!$file->isDir()) {
@@ -111,16 +135,29 @@ class BuildWhmcsServerModule extends Command
 					$filePath = $file->getRealPath();
 					$relativePath = substr($filePath, strlen($this->tmpBuildDirectory));
 
+					// Is it a .DS_Store from a soon to be Linux user? :troll:
+					if (Str::endsWith($filePath, '.DS_Store')) {
+						continue;
+					}
+
 					// Add current file to archive
 					$zip->addFile($filePath, $relativePath);
+					$filesAdded++;
 				}
 			}
 
+			// Close the ZIP
+			$this->info("Files added: " . number_format($filesAdded));
+			$this->info("Closing ZIP file");
 			$zip->close();
+
+			// All done
+			$this->comment("Success! The ZIP file has been created successfully:");
+			$this->question($zipFilename);
 
 			return Command::SUCCESS;
 		} catch (\Throwable $e) {
-			$output->writeln("<error>{$e->getMessage()}</error>");
+			$this->error($e->getMessage());
 			return Command::FAILURE;
 		} finally {
 			// Delete the temp directory
@@ -132,16 +169,32 @@ class BuildWhmcsServerModule extends Command
 
 	protected function removeTempFiles(string ...$files)
 	{
+		$this->info("Removing temp build files:");
+
+		foreach($files as $file) {
+			$this->comment($file);
+		}
+
 		(new Filesystem())->remove(collect($files)->map(function($path) {
 			return $this->tmpBuildDirectory . $path;
 		}));
+
+		$this->info("Finished removing files");
 	}
 
 	protected function removeBuildFiles(string ...$files)
 	{
+		$this->info("Removing build files:");
+
+		foreach($files as $file) {
+			$this->comment($file);
+		}
+
 		(new Filesystem())->remove(collect($files)->map(function($path) {
 			return $this->buildDirectory . $path;
 		}));
+
+		$this->info("Finished removing files");
 	}
 
 	protected function runComposer(array $input)
