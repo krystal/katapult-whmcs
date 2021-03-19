@@ -142,7 +142,7 @@ class VirtualMachine extends Service
 				throw new VirtualMachineBuilding('The VM is awaiting IP address assignment');
 			}
 		} catch(VirtualMachineBuilding $e) {
-			// Has it timed out? // TODO test this
+			// Has it timed out?
 			if($this->vm_build_started_at->diffInSeconds(Carbon::now()) > self::BUILD_TIMEOUT) {
 
 				// Fire the hook, just once..
