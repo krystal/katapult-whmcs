@@ -31,8 +31,7 @@
 * PHP >= 7.4
 * WHMCS >= 8.0
 * A Katapult account with access to managed organizations
-* A Katapult API key
-* Your Katapult organization's ID (preferred) or subdomain
+* A Katapult organization API key
 
 ## Versioning
 This module follows [semantic versioning](https://semver.org/).

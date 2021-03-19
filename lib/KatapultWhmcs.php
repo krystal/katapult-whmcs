@@ -112,9 +112,9 @@ EOF
 		self::log("Updated API V1 key");
 	}
 
-	public static function setParentOrganization(string $organization): void
+	public static function setParentOrganization(string $organization, bool $force = false): void
 	{
-		if (self::getParentOrganization() === $organization) {
+		if (!$force && self::getParentOrganization() === $organization) {
 			return;
 		}
 
@@ -125,7 +125,19 @@ EOF
 
 	public static function getParentOrganizationIdentifier(): ? string
 	{
-		return KatapultWhmcs::dataStoreRead(self::DS_PARENT_ORGANIZATION);
+		$parentOrg = KatapultWhmcs::dataStoreRead(self::DS_PARENT_ORGANIZATION);
+
+		if ($parentOrg) {
+			return $parentOrg;
+		}
+
+		// Try and fetch it from the API and store it for next time
+		if($parentOrgObj = \katapult()->resource(Organization::class)->first()) {
+			self::setParentOrganization($parentOrgObj->id, true);
+			return $parentOrgObj->id;
+		}
+
+		return null;
 	}
 
 	public static function getParentOrganization(): ? Organization

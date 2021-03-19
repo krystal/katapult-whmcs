@@ -53,7 +53,7 @@ HTML;
 			
 			<label>Parent Organization</label>
 			<input type="text" value="{$parentOrganizationEscaped}" name="katapult_parent_organization" class="form-control" placeholder="Enter the organization to use when interacting with Katapult" />
-			<small class="text-light">This can either be your Katapult subdomain or the organization's ID, beginning with <code>org_</code></small>
+			<small class="text-light">Optional, only required with user keys and will be auto detected for organization keys. It can either be your Katapult subdomain or the organization's ID, beginning with <code>org_</code></small>
 			<br>
 
 			{$syncOptionsInput}
