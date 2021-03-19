@@ -1,4 +1,4 @@
-<p align="center"><img src="./build/katapult-logo.png" alt="Katapult logo" /></p>
+<p align="center"><a href="https://github.com/krystal/katapult-whmcs"><img src="./build/katapult-logo.png" alt="Katapult logo" /></a></p>
 
 # Katapult WHMCS Module
 
