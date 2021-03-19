@@ -19,7 +19,7 @@ function katapult_MetaData(): array
 	return [
 		'DisplayName' => 'Katapult',
 		'ServiceSingleSignOnLabel' => 'Open Console',
-		'RequiresServer' => false,
+		'RequiresServer' => true, // Sigh. https://github.com/krystal/katapult-whmcs/issues/18
 	];
 }
 

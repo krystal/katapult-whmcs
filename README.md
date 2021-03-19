@@ -35,7 +35,14 @@ The Katapult module will then be available for you to use inside WHMCS.
 
 ## Initial configuration
 
-### Create a new product
+### Create a server
+Due to a [limitation in WHMCS (#18)](https://github.com/krystal/katapult-whmcs/issues/18), a server is required to use the SSO functionality of this module, which is used to open a console session on a VM.
+
+[Create a server in WHMCS](https://docs.whmcs.com/Servers#Adding_a_New_Server) and assign it to the Katapult module. You can use any values in the fields (hostname, password etc) as they're not used anywhere.
+
+**Note:** Ensure the server is the default (marked with an asterisk*). All future Katapult services will need to be assigned to it for SSO to function.
+
+### Create the first product
 Before you can sell a Katapult service, you need to create a new WHMCS product. [Create a product as normal](https://docs.whmcs.com/Setting_Up_Your_First_Product) and set the module to `Katapult`. It is important that at this stage you click **Save Changes** before proceeding.
 
 You can now click the 'Other' tab on the product's configuration, and you will be presented with a GUI to enter your Katapult API key and parent organization. Fill those in and click **Save Changes**. Please note, this GUI will not show up unless the product is assigned to the Katapult module and then saved, before viewing the 'Other' tab.
