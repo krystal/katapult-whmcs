@@ -41,7 +41,7 @@ This module follows [semantic versioning](https://semver.org/).
 If you discover any security related issues, please email contact@krystal.uk instead of using the issue tracker.
 
 ## Installing and upgrading
-Download the [latest release ZIP](https://github.com/krystal/katapult-whmcs/releases) and extract it to `/whmcs/modules/servers/katapult`. The resulting file structure should look similar to this:
+Download the [latest katapult.zip](https://github.com/krystal/katapult-whmcs/releases) and extract it to `/whmcs/modules/servers/katapult`. The resulting file structure should look similar to this:
 
 ```
 ├── /whmcs/modules/servers/katapult
