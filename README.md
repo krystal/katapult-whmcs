@@ -2,7 +2,67 @@
 
 # Katapult WHMCS Module
 
-You can set the Katapult API key in a products settings under the 'Other' tab, after selecting the product as 'Katapult'. This key will be used for all products.
+## Requirements
+* PHP >= 7.4
+* WHMCS >= 8.0
+* A Katapult account with access to managed organizations
+
+## Versioning
+This module follows [semantic versioning](https://semver.org/).
+
+## Security
+If you discover any security related issues, please email contact@krystal.uk instead of using the issue tracker.
+
+## Installation/upgrading
+Download the [latest release ZIP](https://github.com/krystal/katapult-whmcs/releases) and extract it to `/whmcs/modules/servers/katapult`. The resulting file structure should look similar to this:
+
+```
+├── /whmcs/modules/servers/katapult
+│   ├── assets
+│   ├── composer.json
+│   ├── composer.lock
+│   ├── helpers.php
+│   ├── hooks.php
+│   ├── katapult.php
+│   ├── lib
+│   ├── overrides
+│   ├── README.md
+│   ├── vendor
+│   └── views
+```
+
+The Katapult module will then be available for you to use inside WHMCS.
+
+## Initial configuration
+
+### Create a new product
+Before you can sell a Katapult service, you need to create a new WHMCS product. [Create a product as normal](https://docs.whmcs.com/Setting_Up_Your_First_Product) and set the module to `Katapult`. It is important that at this stage you click **Save Changes** before proceeding.
+
+You can now click the 'Other' tab on the product's configuration, and you will be presented with a GUI to enter your Katapult API key and parent organization. Fill those in and click **Save Changes**. Please note, this GUI will not show up unless the product is assigned to the Katapult module and then saved, before viewing the 'Other' tab.
+
+When you save your API key, WHMCS will connect to Katapult and sync available datacenters and disk templates for virtual machines and assign them to configurable options for the Katapult products.
+
+Once the API key and parent organization have been saved, you can go back to the 'Module Settings' tab, and select the VM package you wish to assign to this product, and then **Save Changes**.
+
+You are now ready to sell this product as you would any other WHMCS product.
+
+## Creating more products
+The easiest way is to duplicate your initial Katapult product, as it will have all the configuration and required configurable options pre-assigned to it.
+
+If you were to create the product manually, the most important things to confirm are the Katapult module is selected, and the configurable option group `Katapult Virtual Machines` is assigned to it.
+
+## Renaming configurable options
+The Katapult module keeps its own record of the configurable options it creates to allow it to automatically sync them with Katapult. You can change the name of configurable options and the groups as you need.
+
+Dropdown options such as disk template and data center use [friendly display names](https://docs.whmcs.com/Addons_and_Configurable_Options#Friendly_Display_Names) - you can change everything after the first `|` (pipe) symbol in their names if desired.
+
+If you wish to manually sync options from Katapult, you can do so by ticking the 'Re-sync' options box on the 'Other' tab of a Katapult product.
+
+**Note:** Data centers and disk templates are automatically synced from Katapult daily, and new ones are hidden by default, you must un-hide them as required. This is to give you the control of selling into new regions and with new disk templates as you see fit.
+
+## Configuration
+
+You can set the Katapult API key and other options in a products settings under the 'Other' tab for any Katapult product. The settings will be used for all products.
 
 ## Template and asset overrides
 The module comes with whitelabel defaults for the client area. You can however override the template, JS and CSS files with your own. The defaults are neither pre-compiled nor minified for ease of editing, they also contain comments to explain what's going on.
@@ -31,6 +91,8 @@ WHMCS does not protect module actions by default, so be aware that a page can't 
 VMs are built asynchronously on Katapult. This means when a service is created in WHMCS, it will call to Katapult and ask it to build a VM. At this point, there is no VM, but the service is considered active. There is a task which runs on the WHMCS cron (which should be called as often as possible, usually every 5 minutes) which will call back to Katapult to check if the VM is built. When the VM is built, the initial root password, hostname, IP addresses and VM ID will be persisted to the WHMCS database.
 
 The issue raised with this, is WHMCS considers the service active when the build has been requested. It will then send the services welcome email (if configured). That's not useful if you want to include the VM's IP address or hostname, as WHMCS doesn't know it at that point. This problem can be solved by using a hook to send the services welcome email and disabling the default welcome email in WHMCS on the products settings.
+
+## Going further
 
 ### Hooks
 This module exposes some hooks for you to interact with at key lifecycle events of objects.
@@ -68,7 +130,7 @@ use \WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 });
 ```
 
-## Reference
+### Reference
 
 The `\WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine` class ultimately extends from the WHMCS service model, `WHMCS\Service\Service`, which is a [Laravel](https://laravel.com/docs/8.x/eloquent) model, which references `tblhosting` in the database.
 
@@ -103,15 +165,7 @@ $virtualMachine->createConsoleSession();
 
 More details about interacting with the Katapult VM instance can be found in the [Katault PHP library](https://github.com/krystal/katapult-php).
 
-## Requirements
-* PHP >= 7.4
-* WHMCS >= 8.0
-* A Katapult account with access to managed organizations
-
-## Versioning
-This module follows [semantic versioning](https://semver.org/).
-
-## Running locally for development
+## Development
 You can clone this repository directly into your development WHMCS installation, for example using [this Vagrant box](https://github.com/grizzlyware/whmcs-dev/):
 
 ```shell
@@ -123,7 +177,7 @@ cd katapult
 composer install
 ```
 
-## Building the module for distribution
+### Building the module for distribution
 When changes have been made to the module, and a new release is being published, a new ZIP file will need to be created to attach to the release. These ZIP files are used to distribute and install the module into WHMCS.
 
 The module has a few require-dev dependencies which aren't required for use within WHMCS. Guzzle being one which has been known to cause conflicts with WHMCS, and is required by [krystal/katapult-php](https://github.com/krystal/katapult-php). Because WHMCS has Guzzle installed, we don't need to include it the distribution of this module.
@@ -142,7 +196,4 @@ $ ./bin/katapult build:server-module
 ```
 
 This will result in a `katapult.zip` file in your `build` directory, the full path will be outputted by the command.
-
-## Security
-If you discover any security related issues, please email contact@krystal.uk instead of using the issue tracker.
 

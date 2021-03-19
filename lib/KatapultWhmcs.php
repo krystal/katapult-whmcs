@@ -173,7 +173,7 @@ EOF
 		// Nope? Create it..
 		if (!$configOptionGroup) {
 			$configOptionGroup = new ConfigOptionGroup();
-			$configOptionGroup->name = 'Katapult';
+			$configOptionGroup->name = 'Katapult Virtual Machines';
 
 			if (!$configOptionGroup->save()) {
 				throw new Exception('Could not save config option group');
@@ -341,6 +341,9 @@ SQL;
 			if ($params->service->domainstatus != 'Active') {
 				throw new Exception('This service is not currently active');
 			}
+
+			// In case it's just been built!
+			$params->service->silentlyCheckForExistingBuildAttempt();
 
 			// Check there is a VM..
 			if (!$params->service->vm_id) {
