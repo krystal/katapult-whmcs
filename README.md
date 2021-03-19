@@ -1,4 +1,4 @@
-<p align="center"><img style="background-color: #550FAE; border-radius: 4px; padding: 40px" src="./assets/katapult_logo_white_strapline.svg" alt="Katapult logo" width="40%" /></p>
+<p align="center"><img src="./build/katapult-logo.png" alt="Katapult logo" /></p>
 
 # Katapult WHMCS Module
 
