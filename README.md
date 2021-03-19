@@ -76,7 +76,7 @@ It's a good idea to split the Katapult products into a new [product group](https
 ### Create the first product
 Before you can sell a Katapult service, you need to create a new WHMCS product. [Create a product as normal](https://docs.whmcs.com/Setting_Up_Your_First_Product) and set the module to `Katapult`. It is important that at this stage you click **Save Changes** before proceeding.
 
-You can now click the 'Other' tab on the product's configuration, and you will be presented with a GUI to enter your Katapult API key and parent organization. Fill those in and click **Save Changes**. Please note, this GUI will not show up unless the product is assigned to the Katapult module and then saved, before viewing the 'Other' tab.
+You can now click the 'Other' tab on the product's configuration, and you will be presented with a GUI to enter your Katapult API key and parent organization (if using a user key). Fill those in and click **Save Changes**. Please note, this GUI will not show up unless the product is assigned to the Katapult module and then saved, before viewing the 'Other' tab.
 
 When you save your API key, WHMCS will connect to Katapult and sync available datacenters and disk templates for virtual machines and assign them to configurable options for the Katapult products.
 
