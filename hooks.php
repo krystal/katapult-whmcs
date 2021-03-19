@@ -4,6 +4,10 @@ use WHMCS\Module\Server\Katapult\Adaptation\AdminArea as AdminAreaAdaptation;
 use WHMCS\Module\Server\Katapult\Adaptation\ClientArea as ClientAreaAdaptation;
 use WHMCS\Module\Server\Katapult\Adaptation\System as SystemAdaptation;
 
+if (!defined('WHMCS')) {
+	die('This file cannot be accessed directly');
+}
+
 require(__DIR__ . '/vendor/autoload.php');
 
 // System
