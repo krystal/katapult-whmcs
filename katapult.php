@@ -78,6 +78,16 @@ function katapult_ChangePackage(array $params): string
 	});
 }
 
+function katapult_SuspendAccount(array $params): string
+{
+	return katapult_ShutdownVm($params);
+}
+
+function katapult_UnsuspendAccount(array $params): string
+{
+	return katapult_StartVm($params);
+}
+
 function katapult_StopVm(array $params): string
 {
 	return KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
