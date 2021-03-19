@@ -66,7 +66,7 @@ Due to a [limitation in WHMCS (#18)](https://github.com/krystal/katapult-whmcs/i
 
 [Create a server in WHMCS](https://docs.whmcs.com/Servers#Adding_a_New_Server) and assign it to the Katapult module. You can use any values in the fields (hostname, password etc) as they're not used anywhere.
 
-**Note:** Ensure the server is the default (marked with an asterisk*). All future Katapult services will need to be assigned to it for SSO to function.
+**⚠️ Note:** Ensure the server is the default (marked with an asterisk*). All future Katapult services will need to be assigned to it for SSO to function.
 
 ### Create the first product
 Before you can sell a Katapult service, you need to create a new WHMCS product. [Create a product as normal](https://docs.whmcs.com/Setting_Up_Your_First_Product) and set the module to `Katapult`. It is important that at this stage you click **Save Changes** before proceeding.
@@ -91,7 +91,7 @@ Dropdown options such as disk template and data center use [friendly display nam
 
 If you wish to manually sync options from Katapult, you can do so by ticking the 'Re-sync' checkbox on the 'Other' tab of a Katapult product.
 
-**Note:** Data centers and disk templates are automatically synced from Katapult daily, and new ones are hidden by default, you must un-hide them as required. This is to give you the control of selling into new regions and with new disk templates as you see fit.
+**⚙️ Note:** Data centers and disk templates are automatically synced from Katapult daily, and new ones are hidden by default, you must un-hide them as required. This is to give you the control of selling into new regions and with new disk templates as you see fit.
 
 ## Configuration
 
