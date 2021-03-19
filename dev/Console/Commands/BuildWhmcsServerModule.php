@@ -96,13 +96,19 @@ class BuildWhmcsServerModule extends Command
 				'--no-install' => true
 			]);
 
-
 			// Install composer dependencies
 			$this->info("Installing composer dependencies");
 			$this->runComposer([
 				'command' => 'install',
 				'--no-dev' => true
 			]);
+
+			// Remove unnecessary composer files.
+			// They can get them from the repo, they don't need to be public in WHMCS leaking version information
+			$this->removeTempFiles(
+				'composer.lock',
+				'composer.json',
+			);
 
 			// Add .htaccess to vendor dir as WHMCS has it in the doc root
 			$this->info("Adding .htaccess deny file to vendor directory");
