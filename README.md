@@ -13,7 +13,7 @@ This module follows [semantic versioning](https://semver.org/).
 ## Security
 If you discover any security related issues, please email contact@krystal.uk instead of using the issue tracker.
 
-## Installation/upgrading
+## Installing and upgrading
 Download the [latest release ZIP](https://github.com/krystal/katapult-whmcs/releases) and extract it to `/whmcs/modules/servers/katapult`. The resulting file structure should look similar to this:
 
 ```
@@ -56,7 +56,7 @@ The Katapult module keeps its own record of the configurable options it creates 
 
 Dropdown options such as disk template and data center use [friendly display names](https://docs.whmcs.com/Addons_and_Configurable_Options#Friendly_Display_Names) - you can change everything after the first `|` (pipe) symbol in their names if desired.
 
-If you wish to manually sync options from Katapult, you can do so by ticking the 'Re-sync' options box on the 'Other' tab of a Katapult product.
+If you wish to manually sync options from Katapult, you can do so by ticking the 'Re-sync' checkbox on the 'Other' tab of a Katapult product.
 
 **Note:** Data centers and disk templates are automatically synced from Katapult daily, and new ones are hidden by default, you must un-hide them as required. This is to give you the control of selling into new regions and with new disk templates as you see fit.
 
@@ -78,7 +78,7 @@ Your override file will then be used instead of the default. Overrides can be us
 ## Notes
 
 ### Logging
-Operations on the VM are logged against the service via the client's activity log. This is the case for both admins and clients, for complete traceability.
+Operations on a VM are logged against the service via the client's activity log. This is the case for both admins and clients, for complete traceability.
 
 For debugging purposes, all HTTP requests to the Katapult API can also be logged in detail by enabling the [WHMCS module debug log](https://docs.whmcs.com/Troubleshooting_Module_Problems).
 
@@ -87,8 +87,8 @@ The module's client area actions are protected by a no replay token, which is au
 
 WHMCS does not protect module actions by default, so be aware that a page can't be refreshed to re-run an action on a VM, which may be possible with other modules. For more information see [this issue](https://github.com/krystal/katapult-whmcs/issues/8).
 
-### VM Builds
-VMs are built asynchronously on Katapult. This means when a service is created in WHMCS, it will call to Katapult and ask it to build a VM. At this point, there is no VM, but the service is considered active. There is a task which runs on the WHMCS cron (which should be called as often as possible, usually every 5 minutes) which will call back to Katapult to check if the VM is built. When the VM is built, the initial root password, hostname, IP addresses and VM ID will be persisted to the WHMCS database.
+### Virtual Machine Builds
+Virtual machines are built asynchronously on Katapult. This means when a service is created in WHMCS, it will call to Katapult and ask it to build a VM. At this point, there is no VM, but the service is considered active. There is a task which runs on the WHMCS cron (which should be called as often as possible, usually every 5 minutes) which will call back to Katapult to check if the VM is built. When the VM is built, the initial root password, hostname, IP addresses and VM ID will be persisted to the WHMCS database.
 
 The issue raised with this, is WHMCS considers the service active when the build has been requested. It will then send the services welcome email (if configured). That's not useful if you want to include the VM's IP address or hostname, as WHMCS doesn't know it at that point. This problem can be solved by using a hook to send the services welcome email and disabling the default welcome email in WHMCS on the products settings.
 
@@ -132,7 +132,7 @@ use \WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 
 ### Reference
 
-The `\WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine` class ultimately extends from the WHMCS service model, `WHMCS\Service\Service`, which is a [Laravel](https://laravel.com/docs/8.x/eloquent) model, which references `tblhosting` in the database.
+The `\WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine` class ultimately extends from the WHMCS service model, `WHMCS\Service\Service`, which is a [Laravel](https://laravel.com/docs/8.x/eloquent) model, which references `tblhosting` in the WHMCS database.
 
 This module uses the [Salmon](https://github.com/grizzlyware/salmon-whmcs) datastore to persist data to WHMCS, outside the default tables, using `mod_salmon_data_store_items`. Data such as VM ID, build ID, organization ID and the encrypted API key are stored in this table.
 
