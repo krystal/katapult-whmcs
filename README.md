@@ -218,7 +218,7 @@ The module has a few require-dev dependencies which aren't required for use with
 Things to consider when packaging the module up:
 
 * Installing the required Composer dependencies
-* Removing untracked files
+* Removing development and untracked files
 * Adding special files such as `.htaccess` in `/vendor` (WHMCS restriction with it being in the docroot)
 * Zipping it up consistently between versions.
 
