@@ -132,9 +132,13 @@ EOF
 		}
 
 		// Try and fetch it from the API and store it for next time
-		if($parentOrgObj = \katapult()->resource(Organization::class)->first()) {
-			self::setParentOrganization($parentOrgObj->id, true);
-			return $parentOrgObj->id;
+		try {
+			if($parentOrgObj = \katapult()->resource(Organization::class)->first()) {
+				self::setParentOrganization($parentOrgObj->id, true);
+				return $parentOrgObj->id;
+			}
+		} catch (\Throwable $e) {
+			// Nothing we can do..
 		}
 
 		return null;
