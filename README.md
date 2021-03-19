@@ -1,3 +1,5 @@
+<p align="center"><img style="background-color: #550FAE; border-radius: 4px; padding: 40px" src="./assets/katapult_logo_white_strapline.svg" alt="Katapult logo" width="40%" /></p>
+
 # Katapult WHMCS Module
 
 You can set the Katapult API key in a products settings under the 'Other' tab, after selecting the product as 'Katapult'. This key will be used for all products.
