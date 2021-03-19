@@ -8,6 +8,7 @@
 * [Installing and upgrading](#installing-and-upgrading)
 * [Initial configuration](#initial-configuration)
     * [Create a server](#create-a-server)
+    * [Create a product group](#create-a-product-group)
     * [Create the first product](#create-the-first-product)
 * [Creating more products](#creating-more-products)
 * [Renaming configurable options](#renaming-configurable-options)
@@ -68,6 +69,11 @@ Due to a [limitation in WHMCS (#18)](https://github.com/krystal/katapult-whmcs/i
 
 **⚠️ Note:** Ensure the server is the default (marked with an asterisk*). All future Katapult services will need to be assigned to it for SSO to function.
 
+### Create a product group
+It's a good idea to split the Katapult products into a new [product group](https://docs.whmcs.com/Product_Groups), you should do this before creating a new product.
+
+**Note:** Katapult products do not need to be separated from your other products if you don't want them to be.
+
 ### Create the first product
 Before you can sell a Katapult service, you need to create a new WHMCS product. [Create a product as normal](https://docs.whmcs.com/Setting_Up_Your_First_Product) and set the module to `Katapult`. It is important that at this stage you click **Save Changes** before proceeding.
 
@@ -80,9 +86,7 @@ Once the API key and parent organization have been saved, you can go back to the
 You are now ready to sell this product as you would any other WHMCS product.
 
 ## Creating more products
-The easiest way is to duplicate your initial Katapult product, as it will have all the configuration and required configurable options pre-assigned to it.
-
-If you were to create the product manually, the most important things to confirm are the Katapult module is selected, and the configurable option group `Katapult Virtual Machines` is assigned to it.
+When creating a new product, the most important things to confirm are the Katapult module is selected, and the configurable option group `Katapult Virtual Machines` is assigned to it.
 
 ## Renaming configurable options
 The Katapult module keeps its own record of the configurable options it creates to allow it to automatically sync them with Katapult. You can change the name of configurable options and the groups as you need.
