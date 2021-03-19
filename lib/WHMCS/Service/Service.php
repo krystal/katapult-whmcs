@@ -19,15 +19,12 @@ class Service extends \Grizzlyware\Salmon\WHMCS\Service\Service
 		return $this->belongsTo(Client::class, 'userid');
 	}
 
-	/**
-	 * @todo test these work
-	 */
 	public function triggerHook(string $hook): void
 	{
 		try {
 			\run_hook($hook, [
-				'service' => $this,
-			]);
+				$this,
+			], true);
 		} catch (\Throwable $e) {
 			$this->log("Failed to run hook: {$hook}: {$e->getMessage()}");
 		}
