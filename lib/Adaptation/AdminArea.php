@@ -28,8 +28,13 @@ HTML;
 
 		if (KatapultWhmcs::getApiV1Key()) {
 			$apiKeyNoteMessage = 'There is currently an API key set, enter a new one to change it. It will apply to all Katapult services.';
+			$syncOptionsInput = <<<HTML
+<label><input class="form-check" type="checkbox" name="katapult_sync_config_options"> Re-sync configurable options on save (data centers, disk templates etc)</label>
+HTML;
+
 		} else {
 			$apiKeyNoteMessage = 'Enter your Katapult API key here to connect to Katapult';
+			$syncOptionsInput = '';
 		}
 
 		$configurationGui = <<<HTML
@@ -51,7 +56,7 @@ HTML;
 			<small class="text-light">This can either be your Katapult subdomain or the organization's ID, beginning with <code>org_</code></small>
 			<br>
 
-			<label><input class="form-check" type="checkbox" name="katapult_sync_config_options"> Sync configurable options on save (data centers, disk templates etc)</label>
+			{$syncOptionsInput}
 			
 		</div>
 	
