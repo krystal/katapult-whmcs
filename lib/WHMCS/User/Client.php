@@ -5,12 +5,13 @@ namespace WHMCS\Module\Server\Katapult\WHMCS\User;
 use Krystal\Katapult\Resources\Organization;
 use Krystal\Katapult\Resources\Organization\ManagedOrganization;
 use WHMCS\Module\Server\Katapult\Concerns\HasDataStoreValues;
+use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 
 /**
  * Class Client
  * @package WHMCS\Module\Server\Katapult\WHMCS\User
  *
- * @property-read ManagedOrganization $managed_organization
+ * @property-read Organization $managed_organization
  */
 class Client extends \Grizzlyware\Salmon\WHMCS\User\Client
 {
@@ -33,8 +34,14 @@ class Client extends \Grizzlyware\Salmon\WHMCS\User\Client
 			]);
 		}
 
+		// Get and check there is a parent org to use
+		$parentOrg = katapultOrg();
+		if (!$parentOrg) {
+			throw new Exception('No parent organization has been set, unable to create managed organization');
+		}
+
 		/** @var ManagedOrganization $managedOrg */
-		$managedOrg = katapult()->resource(ManagedOrganization::class, katapultOrg())->create([
+		$managedOrg = katapult()->resource(ManagedOrganization::class, $parentOrg)->create([
 			'name' => $this->label,
 			'sub_domain' => substr(md5(microtime() . 'NMit6gvf8'), 0, 8)
 		]);
