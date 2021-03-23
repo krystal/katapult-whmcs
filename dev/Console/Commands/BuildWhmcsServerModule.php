@@ -23,8 +23,8 @@ class BuildWhmcsServerModule extends Command
 {
 	protected static $defaultName = 'build:server-module';
 
-	protected ? string $buildDirectory = '';
-	protected ? string $tmpBuildDirectory = '';
+	protected ? string $buildDirectory = null;
+	protected ? string $tmpBuildDirectory = null;
 
 	const ZIP_FILENAME = 'katapult.zip';
 	
