@@ -61,7 +61,7 @@ function katapult_TerminateAccount(array $params): string
 
 		// Log it
 		$params->service->log('VM deleted and local data store cleared');
-	});
+	}, KatapultWhmcs::MRT_STRING, false);
 }
 
 function katapult_ChangePackage(array $params): string

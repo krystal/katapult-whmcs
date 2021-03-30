@@ -331,9 +331,10 @@ SQL;
 	 * @param array $params
 	 * @param callable $command
 	 * @param string $returnType
+	 * @param bool $checkServiceIsActive
 	 * @return string|array
 	 */
-	public static function runModuleCommandOnVm(array $params, callable $command, string $returnType = self::MRT_STRING)
+	public static function runModuleCommandOnVm(array $params, callable $command, string $returnType = self::MRT_STRING, bool $checkServiceIsActive = true)
 	{
 		$formatErrorResponse = function(string $error) use($returnType) {
 			switch($returnType) {
@@ -354,7 +355,7 @@ SQL;
 			$params = new VmServerModuleParams($params);
 
 			// Check the service is active
-			if ($params->service->domainstatus != 'Active') {
+			if ($checkServiceIsActive && $params->service->domainstatus != 'Active') {
 				throw new Exception('This service is not currently active');
 			}
 
