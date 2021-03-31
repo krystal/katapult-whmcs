@@ -127,12 +127,74 @@ if(typeof kvmService === 'object') {
         };
 
         /**
+         * Watch for the console launch so we can launch it in a window or iframe
+         */
+        const watchForConsoleLaunch = () => {
+            const consoleContainer = document.getElementById('kvm-console-container')
+            const launchForm = document.getElementById('kvm-console-launcher')
+            const launchButton = launchForm.querySelector('button')
+
+            // This function determines how the console will launch.
+            // Right now it's pretty basic, just checking against the available width of the window.
+            // If the console was inlined on a small screen, it would cause bad UX.
+            const determineLaunchMethod = () =>  {
+
+                // Default to a new window.
+                let method = 'window';
+
+                if(window.innerWidth > 500) {
+                    method = 'inline'
+                }
+
+                return method;
+            }
+
+            // The button in the form doesn't actually submit the form, it triggered this event, which allows us to set the correct launch method before submitting the form
+            launchButton.addEventListener('click', () => {
+
+                // Fetch the launch method. Used as a function so the screen size when they click the button is used, not when the user loaded the page
+                const consoleLaunchMethod = determineLaunchMethod()
+
+                // Manipulate the form to suit the launch method. Omitted a default intentionally.
+                switch(consoleLaunchMethod) {
+                    case 'inline':
+                        launchForm.target = 'kvm_console'
+                        break;
+
+                    case 'window':
+                        launchForm.target = '_blank'
+                        break;
+                }
+
+                // Submit the launch form
+                launchForm.submit();
+
+                // Fire an event for it
+                let launchEvent = new Event('console-launched');
+                launchEvent.launchMethod = consoleLaunchMethod
+                launchForm.dispatchEvent(launchEvent);
+            })
+
+            launchForm.addEventListener('console-launched', (e) => {
+                launchForm.classList.add('d-none', 'hidden')
+
+                switch(e.launchMethod) {
+                    case 'inline':
+                        consoleContainer.classList.remove('d-none', 'hidden')
+                        consoleContainer.scrollIntoView()
+                        break;
+                }
+            })
+        };
+
+        /**
          * Invoke the above functions
          */
         disableElements();
         passwordToggling();
         confirmUserActions();
         addReplayTokensToActionButtons();
+        watchForConsoleLaunch();
 
     })(kvmService);
 }
