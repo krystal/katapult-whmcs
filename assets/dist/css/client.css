@@ -6,6 +6,28 @@ a.k_disabled {
 }
 
 /**
+VM Console inline frame
+ */
+#kvm-console {
+    width: 100%;
+    padding-top: 60%;
+    position: relative;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.3) 0 0 10px;
+}
+
+#kvm-console iframe {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    border: none;
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+}
+
+/**
 This is a badge displaying the VM's state, ie 'started', 'stopped', 'unknown'
  */
 .kvm-state {

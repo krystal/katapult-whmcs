@@ -11,7 +11,7 @@
 
     <div class="row">
 
-        <div class="col-md-6 col-sm-12">
+        <div class="col-md-6 col-sm-12" style="margin-bottom: 2rem">
 
             <h5>Server state</h5>
             <span class="kvm-state state--{$katapultVmService['vm']['state']|htmlentities} for-template--{$template|htmlentities}">{$katapultVmService['vm']['state']|replace:'_':' '|htmlentities}</span>
@@ -27,21 +27,6 @@
                 <small>SSH is available on most servers, and is the preferred way to login.</small>
 
             {/if}
-
-            <h5 style="margin-top: 2rem">Console access</h5>
-
-            <form method="get">
-
-                <input type="hidden" name="action" value="productdetails">
-                <input type="hidden" name="id" value="{$id|htmlentities}">
-                <input type="hidden" name="dosinglesignon" value="1">
-                <input type="hidden" name="knrp" value="{WHMCS\Module\Server\Katapult\Helpers\Replay::getToken()|htmlentities}">
-
-                <button class="btn btn-primary">Launch console</button>
-
-            </form>
-
-            <small>The console can be used to access the server when the network is unavailable.</small>
 
         </div>
 
@@ -61,6 +46,41 @@
                 <label for="kvm_password">Password</label>
                 <input type="password" class="form-control" id="kvm_password" placeholder="Password" value="{$password|htmlentities}" readonly>
                 <button class="btn btn-secondary btn-sm" type="button" id="kvm_password_toggle" style="margin-top: 0.5rem"></button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-12">
+
+            <form method="get" id="kvm-console-launcher">
+
+                <h5 style="margin-top: 2rem">Console access</h5>
+
+                <input type="hidden" name="action" value="productdetails">
+                <input type="hidden" name="id" value="{$id|htmlentities}">
+                <input type="hidden" name="dosinglesignon" value="1">
+                <input type="hidden" name="knrp" value="{WHMCS\Module\Server\Katapult\Helpers\Replay::getToken()|htmlentities}">
+
+                <button class="btn btn-primary" type="button">Launch console</button>
+
+                <br><small>The console can be used to access the server when the network is unavailable.</small>
+
+            </form>
+
+        </div>
+
+        <div class="col-md-12 d-none hidden" id="kvm-console-container">
+
+            <h5 style="margin-top: 2rem">Console</h5>
+
+            <div id="kvm-console">
+
+                <iframe title="Console" name="kvm_console"></iframe>
 
             </div>
 
