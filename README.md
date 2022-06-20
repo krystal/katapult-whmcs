@@ -45,8 +45,6 @@ Download the [latest katapult.zip](https://github.com/krystal/katapult-whmcs/rel
 ```
 ├── /whmcs/modules/servers/katapult
 │   ├── assets
-│   ├── composer.json
-│   ├── composer.lock
 │   ├── helpers.php
 │   ├── hooks.php
 │   ├── katapult.php
