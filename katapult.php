@@ -53,6 +53,11 @@ function katapult_TerminateAccount(array $params): string
 {
 	return KatapultWhmcs::runModuleCommandOnVm($params, function(VmServerModuleParams $params)
 	{
+		// Delete disk backup policies
+		foreach ($params->service->vm_disk_backup_policies as $diskBackupPolicy) {
+			$diskBackupPolicy->delete();
+		}
+
 		// Delete the VM
 		$params->service->vm->delete();
 
