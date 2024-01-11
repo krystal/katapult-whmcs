@@ -1,0 +1,12 @@
+{
+  "bootstrap-sha": "1dbfca243e2dc83dea6abf1f156dbd90d21d27cc",
+  "packages": {
+    ".": {
+      "release-type": "php",
+      "changelog-path": "CHANGELOG.md",
+      "draft": false,
+      "prerelease": false
+    }
+  },
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
+}
