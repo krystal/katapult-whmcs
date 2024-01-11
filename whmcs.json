@@ -1,0 +1,27 @@
+{
+    "schema": "1.0",
+    "type": "whmcs-servers",
+    "name": "katapult",
+    "license": "MIT",
+    "category": "provisioning",
+    "description": {
+        "name": "Katapult",
+        "tagline": "Provision services on Katapult.",
+        "long": "Provision services on Katapult.",
+        "features": []
+    },
+    "logo": {
+        "filename": "assets/katapult_logo.png"
+    },
+    "support": {
+        "homepage": "https:\/\/github.com\/krystal\/katapult-whmcs",
+        "support_url": "https:\/\/github.com\/krystal\/katapult-whmcs",
+        "docs_url": "https:\/\/github.com\/krystal\/katapult-whmcs"
+    },
+    "authors": [
+        {
+            "name": "Krystal",
+            "homepage": "https:\/\/k.io\/"
+        }
+    ]
+}
