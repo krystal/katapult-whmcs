@@ -13,19 +13,16 @@
             "email": "josh@grizzlyware.com"
         }
     ],
-
     "autoload": {
         "files": [
             "helpers.php"
         ]
     },
-
     "autoload-dev": {
         "psr-4": {
             "Krystal\\Katapult\\WHMCS\\Dev\\": "dev/"
         }
     },
-
     "require-dev": {
         "nesbot/carbon": "^2.46",
         "symfony/console": "^5.2",
