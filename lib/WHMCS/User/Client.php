@@ -15,53 +15,51 @@ use WHMCS\Module\Server\Katapult\Exceptions\Exception;
  */
 class Client extends \Grizzlyware\Salmon\WHMCS\User\Client
 {
-	use HasDataStoreValues;
+    use HasDataStoreValues;
 
-	const DS_MANAGED_ORG_ID = 'managed_org_id';
+    public const DS_MANAGED_ORG_ID = 'managed_org_id';
 
-	protected function dataStoreRelType(): string
-	{
-		return 'client';
-	}
+    protected function dataStoreRelType(): string
+    {
+        return 'client';
+    }
 
-	protected function getManagedOrganizationAttribute(): Organization
-	{
-		$existingOrgId = $this->dataStoreRead(self::DS_MANAGED_ORG_ID);
+    protected function getManagedOrganizationAttribute(): Organization
+    {
+        $existingOrgId = $this->dataStoreRead(self::DS_MANAGED_ORG_ID);
 
-		if ($existingOrgId) {
-			return Organization::instantiateFromSpec((object)[
-				'id' => $existingOrgId
-			]);
-		}
+        if ($existingOrgId) {
+            return Organization::instantiateFromSpec((object)[
+                'id' => $existingOrgId
+            ]);
+        }
 
-		// Get and check there is a parent org to use
-		$parentOrg = katapultOrg();
-		if (!$parentOrg) {
-			throw new Exception('No parent organization has been set, unable to create managed organization');
-		}
+        // Get and check there is a parent org to use
+        $parentOrg = katapultOrg();
+        if (!$parentOrg) {
+            throw new Exception('No parent organization has been set, unable to create managed organization');
+        }
 
-		/** @var ManagedOrganization $managedOrg */
-		$managedOrg = katapult()->resource(ManagedOrganization::class, $parentOrg)->create([
-			'name' => $this->label,
-			'sub_domain' => substr(md5(microtime() . 'NMit6gvf8'), 0, 8)
-		]);
+        /** @var ManagedOrganization $managedOrg */
+        $managedOrg = katapult()->resource(ManagedOrganization::class, $parentOrg)->create([
+            'name' => $this->label,
+            'sub_domain' => substr(md5(microtime() . 'NMit6gvf8'), 0, 8)
+        ]);
 
-		// Store it for next time
-		$this->dataStoreWrite(self::DS_MANAGED_ORG_ID, $managedOrg->id);
+        // Store it for next time
+        $this->dataStoreWrite(self::DS_MANAGED_ORG_ID, $managedOrg->id);
 
-		// Log it
-		$this->log("Created managed organization: {$managedOrg->id}");
+        // Log it
+        $this->log("Created managed organization: {$managedOrg->id}");
 
-		// Send it home
-		return Organization::instantiateFromSpec((object)[
-			'id' => $managedOrg->id
-		]);
-	}
+        // Send it home
+        return Organization::instantiateFromSpec((object)[
+            'id' => $managedOrg->id
+        ]);
+    }
 
-	public function log($message)
-	{
-		parent::log("[Katapult]: {$message}");
-	}
+    public function log($message)
+    {
+        parent::log("[Katapult]: {$message}");
+    }
 }
-
-

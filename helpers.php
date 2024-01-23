@@ -8,7 +8,7 @@ use WHMCS\Module\Server\Katapult\WHMCS\User\Client;
 
 function katapult(): Katapult
 {
-	return KatapultWhmcs::getKatapult();
+    return KatapultWhmcs::getKatapult();
 }
 
 /**
@@ -16,11 +16,11 @@ function katapult(): Katapult
  * @return Organization|null
  * @throws KatapultException
  */
-function katapultOrg(Client $client = null): ? Organization
+function katapultOrg(Client $client = null): ?Organization
 {
-	if ($client) {
-		return $client->managed_organization;
-	}
+    if ($client) {
+        return $client->managed_organization;
+    }
 
-	return KatapultWhmcs::getParentOrganization();
+    return KatapultWhmcs::getParentOrganization();
 }

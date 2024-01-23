@@ -5,7 +5,7 @@ use WHMCS\Module\Server\Katapult\Adaptation\ClientArea as ClientAreaAdaptation;
 use WHMCS\Module\Server\Katapult\Adaptation\System as SystemAdaptation;
 
 if (!defined('WHMCS')) {
-	die('This file cannot be accessed directly');
+    die('This file cannot be accessed directly');
 }
 
 require(__DIR__ . '/vendor/autoload.php');
@@ -21,5 +21,3 @@ require(__DIR__ . '/vendor/autoload.php');
 
 // Client area
 \add_hook('ClientAreaHeadOutput', 0, [ClientAreaAdaptation::class, 'addAssetsToHead']);
-
-

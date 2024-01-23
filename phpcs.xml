@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<ruleset name="PSR12">
+    <description>PSR-12 Coding Style Guide.</description>
+    <arg name="colors"/>
+
+    <!-- Add paths to the directories you want to check -->
+    <file>./lib</file>
+    <file>./helpers.php</file>
+    <file>./hooks.php</file>
+    <file>./katapult.php</file>
+
+    <!-- Exclude some directories if needed -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+
+    <!-- PSR-12 standard -->
+    <rule ref="PSR12">
+        <exclude name="Generic.Files.LineLength"/>
+        <exclude name="PSR1.Files.SideEffects.FoundWithSymbols"/>
+    </rule>
+
+    <!-- Additional rules or adjustments can be added here -->
+</ruleset>

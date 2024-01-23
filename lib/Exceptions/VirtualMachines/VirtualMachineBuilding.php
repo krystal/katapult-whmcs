@@ -6,7 +6,4 @@ use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 
 class VirtualMachineBuilding extends Exception
 {
-
 }
-
-
