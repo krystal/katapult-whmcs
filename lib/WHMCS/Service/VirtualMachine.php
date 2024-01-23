@@ -55,6 +55,15 @@ class VirtualMachine extends Service
 		return $this->dataStoreRead(self::DS_VM_BUILD_STARTED_AT);
 	}
 
+	public function getVmDiskBackupPoliciesAttribute(): array
+	{
+		if (!$this->vm) {
+			return [];
+		}
+
+		return katapult()->resource(KatapultVirtualMachine\VirtualMachineDiskBackupPolicy::class, $this->vm)->all();
+	}
+
 	public function getVmAttribute(): ? KatapultVirtualMachine
 	{
 		if($this->virtualMachine) {
