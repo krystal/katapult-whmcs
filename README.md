@@ -28,7 +28,7 @@
     * [Building the module for distribution](#building-the-module-for-distribution)
     
 ## Requirements
-* PHP >= 7.4
+* PHP >= 8.1
 * WHMCS >= 8.0
 * A Katapult account with access to managed organizations
 * A Katapult organization API key
@@ -230,4 +230,3 @@ $ ./bin/katapult build:server-module
 ```
 
 This will result in a `katapult.zip` file in your `build` directory, the full path will be outputted by the command.
-
