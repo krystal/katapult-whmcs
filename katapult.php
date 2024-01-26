@@ -63,6 +63,8 @@ function katapult_ServiceSingleSignOn(array $params): array
 function katapult_TerminateAccount(array $params): string
 {
     return KatapultWhmcs::runModuleCommandOnVm($params, function (VmServerModuleParams $params) {
+        KatapultWhmcs::deleteDiskBackupPolciesForVm($params->service);
+
         $requestBody = new VirtualMachinesVirtualMachineDeleteBody();
         $requestBody->setVirtualMachine($params->service->virtual_machine_lookup);
 

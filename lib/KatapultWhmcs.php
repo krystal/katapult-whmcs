@@ -189,6 +189,42 @@ EOF
         \logModuleCall(KatapultWhmcs::SERVER_MODULE, $action, $request, $response, '', [self::getApiV1Key()]);
     }
 
+    public static function deleteDiskBackupPolciesForVm(VirtualMachine $virtualMachine): void
+    {
+        // Delete disk backup policies
+        $disks = katapult()->getVirtualMachineDisks([
+            'virtual_machine[id]' => $virtualMachine->vm_id,
+        ])->getDisks();
+
+        foreach ($disks as $disk) {
+            $diskBackupPolicies = katapult()->getDiskDiskBackupPolicies(['disk[id]' => $disk->getDisk()->getId()]);
+
+            katapultHandleApiResponse(
+                $diskBackupPolicies,
+                $virtualMachine,
+                null,
+                'Error getting disk backup policies',
+                function () use ($diskBackupPolicies, $virtualMachine) {
+                    foreach ($diskBackupPolicies->getDiskBackupPolicies() as $diskBackupPolicy) {
+                        $requestBody = new DiskBackupPoliciesDiskBackupPolicyDeleteBody();
+                        $diskBackupPolicyLookup = new DiskBackupPolicyLookup();
+                        $diskBackupPolicyLookup->setId($diskBackupPolicy->getId());
+                        $requestBody->setDiskBackupPolicy($diskBackupPolicyLookup);
+
+                        $deleteResult = katapult()->deleteDiskBackupPolicy($requestBody);
+
+                        katapultHandleApiResponse(
+                            $deleteResult,
+                            $virtualMachine,
+                            'Deleted disk backup policy ' . $diskBackupPolicy->getId(),
+                            'Error deleting disk backup policy ' . $diskBackupPolicy->getId()
+                        );
+                    }
+                }
+            );
+        }
+    }
+
     /**
      * Creates a config option group called Katapult, and assigns it to the Katapult products.
      *
