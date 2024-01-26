@@ -18,5 +18,7 @@
         <exclude name="PSR1.Files.SideEffects.FoundWithSymbols"/>
     </rule>
 
+    <rule ref="Squiz.Arrays.ArrayDeclaration.NoComma" />
+
     <!-- Additional rules or adjustments can be added here -->
 </ruleset>

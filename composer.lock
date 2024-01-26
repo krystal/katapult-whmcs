@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ad84bfbe57905b81dbf5069e282c2880",
+    "content-hash": "0aed2d4e9c4fe553ed8d5a6b7d897f55",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -396,16 +396,16 @@
         },
         {
             "name": "krystal/katapult",
-            "version": "v3.0.0",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/krystal/katapult-php.git",
-                "reference": "35153fc67c3594d0fe1884702cb2f7daae5f1d7f"
+                "reference": "a40af62964d7ed760a4733ec4d5475fd552f09f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/krystal/katapult-php/zipball/35153fc67c3594d0fe1884702cb2f7daae5f1d7f",
-                "reference": "35153fc67c3594d0fe1884702cb2f7daae5f1d7f",
+                "url": "https://api.github.com/repos/krystal/katapult-php/zipball/a40af62964d7ed760a4733ec4d5475fd552f09f5",
+                "reference": "a40af62964d7ed760a4733ec4d5475fd552f09f5",
                 "shasum": ""
             },
             "require": {
@@ -427,9 +427,9 @@
             ],
             "support": {
                 "issues": "https://github.com/krystal/katapult-php/issues",
-                "source": "https://github.com/krystal/katapult-php/tree/v3.0.0"
+                "source": "https://github.com/krystal/katapult-php/tree/v3.0.1"
             },
-            "time": "2024-01-19T14:03:15+00:00"
+            "time": "2024-01-26T09:46:59+00:00"
         },
         {
             "name": "league/uri",
@@ -2826,6 +2826,57 @@
             "time": "2022-06-23T15:29:49+00:00"
         },
         {
+            "name": "illuminate/container",
+            "version": "v8.83.27",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/illuminate/container.git",
+                "reference": "14062628d05f75047c5a1360b9350028427d568e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/illuminate/container/zipball/14062628d05f75047c5a1360b9350028427d568e",
+                "reference": "14062628d05f75047c5a1360b9350028427d568e",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^8.0",
+                "php": "^7.3|^8.0",
+                "psr/container": "^1.0"
+            },
+            "provide": {
+                "psr/container-implementation": "1.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "8.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Illuminate\\Container\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "The Illuminate Container package.",
+            "homepage": "https://laravel.com",
+            "support": {
+                "issues": "https://github.com/laravel/framework/issues",
+                "source": "https://github.com/laravel/framework"
+            },
+            "time": "2022-02-02T21:03:35+00:00"
+        },
+        {
             "name": "illuminate/contracts",
             "version": "v8.83.27",
             "source": {
@@ -2872,6 +2923,74 @@
                 "source": "https://github.com/laravel/framework"
             },
             "time": "2022-01-13T14:47:47+00:00"
+        },
+        {
+            "name": "illuminate/database",
+            "version": "v8.83.27",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/illuminate/database.git",
+                "reference": "1a5b0e4e6913415464fa2aab554a38b9e6fa44b1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/illuminate/database/zipball/1a5b0e4e6913415464fa2aab554a38b9e6fa44b1",
+                "reference": "1a5b0e4e6913415464fa2aab554a38b9e6fa44b1",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/collections": "^8.0",
+                "illuminate/container": "^8.0",
+                "illuminate/contracts": "^8.0",
+                "illuminate/macroable": "^8.0",
+                "illuminate/support": "^8.0",
+                "php": "^7.3|^8.0",
+                "symfony/console": "^5.4"
+            },
+            "suggest": {
+                "doctrine/dbal": "Required to rename columns and drop SQLite columns (^2.13.3|^3.1.4).",
+                "fakerphp/faker": "Required to use the eloquent factory builder (^1.9.1).",
+                "illuminate/console": "Required to use the database commands (^8.0).",
+                "illuminate/events": "Required to use the observers with Eloquent (^8.0).",
+                "illuminate/filesystem": "Required to use the migrations (^8.0).",
+                "illuminate/pagination": "Required to paginate the result set (^8.0).",
+                "symfony/finder": "Required to use Eloquent model factories (^5.4)."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "8.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Illuminate\\Database\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "The Illuminate Database package.",
+            "homepage": "https://laravel.com",
+            "keywords": [
+                "database",
+                "laravel",
+                "orm",
+                "sql"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/framework/issues",
+                "source": "https://github.com/laravel/framework"
+            },
+            "time": "2022-08-31T16:16:06+00:00"
         },
         {
             "name": "illuminate/macroable",
@@ -4802,7 +4921,9 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": "^8.1"
+    },
     "platform-dev": {
         "ext-zip": "*"
     },

@@ -65,7 +65,7 @@ HTML;
 HTML;
 
         return [
-            '' => $configurationGui
+            '' => $configurationGui,
         ];
     }
 
@@ -90,7 +90,7 @@ HTML;
             GeneralHelper::attempt(
                 [
                     KatapultWhmcs::class,
-                    'syncConfigurableOptions'
+                    'syncConfigurableOptions',
                 ],
                 'Sync config options'
             );

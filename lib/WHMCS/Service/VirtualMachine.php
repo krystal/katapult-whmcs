@@ -2,7 +2,9 @@
 
 namespace WHMCS\Module\Server\Katapult\WHMCS\Service;
 
-use Krystal\Katapult\Resources\Organization\VirtualMachine as KatapultVirtualMachine;
+use Krystal\Katapult\KatapultAPI\Model\Enum\VirtualMachineStateEnum;
+use Krystal\Katapult\KatapultAPI\Model\VirtualMachineLookup;
+use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineGetResponse200VirtualMachine as KatapultVirtualMachine;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuilding;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildTimeout;
@@ -18,6 +20,7 @@ use Carbon\Carbon;
  * @property-read Carbon|null $vm_build_started_at
  * @property-read KatapultVirtualMachine $vm
  * @property-read string $vm_state
+ * @property-read VirtualMachineLookup $virtual_machine_lookup
  */
 class VirtualMachine extends Service
 {
@@ -55,6 +58,14 @@ class VirtualMachine extends Service
         return $this->dataStoreRead(self::DS_VM_BUILD_STARTED_AT);
     }
 
+    public function getVirtualMachineLookupAttribute(): VirtualMachineLookup
+    {
+        $virtualMachineLookup = new VirtualMachineLookup();
+        $virtualMachineLookup->setId($this->vm_id);
+
+        return $virtualMachineLookup;
+    }
+
     public function getVmAttribute(): ?KatapultVirtualMachine
     {
         if ($this->virtualMachine) {
@@ -62,7 +73,9 @@ class VirtualMachine extends Service
         }
 
         if ($this->vm_id) {
-            $this->virtualMachine = katapult()->resource(KatapultVirtualMachine::class)->get($this->vm_id);
+            $this->virtualMachine = katapult()
+                ->getVirtualMachine(['virtual_machine[id]' => $this->vm_id])
+                ->getVirtualMachine();
         }
 
         return $this->virtualMachine;
@@ -71,14 +84,10 @@ class VirtualMachine extends Service
     public function getVmStateAttribute(): string
     {
         if ($this->vm) {
-            switch ($this->vm->state) {
-                case KatapultVirtualMachine::STATE_STARTED:
-                case KatapultVirtualMachine::STATE_STOPPED:
-                    return $this->vm->state;
-
-                default:
-                    self::STATE_UNKNOWN;
-            }
+            return match ($this->vm->getState()) {
+                VirtualMachineStateEnum::Started, VirtualMachineStateEnum::Stopped => $this->vm->getState(),
+                default => self::STATE_UNKNOWN,
+            };
         }
 
         if ($this->vm_build_id && !$this->vm_id) {
@@ -120,25 +129,32 @@ class VirtualMachine extends Service
         }
 
         // Fetch the build state
-        $virtualMachineBuild = katapult()->resource(KatapultVirtualMachine\VirtualMachineBuild::class)->get($buildId);
+        $virtualMachineBuild = katapult()->getVirtualMachinesBuildsVirtualMachineBuild([
+            'virtual_machine_build[id]' => $buildId,
+        ]);
 
         try {
+            if ($virtualMachineBuild->getStatusCode() === 404) {
+                throw new VirtualMachineBuilding('No VM build exists');
+            }
+
             // Do we have a VM?
-            if (!$virtualMachineBuild->virtual_machine) {
+            if (!$virtualMachineBuild->getVirtualMachineBuild()->getVirtualMachine()->getId()) {
                 throw new VirtualMachineBuilding('The VM build is queued with Katapult');
             }
 
             // Get the VM
-            /** @var VirtualMachine $vm */
-            $vm = katapult()->resource(KatapultVirtualMachine::class)->get($virtualMachineBuild->virtual_machine->id);
+            $vm = katapult()->getVirtualMachine([
+                'virtual_machine[id]' => $virtualMachineBuild->getVirtualMachineBuild()->getVirtualMachine()->getId(),
+            ])->getVirtualMachine();
 
             // Do we have a root pw?
-            if (!$vm->initial_root_password) {
+            if (!$vm->getInitialRootPassword()) {
                 throw new VirtualMachineBuilding('The VM is awaiting a root password');
             }
 
             // Does it have IPs?
-            if (count($vm->ip_addresses) < 1) {
+            if (count($vm->getIpAddresses()) < 1) {
                 throw new VirtualMachineBuilding('The VM is awaiting IP address assignment');
             }
         } catch (VirtualMachineBuilding $e) {
@@ -170,13 +186,13 @@ class VirtualMachine extends Service
     protected function populateServiceWithVm(KatapultVirtualMachine $virtualMachine): void
     {
         $this->username = 'root';
-        $this->password = \encrypt($virtualMachine->initial_root_password);
-        $this->domain = $virtualMachine->fqdn;
+        $this->password = \encrypt($virtualMachine->getInitialRootPassword());
+        $this->domain = $virtualMachine->getFqdn();
 
         // Extract the IPs
         $ipAddresses = array_map(function ($ipAddressObj) {
-            return $ipAddressObj->address;
-        }, $virtualMachine->ip_addresses);
+            return $ipAddressObj->getAddress();
+        }, $virtualMachine->getIpAddresses());
 
         // Assign the IPs to the service
         $this->dedicatedip = $ipAddresses[0];
@@ -185,7 +201,7 @@ class VirtualMachine extends Service
 
         // Save the details
         $this->save();
-        $this->dataStoreWrite(self::DS_VM_ID, $virtualMachine->id, $virtualMachine->id);
+        $this->dataStoreWrite(self::DS_VM_ID, $virtualMachine->getId(), $virtualMachine->getId());
 
         // Log
         $this->log("Successfully provisioned");
@@ -197,8 +213,8 @@ class VirtualMachine extends Service
             'id' => $this->id,
             'vm_id' => $this->vm_id,
             'vm' => [
-                'state' => $this->vm_state
-            ]
+                'state' => $this->vm_state,
+            ],
         ];
     }
 }

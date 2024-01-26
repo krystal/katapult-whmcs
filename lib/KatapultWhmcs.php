@@ -2,6 +2,7 @@
 
 namespace WHMCS\Module\Server\Katapult;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Grizzlyware\Salmon\WHMCS\Helpers\DataStore;
 use Grizzlyware\Salmon\WHMCS\Product\ConfigurableOptions\Group as ConfigOptionGroup;
@@ -11,6 +12,9 @@ use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
 use Krystal\Katapult\KatapultAPI\Client as KatapultApiClient;
 use Krystal\Katapult\KatapultAPI\ClientFactory;
+use Krystal\Katapult\KatapultAPI\Model\DiskBackupPoliciesDiskBackupPolicyDeleteBody;
+use Krystal\Katapult\KatapultAPI\Model\DiskBackupPolicyLookup;
+use Krystal\Katapult\KatapultAPI\Model\OrganizationLookup;
 use WHMCS\Module\Server\Katapult\Adaptation\System as SystemAdaptation;
 use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 use WHMCS\Module\Server\Katapult\Helpers\WhmcsHelper;
@@ -40,11 +44,6 @@ class KatapultWhmcs
     public const DS_VM_CONFIG_OPTION_GROUP_ID = 'vm_config_option_group_id';
     public const DS_VM_CONFIG_OPTION_DATACENTER_ID = 'vm_config_option_datacenter_id';
     public const DS_VM_CONFIG_OPTION_DISK_TEMPLATE_ID = 'vm_config_option_disk_template_id';
-
-    public static function isUsingProductionApiV1(): bool
-    {
-        return true;
-    }
 
     protected static function createApiV1HandlerStack(): HandlerStack
     {
@@ -78,16 +77,25 @@ EOF
                 throw new Exception('No API key set');
             }
 
-            self::$katapult = Katapult::make(
-                new KatapultApi(
-                    KatapultWhmcs::getApiV1Key(),
-                    self::isUsingProductionApiV1(),
-                    self::createApiV1HandlerStack()
-                )
-            );
+            $clientFactory = new ClientFactory(KatapultWhmcs::getApiV1Key());
+            $clientFactory->setHttpClient((new Client(['handler' => self::createApiV1HandlerStack()])));
+            self::$katapult = $clientFactory->create();
         }
 
         return self::$katapult;
+    }
+
+    public static function convertToQueryParameters(OrganizationLookup $organizationLookup): array
+    {
+        if ($organizationLookup->isInitialized('id')) {
+            return [
+                'organization[id]' => $organizationLookup->getId(),
+            ];
+        } else {
+            return [
+                'organization[sub_domain]' => $organizationLookup->getSubDomain(),
+            ];
+        }
     }
 
     public static function dataStoreRead(string $key)
@@ -120,13 +128,15 @@ EOF
 
     public static function setParentOrganization(string $organization, bool $force = false): void
     {
-        if (!$force && self::getParentOrganization() === $organization) {
+        if (!$force && self::getParentOrganization()->getId() === $organization) {
             return;
         }
 
         KatapultWhmcs::dataStoreWrite(self::DS_PARENT_ORGANIZATION, $organization);
 
-        self::log("Updated parent organization to: {$organization}");
+        if (self::getParentOrganization()->getId() !== $organization) {
+            self::log("Updated parent organization to: {$organization}");
+        }
     }
 
     public static function getParentOrganizationIdentifier(): ?string
@@ -139,9 +149,9 @@ EOF
 
         // Try and fetch it from the API and store it for next time
         try {
-            if ($parentOrgObj = \katapult()->resource(Organization::class)->first()) {
-                self::setParentOrganization($parentOrgObj->id, true);
-                return $parentOrgObj->id;
+            if ($parentOrgObj = \katapult()->getOrganizations()->getOrganizations()[0]) {
+                self::setParentOrganization($parentOrgObj->getId(), true);
+                return $parentOrgObj->getId();
             }
         } catch (\Throwable $e) {
             // Nothing we can do..
@@ -150,7 +160,7 @@ EOF
         return null;
     }
 
-    public static function getParentOrganization(): ?Organization
+    public static function getParentOrganization(): ?OrganizationLookup
     {
         $orgIdentifier = self::getParentOrganizationIdentifier();
 
@@ -158,25 +168,23 @@ EOF
             return null;
         }
 
-        $spec = [];
+        $organizationLookup = new OrganizationLookup();
 
-        if (strpos($orgIdentifier, 'org_') === 0) {
-            $spec['id'] = $orgIdentifier;
+        if (str_starts_with($orgIdentifier, 'org_')) {
+            $organizationLookup->setId($orgIdentifier);
         } else {
-            $spec['subdomain'] = $orgIdentifier;
+            $organizationLookup->setSubDomain($orgIdentifier);
         }
 
-        return Organization::instantiateFromSpec(
-            (object) $spec
-        );
+        return $organizationLookup;
     }
 
-    public static function log(string $message)
+    public static function log(string $message): void
     {
-        return \logActivity("[Katapult]: {$message}");
+        \logActivity("[Katapult]: {$message}");
     }
 
-    public static function moduleLog(string $action, $request, $response)
+    public static function moduleLog(string $action, $request, $response): void
     {
         \logModuleCall(KatapultWhmcs::SERVER_MODULE, $action, $request, $response, '', [self::getApiV1Key()]);
     }
@@ -227,11 +235,10 @@ EOF
         );
 
         // Create options for the DCs
-        /** @var DataCenter $dataCenter */
-        foreach (\katapult()->resource(DataCenter::class)->all() as $dataCenter) {
+        foreach (\katapult()->getDataCenters()->getDataCenters() as $dataCenter) {
             // Already got it, skip
             if (
-                $dataCenterOption->subOptions()->where('optionname', 'LIKE', "{$dataCenter->permalink}|%")->count(
+                $dataCenterOption->subOptions()->where('optionname', 'LIKE', "{$dataCenter->getPermalink()}|%")->count(
                 ) > 0
             ) {
                 continue;
@@ -239,12 +246,12 @@ EOF
 
             // Create the option
             $currentOption = new ConfigOptionGroup\Option\SubOption();
-            $currentOption->optionname = "{$dataCenter->permalink}|{$dataCenter->name}";
+            $currentOption->optionname = "{$dataCenter->getPermalink()}|{$dataCenter->getName()}";
             $currentOption->hidden = $dataCenterOption->wasRecentlyCreated ? 0 : 1;
 
             // Persist the option
             if (!$dataCenterOption->subOptions()->save($currentOption)) {
-                throw new Exception('Could not save data center: ' . $dataCenter->name);
+                throw new Exception('Could not save data center: ' . $dataCenter->getName());
             }
 
             // Create free pricing for the new option
@@ -264,11 +271,12 @@ EOF
         );
 
         // Create options for the templates
-        /** @var DiskTemplate $diskTemplate */
-        foreach (\katapult()->resource(DiskTemplate::class, katapultOrg())->all() as $diskTemplate) {
+        $diskTemplates = \katapult()->getOrganizationDiskTemplates(self::convertToQueryParameters(katapultOrg()));
+
+        foreach ($diskTemplates->getDiskTemplates() as $diskTemplate) {
             // Already got it, skip
             if (
-                $diskTemplateOption->subOptions()->where('optionname', 'LIKE', "{$diskTemplate->permalink}|%")->count(
+                $diskTemplateOption->subOptions()->where('optionname', 'LIKE', "{$diskTemplate->getPermalink()}|%")->count(
                 ) > 0
             ) {
                 continue;
@@ -276,12 +284,12 @@ EOF
 
             // Create the option
             $currentOption = new ConfigOptionGroup\Option\SubOption();
-            $currentOption->optionname = "{$diskTemplate->permalink}|{$diskTemplate->name}";
+            $currentOption->optionname = "{$diskTemplate->getPermalink()}|{$diskTemplate->getName()}";
             $currentOption->hidden = $diskTemplateOption->wasRecentlyCreated ? 0 : 1;
 
             // Persist the option
             if (!$diskTemplateOption->subOptions()->save($currentOption)) {
-                throw new Exception('Could not save disk template: ' . $diskTemplate->name);
+                throw new Exception('Could not save disk template: ' . $diskTemplate->getName());
             }
 
             // Create free pricing for the new option
@@ -371,7 +379,7 @@ SQL;
                 case self::MRT_SSO:
                     return [
                         'success' => false,
-                        'errorMsg' => $error
+                        'errorMsg' => $error,
                     ];
             }
         };

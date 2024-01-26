@@ -10,6 +10,7 @@ class GeneralHelper
     {
         try {
             $task();
+            KatapultWhmcs::log($taskName . ' completed');
         } catch (\Throwable $e) {
             KatapultWhmcs::log("Error running task: {$taskName}: {$e->getMessage()}");
         }
