@@ -82,6 +82,7 @@ EOF
             $clientFactory = new ClientFactory(KatapultWhmcs::getApiV1Key());
             $clientFactory->setHttpClient(new Client([
                 'handler' => self::createApiV1HandlerStack(),
+                'timeout' => 5.0,
             ]));
             self::$katapult = $clientFactory->create();
         }
