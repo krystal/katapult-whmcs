@@ -456,7 +456,7 @@ SQL;
 
             return 'success';
         } catch (\Throwable $e) {
-            return katapultFormatError('Run command', $e);
+            return katapultFormatError('Module command', $e);
         }
     }
 }
