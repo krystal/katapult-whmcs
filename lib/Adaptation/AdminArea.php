@@ -87,6 +87,8 @@ HTML;
         }
 
         if ($syncConfigOptions || isset($_POST['katapult_sync_config_options'])) {
+            KatapultWhmcs::log('Attempting to sync config options');
+
             GeneralHelper::attempt(
                 [
                     KatapultWhmcs::class,

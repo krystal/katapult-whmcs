@@ -13,7 +13,9 @@ use GuzzleHttp\Middleware;
 use Krystal\Katapult\KatapultAPI\Client as KatapultApiClient;
 use Krystal\Katapult\KatapultAPI\ClientFactory;
 use Krystal\Katapult\KatapultAPI\Model\DiskBackupPoliciesDiskBackupPolicyDeleteBody;
+use Krystal\Katapult\KatapultAPI\Model\DiskBackupPoliciesDiskBackupPolicyDeleteResponse200;
 use Krystal\Katapult\KatapultAPI\Model\DiskBackupPolicyLookup;
+use Krystal\Katapult\KatapultAPI\Model\DisksDiskDiskBackupPoliciesGetResponse200;
 use Krystal\Katapult\KatapultAPI\Model\OrganizationLookup;
 use WHMCS\Module\Server\Katapult\Adaptation\System as SystemAdaptation;
 use WHMCS\Module\Server\Katapult\Exceptions\Exception;
@@ -78,7 +80,9 @@ EOF
             }
 
             $clientFactory = new ClientFactory(KatapultWhmcs::getApiV1Key());
-            $clientFactory->setHttpClient((new Client(['handler' => self::createApiV1HandlerStack()])));
+            $clientFactory->setHttpClient(new Client([
+                'handler' => self::createApiV1HandlerStack(),
+            ]));
             self::$katapult = $clientFactory->create();
         }
 
@@ -200,6 +204,7 @@ EOF
             $diskBackupPolicies = katapult()->getDiskDiskBackupPolicies(['disk[id]' => $disk->getDisk()->getId()]);
 
             katapultHandleApiResponse(
+                DisksDiskDiskBackupPoliciesGetResponse200::class,
                 $diskBackupPolicies,
                 $virtualMachine,
                 null,
@@ -214,6 +219,7 @@ EOF
                         $deleteResult = katapult()->deleteDiskBackupPolicy($requestBody);
 
                         katapultHandleApiResponse(
+                            DiskBackupPoliciesDiskBackupPolicyDeleteResponse200::class,
                             $deleteResult,
                             $virtualMachine,
                             'Deleted disk backup policy ' . $diskBackupPolicy->getId(),
@@ -307,7 +313,10 @@ EOF
         );
 
         // Create options for the templates
-        $diskTemplates = \katapult()->getOrganizationDiskTemplates(self::convertToQueryParameters(katapultOrg()));
+        $queryParameters = self::convertToQueryParameters(katapultOrg());
+        // include universal templates provided by Katapult alongside the org's custom ones
+        $queryParameters['include_universal'] = true;
+        $diskTemplates = \katapult()->getOrganizationDiskTemplates($queryParameters);
 
         foreach ($diskTemplates->getDiskTemplates() as $diskTemplate) {
             // Already got it, skip

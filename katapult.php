@@ -4,7 +4,6 @@
  * https://github.com/krystal/katapult-whmcs
  */
 
-use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Str;
 use Krystal\Katapult\KatapultAPI\Model\DataCenterLookup;
 use Krystal\Katapult\KatapultAPI\Model\DiskTemplateLookup;
@@ -12,11 +11,17 @@ use Krystal\Katapult\KatapultAPI\Model\OrganizationsOrganizationVirtualMachinesB
 use Krystal\Katapult\KatapultAPI\Model\VirtualMachinePackageLookup;
 use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineConsoleSessionsPostBody;
 use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineDeleteBody;
+use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineDeleteResponse200;
 use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachinePackagePutBody;
+use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachinePackagePutResponse200;
 use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineResetPostBody;
+use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineResetPostResponse200;
 use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineShutdownPostBody;
+use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineShutdownPostResponse200;
 use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineStartPostBody;
+use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineStartPostResponse200;
 use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineStopPostBody;
+use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineStopPostResponse200;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
 use WHMCS\Module\Server\Katapult\Helpers\KatapultApiV1Helper;
 use WHMCS\Module\Server\Katapult\Helpers\OverrideHelper;
@@ -71,6 +76,7 @@ function katapult_TerminateAccount(array $params): string
         $deleteVirtualMachineResult = katapult()->deleteVirtualMachine($requestBody);
 
         \katapultHandleApiResponse(
+            VirtualMachinesVirtualMachineDeleteResponse200::class,
             $deleteVirtualMachineResult,
             $params->service,
             'VM deleted and local data store cleared',
@@ -93,6 +99,7 @@ function katapult_ChangePackage(array $params): string
         $apiResult = katapult()->putVirtualMachinePackage($requestBody);
 
         \katapultHandleApiResponse(
+            VirtualMachinesVirtualMachinePackagePutResponse200::class,
             $apiResult,
             $params->service,
             'VM package changed to ' . $params->package,
@@ -120,6 +127,7 @@ function katapult_StopVm(array $params): string
         $apiResult = katapult()->postVirtualMachineStop($requestBody);
 
         \katapultHandleApiResponse(
+            VirtualMachinesVirtualMachineStopPostResponse200::class,
             $apiResult,
             $params->service,
             'VM stopped',
@@ -137,6 +145,7 @@ function katapult_ResetVm(array $params): string
         $apiResult = katapult()->postVirtualMachineReset($requestBody);
 
         \katapultHandleApiResponse(
+            VirtualMachinesVirtualMachineResetPostResponse200::class,
             $apiResult,
             $params->service,
             'VM reset',
@@ -154,6 +163,7 @@ function katapult_StartVm(array $params): string
         $apiResult = katapult()->postVirtualMachineStart($requestBody);
 
         \katapultHandleApiResponse(
+            VirtualMachinesVirtualMachineStartPostResponse200::class,
             $apiResult,
             $params->service,
             'VM started',
@@ -171,6 +181,7 @@ function katapult_ShutdownVm(array $params): string
         $apiResult = katapult()->postVirtualMachineShutdown($requestBody);
 
         \katapultHandleApiResponse(
+            VirtualMachinesVirtualMachineShutdownPostResponse200::class,
             $apiResult,
             $params->service,
             'VM shutdown',
@@ -259,10 +270,8 @@ function katapult_CreateAccount(array $params): string
 
             return 'success';
         }
-    } catch (ClientException $e) {
-        return implode(', ', KatapultApiV1Helper::humaniseHttpError($e));
     } catch (\Throwable $e) {
-        return $e->getMessage();
+        return katapultFormatError('Create Account', $e);
     }
 }
 
@@ -295,7 +304,7 @@ function katapult_AdminServicesTabFields(array $params): array
         $params->service->silentlyCheckForExistingBuildAttempt();
 
         // Generate the public VM JSON
-        $publicServiceJson = \GuzzleHttp\Utils::jsonEncode(
+        $publicServiceJson = json_encode(
             $params->service->toPublicArray()
         );
 
@@ -320,7 +329,7 @@ HTML
         ,];
     } catch (\Throwable $e) {
         return [
-            'Error' => $e->getMessage(),
+            'Error' => katapultFormatError('Admin Services Tab Fields', $e),
         ];
     }
 }

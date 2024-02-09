@@ -4,7 +4,8 @@ namespace WHMCS\Module\Server\Katapult\WHMCS\Service;
 
 use Krystal\Katapult\KatapultAPI\Model\Enum\VirtualMachineStateEnum;
 use Krystal\Katapult\KatapultAPI\Model\VirtualMachineLookup;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineGetResponse200VirtualMachine as KatapultVirtualMachine;
+use Krystal\Katapult\KatapultAPI\Model\GetVirtualMachine200ResponseVirtualMachine as KatapultVirtualMachine;
+use Psr\Http\Message\ResponseInterface;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuilding;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildTimeout;
@@ -129,23 +130,23 @@ class VirtualMachine extends Service
         }
 
         // Fetch the build state
-        $virtualMachineBuild = katapult()->getVirtualMachinesBuildsVirtualMachineBuild([
+        $apiResult = katapult()->getVirtualMachinesBuildsVirtualMachineBuild([
             'virtual_machine_build[id]' => $buildId,
         ]);
 
         try {
-            if ($virtualMachineBuild->getStatusCode() === 404) {
+            if ($apiResult instanceof ResponseInterface && $apiResult->getStatusCode() === 404) {
                 throw new VirtualMachineBuilding('No VM build exists');
             }
 
             // Do we have a VM?
-            if (!$virtualMachineBuild->getVirtualMachineBuild()->getVirtualMachine()->getId()) {
+            if (!$apiResult->getVirtualMachineBuild()->getVirtualMachine()->getId()) {
                 throw new VirtualMachineBuilding('The VM build is queued with Katapult');
             }
 
             // Get the VM
             $vm = katapult()->getVirtualMachine([
-                'virtual_machine[id]' => $virtualMachineBuild->getVirtualMachineBuild()->getVirtualMachine()->getId(),
+                'virtual_machine[id]' => $apiResult->getVirtualMachineBuild()->getVirtualMachine()->getId(),
             ])->getVirtualMachine();
 
             // Do we have a root pw?

@@ -2,6 +2,7 @@
 
 namespace WHMCS\Module\Server\Katapult\WhmcsModuleParams;
 
+use Krystal\Katapult\KatapultAPI\Model\GetVirtualMachinePackages200ResponseVirtualMachinePackages;
 use WHMCS\Module\Server\Katapult\KatapultWhmcs;
 use WHMCS\Module\Server\Katapult\WHMCS\Product\Product;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
@@ -58,9 +59,10 @@ class VmServerModuleParams extends ServerModuleParams
                 'SimpleMode' => true,
                 'Loader' => function () use ($attemptToAccessKatapult) {
                     return $attemptToAccessKatapult(function () {
-                        return collect(katapult()->resource(VirtualMachinePackage::class)->all())->mapWithKeys(
-                            function (VirtualMachinePackage $package) {
-                                return [$package->permalink => $package->name];
+                        $packages = katapult()->getVirtualMachinePackages()->getVirtualMachinePackages();
+                        return collect($packages)->mapWithKeys(
+                            function (GetVirtualMachinePackages200ResponseVirtualMachinePackages $package) {
+                                return [$package->getPermalink() => $package->getName()];
                             }
                         )->all();
                     });
