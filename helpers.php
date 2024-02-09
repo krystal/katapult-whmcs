@@ -82,6 +82,10 @@ function katapultFormatError(string $prefix, Throwable $e): string {
 
         if ($json && isset($json['error']['description']) && isset($json['error']['code'])) {
             $response = $json['error']['code'] . ': ' . $json['error']['description'];
+
+            if (!empty($json['error']['detail']['details'])) {
+                $response .= ' - ' . $json['error']['detail']['details'];
+            }
         }
 
         // example of the resultant activity log message is as follows:
