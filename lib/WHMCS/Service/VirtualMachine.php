@@ -85,10 +85,7 @@ class VirtualMachine extends Service
     public function getVmStateAttribute(): string
     {
         if ($this->vm) {
-            return match ($this->vm->getState()) {
-                VirtualMachineStateEnum::Started, VirtualMachineStateEnum::Stopped => $this->vm->getState(),
-                default => self::STATE_UNKNOWN,
-            };
+            return $this->vm->getState();
         }
 
         if ($this->vm_build_id && !$this->vm_id) {

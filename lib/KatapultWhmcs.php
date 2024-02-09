@@ -455,10 +455,8 @@ SQL;
             }
 
             return 'success';
-        } catch (ClientException $e) {
-            return $formatErrorResponse(implode(', ', KatapultApiV1Helper::humaniseHttpError($e)));
         } catch (\Throwable $e) {
-            return $formatErrorResponse($e->getMessage());
+            return katapultFormatError('Run command', $e);
         }
     }
 }
