@@ -2,6 +2,7 @@
 
 namespace WHMCS\Module\Server\Katapult;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Grizzlyware\Salmon\WHMCS\Helpers\DataStore;
 use Grizzlyware\Salmon\WHMCS\Product\ConfigurableOptions\Group as ConfigOptionGroup;
@@ -9,11 +10,13 @@ use Grizzlyware\Salmon\WHMCS\Product\Product;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
-use Krystal\Katapult\Katapult;
-use Krystal\Katapult\API\RestfulKatapultApiV1 as KatapultApi;
-use Krystal\Katapult\Resources\DataCenter;
-use Krystal\Katapult\Resources\Organization;
-use Krystal\Katapult\Resources\Organization\DiskTemplate;
+use Krystal\Katapult\KatapultAPI\Client as KatapultApiClient;
+use Krystal\Katapult\KatapultAPI\ClientFactory;
+use Krystal\Katapult\KatapultAPI\Model\DiskBackupPoliciesDiskBackupPolicyDeleteBody;
+use Krystal\Katapult\KatapultAPI\Model\DiskBackupPoliciesDiskBackupPolicyDeleteResponse200;
+use Krystal\Katapult\KatapultAPI\Model\DiskBackupPolicyLookup;
+use Krystal\Katapult\KatapultAPI\Model\DisksDiskDiskBackupPoliciesGetResponse200;
+use Krystal\Katapult\KatapultAPI\Model\OrganizationLookup;
 use WHMCS\Module\Server\Katapult\Adaptation\System as SystemAdaptation;
 use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 use WHMCS\Module\Server\Katapult\Helpers\WhmcsHelper;
@@ -24,35 +27,35 @@ use WHMCS\Module\Server\Katapult\WhmcsModuleParams\VmServerModuleParams;
 
 class KatapultWhmcs
 {
-	private static ? Katapult $katapult = null;
+    private static ?KatapultApiClient $katapult = null;
 
-	const SERVER_MODULE = 'katapult';
+    public const SERVER_MODULE = 'katapult';
 
-	/**
-	 * Module return types
-	 * WHMCS expects inconsistent return types from module functions. These are used by KatapultWhmcs::runModuleCommandOnVm() to allow it to return the correct response in the event of an error.
-	 */
-	const MRT_STRING = 'string';
-	const MRT_SSO = 'sso';
+    /**
+     * Module return types
+     * WHMCS expects inconsistent return types from module functions.
+     * These are used by KatapultWhmcs::runModuleCommandOnVm() to allow
+     * it to return the correct response in the event of an error.
+     */
+    public const MRT_STRING = 'string';
+    public const MRT_SSO = 'sso';
 
-	const DS_API_V1_KEY = 'api_v1_key';
-	const DS_PARENT_ORGANIZATION = 'parent_organization';
+    public const DS_API_V1_KEY = 'api_v1_key';
+    public const DS_PARENT_ORGANIZATION = 'parent_organization';
 
-	const DS_VM_CONFIG_OPTION_GROUP_ID = 'vm_config_option_group_id';
-	const DS_VM_CONFIG_OPTION_DATACENTER_ID = 'vm_config_option_datacenter_id';
-	const DS_VM_CONFIG_OPTION_DISK_TEMPLATE_ID = 'vm_config_option_disk_template_id';
+    public const DS_VM_CONFIG_OPTION_GROUP_ID = 'vm_config_option_group_id';
+    public const DS_VM_CONFIG_OPTION_DATACENTER_ID = 'vm_config_option_datacenter_id';
+    public const DS_VM_CONFIG_OPTION_DISK_TEMPLATE_ID = 'vm_config_option_disk_template_id';
 
-	public static function isUsingProductionApiV1(): bool
-	{
-		return true;
-	}
+    protected static function createApiV1HandlerStack(): HandlerStack
+    {
+        $handlerStack = HandlerStack::create();
 
-	protected static function createApiV1HandlerStack(): HandlerStack
-	{
-		$handlerStack = HandlerStack::create();
-
-		$handlerStack->push(Middleware::log(
-			new ApiV1Logger(), new MessageFormatter(<<<EOF
+        $handlerStack->push(
+            Middleware::log(
+                new ApiV1Logger(),
+                new MessageFormatter(
+                    <<<EOF
 {method} {target}
 
 __KATAPULT_REQUEST__
@@ -62,225 +65,298 @@ __KATAPULT_REQUEST__
 __KATAPULT_RESPONSE__
 {response}
 EOF
-)
-		));
+                )
+            )
+        );
 
-		return $handlerStack;
-	}
+        return $handlerStack;
+    }
 
-	public static function getKatapult(): Katapult
-	{
-		if (self::$katapult === null) {
+    public static function getKatapult(): KatapultApiClient
+    {
+        if (self::$katapult === null) {
+            if (!KatapultWhmcs::getApiV1Key()) {
+                throw new Exception('No API key set');
+            }
 
-			if (!KatapultWhmcs::getApiV1Key()) {
-				throw new Exception('No API key set');
-			}
+            $clientFactory = new ClientFactory(KatapultWhmcs::getApiV1Key());
+            $clientFactory->setHttpClient(new Client([
+                'handler' => self::createApiV1HandlerStack(),
+                'timeout' => 5.0,
+            ]));
+            self::$katapult = $clientFactory->create();
+        }
 
-			self::$katapult = Katapult::make(new KatapultApi(
-				KatapultWhmcs::getApiV1Key(), self::isUsingProductionApiV1(), self::createApiV1HandlerStack()
-			));
-		}
+        return self::$katapult;
+    }
 
-		return self::$katapult;
-	}
+    public static function convertToQueryParameters(OrganizationLookup $organizationLookup): array
+    {
+        if ($organizationLookup->isInitialized('id')) {
+            return [
+                'organization[id]' => $organizationLookup->getId(),
+            ];
+        } else {
+            return [
+                'organization[sub_domain]' => $organizationLookup->getSubDomain(),
+            ];
+        }
+    }
 
-	public static function dataStoreRead(string $key)
-	{
-		return DataStore::get('module_setting', 'katapult', $key);
-	}
+    public static function dataStoreRead(string $key)
+    {
+        return DataStore::get('module_setting', 'katapult', $key);
+    }
 
-	public static function dataStoreWrite(string $key, $value)
-	{
-		DataStore::set('module_setting', 'katapult', $key, $value);
-	}
+    public static function dataStoreWrite(string $key, $value)
+    {
+        DataStore::set('module_setting', 'katapult', $key, $value);
+    }
 
-	public static function getApiV1Key(): ? string
-	{
-		$value = KatapultWhmcs::dataStoreRead(self::DS_API_V1_KEY);
+    public static function getApiV1Key(): ?string
+    {
+        $value = KatapultWhmcs::dataStoreRead(self::DS_API_V1_KEY);
 
-		if (!$value) {
-			return null;
-		}
+        if (!$value) {
+            return null;
+        }
 
-		return \decrypt($value);
-	}
+        return \decrypt($value);
+    }
 
-	public static function setApiV1Key(string $apiKey): void
-	{
-		KatapultWhmcs::dataStoreWrite(self::DS_API_V1_KEY, \encrypt($apiKey));
+    public static function setApiV1Key(string $apiKey): void
+    {
+        KatapultWhmcs::dataStoreWrite(self::DS_API_V1_KEY, \encrypt($apiKey));
 
-		self::log("Updated API V1 key");
-	}
+        self::log("Updated API V1 key");
+    }
 
-	public static function setParentOrganization(string $organization, bool $force = false): void
-	{
-		if (!$force && self::getParentOrganization() === $organization) {
-			return;
-		}
+    public static function setParentOrganization(string $organization, bool $force = false): void
+    {
+        if (!$force && self::getParentOrganization()->getId() === $organization) {
+            return;
+        }
 
-		KatapultWhmcs::dataStoreWrite(self::DS_PARENT_ORGANIZATION, $organization);
+        KatapultWhmcs::dataStoreWrite(self::DS_PARENT_ORGANIZATION, $organization);
 
-		self::log("Updated parent organization to: {$organization}");
-	}
+        if (self::getParentOrganization()->getId() !== $organization) {
+            self::log("Updated parent organization to: {$organization}");
+        }
+    }
 
-	public static function getParentOrganizationIdentifier(): ? string
-	{
-		$parentOrg = KatapultWhmcs::dataStoreRead(self::DS_PARENT_ORGANIZATION);
+    public static function getParentOrganizationIdentifier(): ?string
+    {
+        $parentOrg = KatapultWhmcs::dataStoreRead(self::DS_PARENT_ORGANIZATION);
 
-		if ($parentOrg) {
-			return $parentOrg;
-		}
+        if ($parentOrg) {
+            return $parentOrg;
+        }
 
-		// Try and fetch it from the API and store it for next time
-		try {
-			if($parentOrgObj = \katapult()->resource(Organization::class)->first()) {
-				self::setParentOrganization($parentOrgObj->id, true);
-				return $parentOrgObj->id;
-			}
-		} catch (\Throwable $e) {
-			// Nothing we can do..
-		}
+        // Try and fetch it from the API and store it for next time
+        try {
+            if ($parentOrgObj = \katapult()->getOrganizations()->getOrganizations()[0]) {
+                self::setParentOrganization($parentOrgObj->getId(), true);
+                return $parentOrgObj->getId();
+            }
+        } catch (\Throwable $e) {
+            // Nothing we can do..
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public static function getParentOrganization(): ? Organization
-	{
-		$orgIdentifier = self::getParentOrganizationIdentifier();
+    public static function getParentOrganization(): ?OrganizationLookup
+    {
+        $orgIdentifier = self::getParentOrganizationIdentifier();
 
-		if (!$orgIdentifier) {
-			return null;
-		}
+        if (!$orgIdentifier) {
+            return null;
+        }
 
-		$spec = [];
+        $organizationLookup = new OrganizationLookup();
 
-		if(strpos($orgIdentifier, 'org_') === 0) {
-			$spec['id'] = $orgIdentifier;
-		} else {
-			$spec['subdomain'] = $orgIdentifier;
-		}
+        if (str_starts_with($orgIdentifier, 'org_')) {
+            $organizationLookup->setId($orgIdentifier);
+        } else {
+            $organizationLookup->setSubDomain($orgIdentifier);
+        }
 
-		return Organization::instantiateFromSpec(
-			(object)$spec
-		);
-	}
+        return $organizationLookup;
+    }
 
-	public static function log(string $message)
-	{
-		return \logActivity("[Katapult]: {$message}");
-	}
+    public static function log(string $message): void
+    {
+        \logActivity("[Katapult]: {$message}");
+    }
 
-	public static function moduleLog(string $action, $request, $response)
-	{
-		\logModuleCall(KatapultWhmcs::SERVER_MODULE, $action, $request, $response, '', [self::getApiV1Key()]);
-	}
+    public static function moduleLog(string $action, $request, $response): void
+    {
+        \logModuleCall(KatapultWhmcs::SERVER_MODULE, $action, $request, $response, '', [self::getApiV1Key()]);
+    }
 
-	/**
-	 * Creates a config option group called Katapult, and assigns it to the Katapult products.
-	 * @throws Exception
-	 */
-	public static function syncConfigurableOptions(): void
-	{
-		// Have we already created a config option group for Katapult?
-		$configOptionGroup = ConfigOptionGroup::find(
-			KatapultWhmcs::dataStoreRead(self::DS_VM_CONFIG_OPTION_GROUP_ID)
-		);
+    public static function deleteDiskBackupPolciesForVm(VirtualMachine $virtualMachine): void
+    {
+        // Delete disk backup policies
+        $disks = katapult()->getVirtualMachineDisks([
+            'virtual_machine[id]' => $virtualMachine->vm_id,
+        ])->getDisks();
 
-		// Nope? Create it..
-		if (!$configOptionGroup) {
-			$configOptionGroup = new ConfigOptionGroup();
-			$configOptionGroup->name = 'Katapult Virtual Machines';
+        foreach ($disks as $disk) {
+            $diskBackupPolicies = katapult()->getDiskDiskBackupPolicies(['disk[id]' => $disk->getDisk()->getId()]);
 
-			if (!$configOptionGroup->save()) {
-				throw new Exception('Could not save config option group');
-			}
+            katapultHandleApiResponse(
+                DisksDiskDiskBackupPoliciesGetResponse200::class,
+                $diskBackupPolicies,
+                $virtualMachine,
+                null,
+                'Error getting disk backup policies',
+                function () use ($diskBackupPolicies, $virtualMachine) {
+                    foreach ($diskBackupPolicies->getDiskBackupPolicies() as $diskBackupPolicy) {
+                        $requestBody = new DiskBackupPoliciesDiskBackupPolicyDeleteBody();
+                        $diskBackupPolicyLookup = new DiskBackupPolicyLookup();
+                        $diskBackupPolicyLookup->setId($diskBackupPolicy->getId());
+                        $requestBody->setDiskBackupPolicy($diskBackupPolicyLookup);
 
-			KatapultWhmcs::dataStoreWrite(self::DS_VM_CONFIG_OPTION_GROUP_ID, $configOptionGroup->id);
+                        $deleteResult = katapult()->deleteDiskBackupPolicy($requestBody);
 
-			// Assign it to all of the Katapult products
-			$configOptionGroup->products()->attach(
-				Product::where('servertype', KatapultWhmcs::SERVER_MODULE)->pluck('id')->toArray()
-			);
-		}
+                        katapultHandleApiResponse(
+                            DiskBackupPoliciesDiskBackupPolicyDeleteResponse200::class,
+                            $deleteResult,
+                            $virtualMachine,
+                            'Deleted disk backup policy ' . $diskBackupPolicy->getId(),
+                            'Error deleting disk backup policy ' . $diskBackupPolicy->getId()
+                        );
+                    }
+                }
+            );
+        }
+    }
 
-		// This will fetch DCs, disk templates from Katapult and sync them with WHMCS configurable options.
-		// If there is no existing config option, it will create all elements as visible, else it will add new ones as hidden for an admin to un-hide as required.
+    /**
+     * Creates a config option group called Katapult, and assigns it to the Katapult products.
+     *
+     * @throws Exception
+     */
+    public static function syncConfigurableOptions(): void
+    {
+        // Have we already created a config option group for Katapult?
+        $configOptionGroup = ConfigOptionGroup::find(
+            KatapultWhmcs::dataStoreRead(self::DS_VM_CONFIG_OPTION_GROUP_ID)
+        );
 
-		/**
-		 * Data center option
-		 */
+        // Nope? Create it..
+        if (!$configOptionGroup) {
+            $configOptionGroup = new ConfigOptionGroup();
+            $configOptionGroup->name = 'Katapult Virtual Machines';
 
-		// Fetch the DC option
-		$dataCenterOption = WhmcsHelper::getOrCreateConfigOption($configOptionGroup, 'Data Center', 1, self::DS_VM_CONFIG_OPTION_DATACENTER_ID);
+            if (!$configOptionGroup->save()) {
+                throw new Exception('Could not save config option group');
+            }
 
-		// Create options for the DCs
-		/** @var DataCenter $dataCenter */
-		foreach(\katapult()->resource(DataCenter::class)->all() as $dataCenter) {
+            KatapultWhmcs::dataStoreWrite(self::DS_VM_CONFIG_OPTION_GROUP_ID, $configOptionGroup->id);
 
-			// Already got it, skip
-			if ($dataCenterOption->subOptions()->where('optionname', 'LIKE', "{$dataCenter->permalink}|%")->count() > 0) {
-				continue;
-			}
+            // Assign it to all of the Katapult products
+            $configOptionGroup->products()->attach(
+                Product::where('servertype', KatapultWhmcs::SERVER_MODULE)->pluck('id')->toArray()
+            );
+        }
 
-			// Create the option
-			$currentOption = new ConfigOptionGroup\Option\SubOption();
-			$currentOption->optionname = "{$dataCenter->permalink}|{$dataCenter->name}";
-			$currentOption->hidden = $dataCenterOption->wasRecentlyCreated ? 0 : 1;
+        // This will fetch DCs, disk templates from Katapult and sync them with WHMCS configurable options.
+        // If there is no existing config option, it will create all elements as visible, else it will add
+        // new ones as hidden for an admin to un-hide as required.
 
-			// Persist the option
-			if (!$dataCenterOption->subOptions()->save($currentOption)) {
-				throw new Exception('Could not save data center: ' . $dataCenter->name);
-			}
+        /**
+         * Data center option
+         */
 
-			// Create free pricing for the new option
-			WhmcsHelper::createFreePricingForObject('configoptions', $currentOption->id);
-		}
+        // Fetch the DC option
+        $dataCenterOption = WhmcsHelper::getOrCreateConfigOption(
+            $configOptionGroup,
+            'Data Center',
+            1,
+            self::DS_VM_CONFIG_OPTION_DATACENTER_ID
+        );
 
-		/**
-		 * Disk template option
-		 */
+        // Create options for the DCs
+        foreach (\katapult()->getDataCenters()->getDataCenters() as $dataCenter) {
+            // Already got it, skip
+            if (
+                $dataCenterOption->subOptions()->where('optionname', 'LIKE', "{$dataCenter->getPermalink()}|%")->count(
+                ) > 0
+            ) {
+                continue;
+            }
 
-		// Fetch the DC option
-		$diskTemplateOption = WhmcsHelper::getOrCreateConfigOption($configOptionGroup, 'Disk Template', 1, self::DS_VM_CONFIG_OPTION_DISK_TEMPLATE_ID);
+            // Create the option
+            $currentOption = new ConfigOptionGroup\Option\SubOption();
+            $currentOption->optionname = "{$dataCenter->getPermalink()}|{$dataCenter->getName()}";
+            $currentOption->hidden = $dataCenterOption->wasRecentlyCreated ? 0 : 1;
 
-		// Create options for the templates
-		/** @var DiskTemplate $diskTemplate */
-		foreach(\katapult()->resource(DiskTemplate::class, katapultOrg())->all() as $diskTemplate) {
+            // Persist the option
+            if (!$dataCenterOption->subOptions()->save($currentOption)) {
+                throw new Exception('Could not save data center: ' . $dataCenter->getName());
+            }
 
-			// Already got it, skip
-			if ($diskTemplateOption->subOptions()->where('optionname', 'LIKE', "{$diskTemplate->permalink}|%")->count() > 0) {
-				continue;
-			}
+            // Create free pricing for the new option
+            WhmcsHelper::createFreePricingForObject('configoptions', $currentOption->id);
+        }
 
-			// Create the option
-			$currentOption = new ConfigOptionGroup\Option\SubOption();
-			$currentOption->optionname = "{$diskTemplate->permalink}|{$diskTemplate->name}";
-			$currentOption->hidden = $diskTemplateOption->wasRecentlyCreated ? 0 : 1;
+        /**
+         * Disk template option
+         */
 
-			// Persist the option
-			if (!$diskTemplateOption->subOptions()->save($currentOption)) {
-				throw new Exception('Could not save disk template: ' . $diskTemplate->name);
-			}
+        // Fetch the DC option
+        $diskTemplateOption = WhmcsHelper::getOrCreateConfigOption(
+            $configOptionGroup,
+            'Disk Template',
+            1,
+            self::DS_VM_CONFIG_OPTION_DISK_TEMPLATE_ID
+        );
 
-			// Create free pricing for the new option
-			WhmcsHelper::createFreePricingForObject('configoptions', $currentOption->id);
-		}
-	}
+        // Create options for the templates
+        $queryParameters = self::convertToQueryParameters(katapultOrg());
+        // include universal templates provided by Katapult alongside the org's custom ones
+        $queryParameters['include_universal'] = true;
+        $diskTemplates = \katapult()->getOrganizationDiskTemplates($queryParameters);
 
-	public static function syncVmBuilds(): void
-	{
-		$log = function($message, VirtualMachine $service = null) {
-			$message = "[SyncVmBuilds]: {$message}";
+        foreach ($diskTemplates->getDiskTemplates() as $diskTemplate) {
+            // Already got it, skip
+            if (
+                $diskTemplateOption->subOptions()->where('optionname', 'LIKE', "{$diskTemplate->getPermalink()}|%")->count(
+                ) > 0
+            ) {
+                continue;
+            }
 
-			if($service) {
-				$service->log($message);
-			} else {
-				self::log($message);
-			}
-		};
+            // Create the option
+            $currentOption = new ConfigOptionGroup\Option\SubOption();
+            $currentOption->optionname = "{$diskTemplate->getPermalink()}|{$diskTemplate->getName()}";
+            $currentOption->hidden = $diskTemplateOption->wasRecentlyCreated ? 0 : 1;
 
-		// Find Katapult services with a build ID but not a VM ID, and sync them.
-		$sql = <<<SQL
+            // Persist the option
+            if (!$diskTemplateOption->subOptions()->save($currentOption)) {
+                throw new Exception('Could not save disk template: ' . $diskTemplate->getName());
+            }
+
+            // Create free pricing for the new option
+            WhmcsHelper::createFreePricingForObject('configoptions', $currentOption->id);
+        }
+    }
+
+    public static function syncVmBuilds(): void
+    {
+        $log = function ($message, VirtualMachine $service = null) {
+            $message = "[SyncVmBuilds]: {$message}";
+
+            if ($service) {
+                $service->log($message);
+            } else {
+                self::log($message);
+            }
+        };
+
+        // Find Katapult services with a build ID but not a VM ID, and sync them.
+        $sql = <<<SQL
 SELECT DISTINCT tblhosting.id as id
 FROM tblhosting
          INNER JOIN tblproducts ON tblproducts.id = tblhosting.packageid
@@ -302,86 +378,85 @@ WHERE domainstatus = 'Active'
                    AND value_index IS NOT NULL);
 SQL;
 
-		$sql = WhmcsHelper::getPdo()->query($sql);
+        $sql = WhmcsHelper::getPdo()->query($sql);
 
-		// Nothing to do..
-		if ($sql->rowCount() < 1) {
-			return;
-		}
+        // Nothing to do..
+        if ($sql->rowCount() < 1) {
+            return;
+        }
 
-		$log(sprintf("Found %d VM builds", $sql->rowCount()));
+        $log(sprintf("Found %d VM builds", $sql->rowCount()));
 
-		while($row = $sql->fetch(\PDO::FETCH_ASSOC)) {
-			try {
-				/** @var VirtualMachine $service */
-				$service = VirtualMachine::findOrFail($row['id']);
-				$log("Starting", $service);
-				$service->checkForExistingBuildAttempt();
-			} catch (\Throwable $e) {
-				if(isset($service) && $service) {
-					$log("Error: {$e->getMessage()}", $service);
-				} else {
-					$log("Error: Service ID: " . $row['id'] . ": {$e->getMessage()}");
-				}
-			}
-		}
-	}
+        while ($row = $sql->fetch(\PDO::FETCH_ASSOC)) {
+            try {
+                /** @var VirtualMachine $service */
+                $service = VirtualMachine::findOrFail($row['id']);
+                $log("Starting", $service);
+                $service->checkForExistingBuildAttempt();
+            } catch (\Throwable $e) {
+                if (isset($service) && $service) {
+                    $log("Error: {$e->getMessage()}", $service);
+                } else {
+                    $log("Error: Service ID: " . $row['id'] . ": {$e->getMessage()}");
+                }
+            }
+        }
+    }
 
-	/**
-	 * @param array $params
-	 * @param callable $command
-	 * @param string $returnType
-	 * @param bool $checkServiceIsActive
-	 * @return string|array
-	 */
-	public static function runModuleCommandOnVm(array $params, callable $command, string $returnType = self::MRT_STRING, bool $checkServiceIsActive = true)
-	{
-		$formatErrorResponse = function(string $error) use($returnType) {
-			switch($returnType) {
-				case self::MRT_STRING:
-					return $error;
+    /**
+     * @param array $params
+     * @param callable $command
+     * @param string $returnType
+     * @param bool $checkServiceIsActive
+     *
+     * @return string|array
+     */
+    public static function runModuleCommandOnVm(
+        array $params,
+        callable $command,
+        string $returnType = self::MRT_STRING,
+        bool $checkServiceIsActive = true
+    ) {
+        $formatErrorResponse = function (string $error) use ($returnType) {
+            switch ($returnType) {
+                case self::MRT_STRING:
+                    return $error;
 
-				case self::MRT_SSO:
-					return [
-						'success' => false,
-						'errorMsg' => $error
-					];
-			}
-		};
+                case self::MRT_SSO:
+                    return [
+                        'success' => false,
+                        'errorMsg' => $error,
+                    ];
+            }
+        };
 
-		try {
-			SystemAdaptation::validateNoReplayTokenForClientArea();
+        try {
+            SystemAdaptation::validateNoReplayTokenForClientArea();
 
-			$params = new VmServerModuleParams($params);
+            $params = new VmServerModuleParams($params);
 
-			// Check the service is active
-			if ($checkServiceIsActive && $params->service->domainstatus != 'Active') {
-				throw new Exception('This service is not currently active');
-			}
+            // Check the service is active
+            if ($checkServiceIsActive && $params->service->domainstatus != 'Active') {
+                throw new Exception('This service is not currently active');
+            }
 
-			// In case it's just been built!
-			$params->service->silentlyCheckForExistingBuildAttempt();
+            // In case it's just been built!
+            $params->service->silentlyCheckForExistingBuildAttempt();
 
-			// Check there is a VM..
-			if (!$params->service->vm_id) {
-				throw new Exception('There is no VM ID set for this service');
-			}
+            // Check there is a VM..
+            if (!$params->service->vm_id) {
+                throw new Exception('There is no VM ID set for this service');
+            }
 
-			$return = $command($params);
+            $return = $command($params);
 
-			if ($return) {
-				return $return;
-			}
+            if ($return) {
+                return $return;
+            }
 
-			return 'success';
-		} catch (ClientException $e) {
-			return $formatErrorResponse(implode(', ', KatapultApiV1Helper::humaniseHttpError($e)));
-		} catch (\Throwable $e) {
-			return $formatErrorResponse($e->getMessage());
-		}
-	}
+            return 'success';
+        } catch (\Throwable $e) {
+            return katapultFormatError('Module command', $e);
+        }
+    }
 }
-
-
-
-

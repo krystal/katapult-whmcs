@@ -75,7 +75,7 @@ class BuildWhmcsServerModule extends Command
 				'vendor',
 				'.gitignore',
 			);
-
+/*
 			// Fetch the composer.json file
 			$this->info("Modifying composer.json to satisfy WHMCS issue with Guzzle being pre-installed");
 			$composerJson = Utils::jsonDecode(file_get_contents($this->tmpBuildDirectory . 'composer.json'));
@@ -86,15 +86,15 @@ class BuildWhmcsServerModule extends Command
 			];
 
 			// Put it back on disk
-			file_put_contents($this->tmpBuildDirectory . 'composer.json', Utils::jsonEncode($composerJson));
-
+			file_put_contents($this->tmpBuildDirectory . 'composer.json', Utils::jsonEncode($composerJson));*/
+/*
 			// This updates the lockfile with a version happy without Guzzle.
 			$this->info("Removing Guzzle as dependency to force removal from composer.lock");
 			$this->runComposer([
 				'command' => 'remove',
 				'packages' =>['guzzlehttp/guzzle'],
 				'--no-install' => true
-			]);
+			]);*/
 
 			// Install composer dependencies
 			$this->info("Installing composer dependencies");
@@ -216,4 +216,3 @@ class BuildWhmcsServerModule extends Command
 		$composer->run($input);
 	}
 }
-
