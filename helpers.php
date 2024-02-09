@@ -68,7 +68,8 @@ function katapultHandleApiResponse(
     }
 }
 
-function katapultFormatError(string $prefix, Throwable $e): string {
+function katapultFormatError(string $prefix, Throwable $e): string
+{
     if ($e instanceof ClientErrorException) {
         $responseBody = $e->getResponse()->getBody();
 
