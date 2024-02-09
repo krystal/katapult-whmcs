@@ -97,7 +97,7 @@ HTML;
         }
     }
 
-    public function addAssetsToHead(): string
+    public static function addAssetsToHead(): string
     {
         $baseUrl = htmlentities(WebHelper::getBaseUrl());
 

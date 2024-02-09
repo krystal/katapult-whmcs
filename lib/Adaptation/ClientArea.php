@@ -8,7 +8,7 @@ use WHMCS\Utility\Environment\WebHelper;
 
 class ClientArea
 {
-    public function addAssetsToHead(): string
+    public static function addAssetsToHead(): string
     {
         $baseUrl = htmlentities(WebHelper::getBaseUrl());
         $replayToken = htmlentities(Replay::getToken());
