@@ -141,6 +141,16 @@ class VirtualMachine extends Service
                 throw new VirtualMachineBuilding('The VM build is queued with Katapult');
             }
 
+            // Is the build state complete?
+            //   "draft"
+            //   "failed"
+            //   "pending"
+            //   "complete"
+            //   "building"
+            if ($apiResult->getVirtualMachineBuild()->getState() !== 'complete') {
+                throw new VirtualMachineBuilding('The VM build is still in progress');
+            }
+
             // Get the VM
             $vm = katapult()->getVirtualMachine([
                 'virtual_machine[id]' => $apiResult->getVirtualMachineBuild()->getVirtualMachine()->getId(),
