@@ -6,6 +6,7 @@ use Krystal\Katapult\KatapultAPI\Model\Enum\VirtualMachineStateEnum;
 use Krystal\Katapult\KatapultAPI\Model\VirtualMachineLookup;
 use Krystal\Katapult\KatapultAPI\Model\GetVirtualMachine200ResponseVirtualMachine as KatapultVirtualMachine;
 use Psr\Http\Message\ResponseInterface;
+use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildFailed;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuilding;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildTimeout;
@@ -109,6 +110,7 @@ class VirtualMachine extends Service
      * @throws VirtualMachineBuildNotFound
      * @throws VirtualMachineBuilding
      * @throws VirtualMachineExists
+     * @throws VirtualMachineBuildFailed
      * @throws VirtualMachineBuildTimeout
      */
     public function checkForExistingBuildAttempt(): void
@@ -142,11 +144,18 @@ class VirtualMachine extends Service
             }
 
             // Is the build state complete?
+            // Possible states:
             //   "draft"
             //   "failed"
             //   "pending"
             //   "complete"
             //   "building"
+            // We're after "complete", but it could have permanently failed as well
+            // So check for that first
+            if ($apiResult->getVirtualMachineBuild()->getState() === 'failed') {
+                throw new VirtualMachineBuildFailed('The VM build has failed');
+            }
+            // ...and if it didn't fail, see if it's complete yet
             if ($apiResult->getVirtualMachineBuild()->getState() !== 'complete') {
                 throw new VirtualMachineBuilding('The VM build is still in progress');
             }
