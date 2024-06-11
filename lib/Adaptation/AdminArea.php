@@ -11,33 +11,32 @@ use WHMCS\Utility\Environment\WebHelper;
 
 class AdminArea
 {
-	public static function addConfigurationPaneToProductSettings($vars): array
-	{
-		if (!WhmcsHelper::productIdIsKatapult($vars['pid'])) {
-			return [];
-		}
+    public static function addConfigurationPaneToProductSettings($vars): array
+    {
+        if (!WhmcsHelper::productIdIsKatapult($vars['pid'])) {
+            return [];
+        }
 
-		$baseUrl = htmlentities(WebHelper::getBaseUrl());
-		$parentOrganizationEscaped = htmlentities(KatapultWhmcs::getParentOrganizationIdentifier() ?: '');
+        $baseUrl = htmlentities(WebHelper::getBaseUrl());
+        $parentOrganizationEscaped = htmlentities(KatapultWhmcs::getParentOrganizationIdentifier() ?: '');
 
-		$katapultLogoPath = OverrideHelper::asset('katapult_logo_white_strapline.svg');
+        $katapultLogoPath = OverrideHelper::asset('katapult_logo_white_strapline.svg');
 
-		$katapultLogo = <<<HTML
+        $katapultLogo = <<<HTML
 <img src="{$baseUrl}/modules/servers/katapult/{$katapultLogoPath}" alt="" style="max-width: 200px;">
 HTML;
 
-		if (KatapultWhmcs::getApiV1Key()) {
-			$apiKeyNoteMessage = 'There is currently an API key set, enter a new one to change it. It will apply to all Katapult services.';
-			$syncOptionsInput = <<<HTML
+        if (KatapultWhmcs::getApiV1Key()) {
+            $apiKeyNoteMessage = 'There is currently an API key set, enter a new one to change it. It will apply to all Katapult services.';
+            $syncOptionsInput = <<<HTML
 <label><input class="form-check" type="checkbox" name="katapult_sync_config_options"> Re-sync configurable options on save (data centers, disk templates etc)</label>
 HTML;
+        } else {
+            $apiKeyNoteMessage = 'Enter your Katapult API key here to connect to Katapult';
+            $syncOptionsInput = '';
+        }
 
-		} else {
-			$apiKeyNoteMessage = 'Enter your Katapult API key here to connect to Katapult';
-			$syncOptionsInput = '';
-		}
-
-		$configurationGui = <<<HTML
+        $configurationGui = <<<HTML
 <div class="row">
 
 	<div class="col-md-12 col-lg-6">
@@ -65,45 +64,51 @@ HTML;
 </div>
 HTML;
 
-		return [
-			'' => $configurationGui
-		];
-	}
+        return [
+            '' => $configurationGui,
+        ];
+    }
 
-	public static function updateKatapultConfiguration($vars): void
-	{
-		if (!WhmcsHelper::productIdIsKatapult($vars['pid'])) {
-			return;
-		}
+    public static function updateKatapultConfiguration($vars): void
+    {
+        if (!WhmcsHelper::productIdIsKatapult($vars['pid'])) {
+            return;
+        }
 
-		$syncConfigOptions = false;
+        $syncConfigOptions = false;
 
-		if (isset($_POST['katapult_api_v1_key']) && $_POST['katapult_api_v1_key']) {
-			KatapultWhmcs::setApiV1Key($_POST['katapult_api_v1_key']);
-			$syncConfigOptions = true;
-		}
+        if (isset($_POST['katapult_api_v1_key']) && $_POST['katapult_api_v1_key']) {
+            KatapultWhmcs::setApiV1Key($_POST['katapult_api_v1_key']);
+            $syncConfigOptions = true;
+        }
 
-		if (isset($_POST['katapult_parent_organization'])) {
-			KatapultWhmcs::setParentOrganization($_POST['katapult_parent_organization']);
-		}
+        if (isset($_POST['katapult_parent_organization'])) {
+            KatapultWhmcs::setParentOrganization($_POST['katapult_parent_organization']);
+        }
 
-		if ($syncConfigOptions || isset($_POST['katapult_sync_config_options'])) {
-			GeneralHelper::attempt([KatapultWhmcs::class, 'syncConfigurableOptions'], 'Sync config options');
-		}
-	}
+        if ($syncConfigOptions || isset($_POST['katapult_sync_config_options'])) {
+            KatapultWhmcs::log('Attempting to sync config options');
 
-	public function addAssetsToHead(): string
-	{
-		$baseUrl = htmlentities(WebHelper::getBaseUrl());
+            GeneralHelper::attempt(
+                [
+                    KatapultWhmcs::class,
+                    'syncConfigurableOptions',
+                ],
+                'Sync config options'
+            );
+        }
+    }
 
-		$cssPath = OverrideHelper::asset('dist/css/admin.css');
-		$jsPath = OverrideHelper::asset('dist/js/admin.js');
+    public static function addAssetsToHead(): string
+    {
+        $baseUrl = htmlentities(WebHelper::getBaseUrl());
 
-		return <<<HTML
+        $cssPath = OverrideHelper::asset('dist/css/admin.css');
+        $jsPath = OverrideHelper::asset('dist/js/admin.js');
+
+        return <<<HTML
 <link href="{$baseUrl}/modules/servers/katapult/{$cssPath}" rel="stylesheet" type="text/css" />
 <script type="text/javascript" defer src="{$baseUrl}/modules/servers/katapult/{$jsPath}"></script>
 HTML;
-	}
+    }
 }
-
-
