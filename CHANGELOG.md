@@ -1,5 +1,43 @@
 # Changelog
 
+## [2.0.0](https://github.com/krystal/katapult-whmcs/compare/v1.2.1...v2.0.0) (2024-07-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* convert API usages to Katapult API v3
+
+### Features
+
+* delete disk backup policies on terminate. closes [#22](https://github.com/krystal/katapult-whmcs/issues/22) ([4fbc201](https://github.com/krystal/katapult-whmcs/commit/4fbc201f479b366e0a74451bd3e941aeda5a9c68))
+* upgrade to Katapult API client v4.0 ([#33](https://github.com/krystal/katapult-whmcs/issues/33)) ([a63dd4e](https://github.com/krystal/katapult-whmcs/commit/a63dd4e06129b9e3286a7117b01914b3769375d8))
+
+
+### Bug Fixes
+
+* add 5s timeout back into API ([559452e](https://github.com/krystal/katapult-whmcs/commit/559452e30a735935f3c693a0c7c82af4eb2cc23c))
+* add detail to error messages ([2ea85c5](https://github.com/krystal/katapult-whmcs/commit/2ea85c50b2e5c5b8e9a480d0e6cf04439e50ff46))
+* API response types, improve error handling ([290e4d4](https://github.com/krystal/katapult-whmcs/commit/290e4d4e7176f800b4e4992128f204b19cb69e63))
+* error message wording ([6c2a505](https://github.com/krystal/katapult-whmcs/commit/6c2a5059cf376ebadf3cfa35442514cc40d621dd))
+* not loading JS into admin/client area ([455ea38](https://github.com/krystal/katapult-whmcs/commit/455ea386a37c8fc70fbe3e4f1e07ea120361e948))
+* phpcs ([6c6a24e](https://github.com/krystal/katapult-whmcs/commit/6c6a24ec99e1e943c4c40a346a2c8f7099fc260f))
+* VM state indicator ([ea30a7f](https://github.com/krystal/katapult-whmcs/commit/ea30a7f9f035ecfb91decfbf70234f6ebaed44bb))
+
+
+### Miscellaneous Chores
+
+* add a check on the current VM build state directly ([5150222](https://github.com/krystal/katapult-whmcs/commit/5150222e38c93f44e8d05de7481d81639b2e2fb9))
+* add ide-helper for WHMCS functions ([39e45ba](https://github.com/krystal/katapult-whmcs/commit/39e45bafae17b89541dc3310eb2d301a03cfa5d5))
+* apply phpcs ([13087c9](https://github.com/krystal/katapult-whmcs/commit/13087c90933d89fff92b591ecaa824e27e250dec))
+* **CI:** add linter to GHA ([3514c22](https://github.com/krystal/katapult-whmcs/commit/3514c22a7c912f49b4fa81b44401bfd211c3ba88))
+* **docs:** update Readme to new min PHP version ([ff72029](https://github.com/krystal/katapult-whmcs/commit/ff72029bf4124c405ec54da8fed08df79cd74c1c))
+* handle the failed state before the complete state for a VM build ([e90366b](https://github.com/krystal/katapult-whmcs/commit/e90366bea233eb4b84e0f3e8e276d98f163080bf))
+
+
+### Code Refactoring
+
+* convert API usages to Katapult API v3 ([d82e9a6](https://github.com/krystal/katapult-whmcs/commit/d82e9a6e14ea02ef36addf774dfe010b5bf0b0e3))
+
 ## [1.2.1](https://github.com/krystal/katapult-whmcs/compare/v1.2.0...v1.2.1) (2024-01-12)
 
 
