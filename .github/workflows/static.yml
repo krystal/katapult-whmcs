@@ -1,0 +1,36 @@
+---
+name: Static Analysis
+
+on:
+  pull_request:
+    paths:
+      - '**.php'
+  push:
+    branches:
+      - main
+    paths:
+      - '**.php'
+
+concurrency:
+  # On the main branch we want all builds to complete, even if new commits are merged.
+  group: ${{ github.ref == 'refs/heads/main' && format('lint-main-{0}', github.run_id) || format('lint-{0}-lint', github.ref) }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+
+    - name: Install Composer dependencies
+      run: composer install
+
+    - name: Run PHPStan
+      run: composer stan

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "557bd2eff33825db439658a53751bffd",
+    "content-hash": "dd2a308175fd132e920fa5456f9f75f0",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -396,16 +396,16 @@
         },
         {
             "name": "krystal/katapult",
-            "version": "v3.0.2",
+            "version": "v4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/krystal/katapult-php.git",
-                "reference": "b25ab2233077ac6d5d9b2a56ce707fc824de6f1a"
+                "reference": "57245797245d66189a1df554dc3ada5d5496f11d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/krystal/katapult-php/zipball/b25ab2233077ac6d5d9b2a56ce707fc824de6f1a",
-                "reference": "b25ab2233077ac6d5d9b2a56ce707fc824de6f1a",
+                "url": "https://api.github.com/repos/krystal/katapult-php/zipball/57245797245d66189a1df554dc3ada5d5496f11d",
+                "reference": "57245797245d66189a1df554dc3ada5d5496f11d",
                 "shasum": ""
             },
             "require": {
@@ -427,9 +427,9 @@
             ],
             "support": {
                 "issues": "https://github.com/krystal/katapult-php/issues",
-                "source": "https://github.com/krystal/katapult-php/tree/v3.0.2"
+                "source": "https://github.com/krystal/katapult-php/tree/v4.0.0"
             },
-            "time": "2024-02-08T11:34:56+00:00"
+            "time": "2024-07-01T10:38:42+00:00"
         },
         {
             "name": "league/uri",

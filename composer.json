@@ -4,7 +4,7 @@
     "type": "project",
     "require": {
         "php": "^8.1",
-        "krystal/katapult": "^v3.0",
+        "krystal/katapult": "^v4.0",
         "grizzlyware/salmon-whmcs": "^1.1",
         "guzzlehttp/psr7": "^2.6"
     },
@@ -45,6 +45,7 @@
     },
     "scripts": {
         "lint": "phpcs --standard=phpcs.xml -p",
-        "lint-fix": "phpcbf --standard=phpcs.xml -p"
+        "lint-fix": "phpcbf --standard=phpcs.xml -p",
+        "stan": "phpstan --memory-limit=1G"
     }
 }
