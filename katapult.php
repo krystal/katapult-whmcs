@@ -7,6 +7,7 @@
 use Illuminate\Support\Str;
 use Krystal\Katapult\KatapultAPI\Model\DataCenterLookup;
 use Krystal\Katapult\KatapultAPI\Model\DiskTemplateLookup;
+use Krystal\Katapult\KatapultAPI\Model\OrganizationsGetResponse200;
 use Krystal\Katapult\KatapultAPI\Model\OrganizationsOrganizationVirtualMachinesBuildPostBody;
 use Krystal\Katapult\KatapultAPI\Model\VirtualMachinePackageLookup;
 use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineConsoleSessionsPostBody;
@@ -308,6 +309,44 @@ function katapult_ChangePackage(array $params): string
             'VM failed to have its package changed',
         );
     });
+}
+
+/**
+ * Test connection with the given server parameters.
+ *
+ * Allows an admin user to verify that an API connection can be
+ * successfully made with the given configuration parameters for a
+ * server.
+ *
+ * When defined in a module, a Test Connection button will appear
+ * alongside the Server Type dropdown when adding or editing an
+ * existing server.
+ *
+ * @param array $params common module parameters
+ *
+ * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
+ */
+function katapult_TestConnection(array $params): array
+{
+    try {
+        $response = katapult()->getOrganizations();
+
+        if ($response instanceof OrganizationsGetResponse200) {
+            $success = true;
+            $errorMsg = '';
+        } else {
+            $success = false;
+            $errorMsg = $response->getBody()->getContents();
+        }
+    } catch (\Throwable $e) {
+        $success = false;
+        $errorMsg = $e->getMessage();
+    }
+
+    return array(
+        'success' => $success,
+        'error' => $errorMsg,
+    );
 }
 
 /**
