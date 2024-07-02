@@ -1,0 +1,11 @@
+includes:
+    - phpstan-baseline.neon
+parameters:
+    level: 8
+    paths:
+        - lib
+        - helpers.php
+        - katapult.php
+        - hooks.php
+    bootstrapFiles:
+        - ide-helper.php

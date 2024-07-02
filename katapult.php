@@ -23,7 +23,6 @@ use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineStartPostRes
 use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineStopPostBody;
 use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineStopPostResponse200;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
-use WHMCS\Module\Server\Katapult\Helpers\KatapultApiV1Helper;
 use WHMCS\Module\Server\Katapult\Helpers\OverrideHelper;
 use WHMCS\Module\Server\Katapult\KatapultWhmcs;
 use WHMCS\Module\Server\Katapult\WhmcsModuleParams\VmServerModuleParams;

@@ -1,5 +1,5 @@
 ---
-name: Linting
+name: Analyse
 
 on:
   pull_request:
@@ -18,6 +18,7 @@ concurrency:
 
 jobs:
   lint:
+    name: Linting
     runs-on: ubuntu-latest
 
     steps:
@@ -34,3 +35,22 @@ jobs:
 
     - name: Run PHP CodeSniffer
       run: composer lint
+
+  phpstan:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+
+    - name: Install Composer dependencies
+      run: composer install
+
+    - name: Run PHPStan
+      run: composer stan
