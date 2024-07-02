@@ -100,8 +100,8 @@ namespace WHMCS\Service {
     /**
      * @see https://classdocs.whmcs.com/8.10/WHMCS/Service/Service.html
      *      Ideally we would have a way to generate this from that.
-     *      For now, we just want this class to exist to satisfy Psalm
-     *      and avoid false positive results there.
+     *      For now, we just want this class to exist to satisfy Psalm/Stan and
+     *      avoid false positive results there.
      *
      * @mixin \Eloquent
      *
