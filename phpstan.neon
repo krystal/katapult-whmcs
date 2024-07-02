@@ -1,0 +1,9 @@
+parameters:
+    level: 5
+    paths:
+        - lib
+        - helpers.php
+        - katapult.php
+        - hooks.php
+    bootstrapFiles:
+        - ide-helper.php

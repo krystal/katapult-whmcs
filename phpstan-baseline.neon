@@ -1,0 +1,141 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Variable \\$hostname might not be defined\\.$#"
+			count: 1
+			path: katapult.php
+
+		-
+			message: "#^Cannot access property \\$error on array\\|bool\\|float\\|int\\|object\\|string\\.$#"
+			count: 2
+			path: lib/Helpers/KatapultApiV1Helper.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 1
+			path: lib/Helpers/Replay.php
+
+		-
+			message: "#^Access to an undefined property Grizzlyware\\\\Salmon\\\\WHMCS\\\\Billing\\\\Currency\\:\\:\\$id\\.$#"
+			count: 1
+			path: lib/Helpers/WhmcsHelper.php
+
+		-
+			message: "#^Access to an undefined property Grizzlyware\\\\Salmon\\\\WHMCS\\\\Product\\\\ConfigurableOptions\\\\Group\\\\Option\\:\\:\\$id\\.$#"
+			count: 1
+			path: lib/Helpers/WhmcsHelper.php
+
+		-
+			message: "#^Access to an undefined property Grizzlyware\\\\Salmon\\\\WHMCS\\\\Product\\\\ConfigurableOptions\\\\Group\\\\Option\\:\\:\\$optionname\\.$#"
+			count: 1
+			path: lib/Helpers/WhmcsHelper.php
+
+		-
+			message: "#^Access to an undefined property Grizzlyware\\\\Salmon\\\\WHMCS\\\\Product\\\\ConfigurableOptions\\\\Group\\\\Option\\:\\:\\$optiontype\\.$#"
+			count: 1
+			path: lib/Helpers/WhmcsHelper.php
+
+		-
+			message: "#^Call to an undefined static method Grizzlyware\\\\Salmon\\\\WHMCS\\\\Product\\\\Product\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: lib/Helpers/WhmcsHelper.php
+
+		-
+			message: "#^Access to an undefined property Grizzlyware\\\\Salmon\\\\WHMCS\\\\Product\\\\ConfigurableOptions\\\\Group\\:\\:\\$id\\.$#"
+			count: 1
+			path: lib/KatapultWhmcs.php
+
+		-
+			message: "#^Access to an undefined property Grizzlyware\\\\Salmon\\\\WHMCS\\\\Product\\\\ConfigurableOptions\\\\Group\\:\\:\\$name\\.$#"
+			count: 1
+			path: lib/KatapultWhmcs.php
+
+		-
+			message: "#^Access to an undefined property Grizzlyware\\\\Salmon\\\\WHMCS\\\\Product\\\\ConfigurableOptions\\\\Group\\\\Option\\\\SubOption\\:\\:\\$id\\.$#"
+			count: 2
+			path: lib/KatapultWhmcs.php
+
+		-
+			message: "#^Access to an undefined property Grizzlyware\\\\Salmon\\\\WHMCS\\\\Product\\\\ConfigurableOptions\\\\Group\\\\Option\\\\SubOption\\:\\:\\$optionname\\.$#"
+			count: 2
+			path: lib/KatapultWhmcs.php
+
+		-
+			message: "#^Access to an undefined property WHMCS\\\\Module\\\\Server\\\\Katapult\\\\WHMCS\\\\Service\\\\VirtualMachine\\:\\:\\$domainstatus\\.$#"
+			count: 1
+			path: lib/KatapultWhmcs.php
+
+		-
+			message: "#^Access to protected property Grizzlyware\\\\Salmon\\\\WHMCS\\\\Product\\\\ConfigurableOptions\\\\Group\\\\Option\\\\SubOption\\:\\:\\$hidden\\.$#"
+			count: 2
+			path: lib/KatapultWhmcs.php
+
+		-
+			message: "#^Call to an undefined static method Grizzlyware\\\\Salmon\\\\WHMCS\\\\Product\\\\ConfigurableOptions\\\\Group\\:\\:find\\(\\)\\.$#"
+			count: 1
+			path: lib/KatapultWhmcs.php
+
+		-
+			message: "#^Call to an undefined static method Grizzlyware\\\\Salmon\\\\WHMCS\\\\Product\\\\Product\\:\\:where\\(\\)\\.$#"
+			count: 1
+			path: lib/KatapultWhmcs.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: lib/KatapultWhmcs.php
+
+		-
+			message: "#^Property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$hidden \\(array\\) does not accept int\\.$#"
+			count: 2
+			path: lib/KatapultWhmcs.php
+
+		-
+			message: "#^Right side of && is always true\\.$#"
+			count: 1
+			path: lib/KatapultWhmcs.php
+
+		-
+			message: "#^Call to an undefined static method Grizzlyware\\\\Salmon\\\\WHMCS\\\\Helpers\\\\DataStore\\\\Item\\:\\:relType\\(\\)\\.$#"
+			count: 1
+			path: lib/WHMCS/Service/Service.php
+
+		-
+			message: "#^Access to an undefined property WHMCS\\\\Module\\\\Server\\\\Katapult\\\\WHMCS\\\\Service\\\\VirtualMachine\\:\\:\\$assignedips\\.$#"
+			count: 1
+			path: lib/WHMCS/Service/VirtualMachine.php
+
+		-
+			message: "#^Access to an undefined property WHMCS\\\\Module\\\\Server\\\\Katapult\\\\WHMCS\\\\Service\\\\VirtualMachine\\:\\:\\$dedicatedip\\.$#"
+			count: 1
+			path: lib/WHMCS/Service/VirtualMachine.php
+
+		-
+			message: "#^Access to an undefined property WHMCS\\\\Module\\\\Server\\\\Katapult\\\\WHMCS\\\\Service\\\\VirtualMachine\\:\\:\\$password\\.$#"
+			count: 1
+			path: lib/WHMCS/Service/VirtualMachine.php
+
+		-
+			message: "#^Access to an undefined property WHMCS\\\\Module\\\\Server\\\\Katapult\\\\WHMCS\\\\Service\\\\VirtualMachine\\:\\:\\$username\\.$#"
+			count: 1
+			path: lib/WHMCS/Service/VirtualMachine.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: lib/WHMCS/Service/VirtualMachine.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: lib/WHMCS/Service/VirtualMachine.php
+
+		-
+			message: "#^Call to an undefined static method Grizzlyware\\\\Salmon\\\\WHMCS\\\\Helpers\\\\DataStore\\\\Item\\:\\:relType\\(\\)\\.$#"
+			count: 1
+			path: lib/WHMCS/User/Client.php
+
+		-
+			message: "#^Access to an undefined property WHMCS\\\\Module\\\\Server\\\\Katapult\\\\WhmcsModuleParams\\\\ServerModuleParams\\:\\:\\$service\\.$#"
+			count: 1
+			path: lib/WhmcsModuleParams/ServerModuleParams.php

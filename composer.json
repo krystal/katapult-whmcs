@@ -32,6 +32,7 @@
         "illuminate/database": "^8.83",
         "illuminate/support": "^8.33",
         "nesbot/carbon": "^2.46",
+        "phpstan/phpstan": "^1.11",
         "squizlabs/php_codesniffer": "^3.8",
         "symfony/console": "^5.2",
         "symfony/filesystem": "^5.2"
