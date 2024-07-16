@@ -69,4 +69,7 @@ jobs:
         php-version: '8.2'
 
     - name: Install Composer dependencies
+      run: composer install
+
+    - name: Run PHPUnit
       run: composer test
