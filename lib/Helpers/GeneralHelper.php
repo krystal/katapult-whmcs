@@ -15,7 +15,6 @@ class GeneralHelper
             KatapultWHMCS::log($taskName . ' completed');
         } catch (\Throwable $e) {
             KatapultWHMCS::log("Error running task: {$taskName}: {$e->getMessage()}");
-            KatapultWHMCS::log(print_r($e,true));
         }
     }
 }
