@@ -4,35 +4,13 @@
  * @see https://github.com/krystal/katapult-whmcs
  */
 
-use Illuminate\Support\Str;
-use Krystal\Katapult\KatapultAPI\Model\DataCenterLookup;
-use Krystal\Katapult\KatapultAPI\Model\DiskTemplateLookup;
-use Krystal\Katapult\KatapultAPI\Model\OrganizationsGetResponse200;
-use Krystal\Katapult\KatapultAPI\Model\OrganizationsOrganizationVirtualMachinesBuildPostBody;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinePackageLookup;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineConsoleSessionsPostBody;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineDeleteBody;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineDeleteResponse200;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachinePackagePutBody;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachinePackagePutResponse200;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineResetPostBody;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineResetPostResponse200;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineShutdownPostBody;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineShutdownPostResponse200;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineStartPostBody;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineStartPostResponse200;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineStopPostBody;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineStopPostResponse200;
-use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
-use WHMCS\Module\Server\Katapult\Helpers\OverrideHelper;
-use WHMCS\Module\Server\Katapult\KatapultWhmcs;
-use WHMCS\Module\Server\Katapult\WhmcsModuleParams\VmServerModuleParams;
-use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
-use Carbon\Carbon;
+use WHMCS\Module\Server\Katapult\ModuleFunction;
 
 if (!defined('WHMCS')) {
     die('This file cannot be accessed directly');
 }
+
+require_once __DIR__ . '/vendor/autoload.php';
 
 /**
  * Values returned here are used to determine module related abilities and
@@ -40,7 +18,7 @@ if (!defined('WHMCS')) {
  *
  * @see https://developers.whmcs.com/provisioning-modules/meta-data-params/
  *
- * @return array<string, string>
+ * @return array<string, string|bool>
  */
 function katapult_MetaData(): array
 {
@@ -72,7 +50,12 @@ function katapult_MetaData(): array
  */
 function katapult_ConfigOptions(): array
 {
-    return VmServerModuleParams::getWhmcsServerConfiguration();
+    $configOptions = new ModuleFunction\ConfigOptions(
+        \Katapult\APIClient(),
+        \Katapult\keyValueStore(),
+    );
+
+    return $configOptions->run();
 }
 
 /**
@@ -87,93 +70,19 @@ function katapult_ConfigOptions(): array
  *
  * @param array $params common module parameters
  *
+ * @return string "success" or an error message
+ * @throws \WHMCS\Module\Server\Katapult\Exceptions\Exception
  * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  *
- * @return string "success" or an error message
  */
 function katapult_CreateAccount(array $params): string
 {
-    try {
-        $params = new VmServerModuleParams($params);
+    $createAccount = new ModuleFunction\CreateAccount(
+        \Katapult\APIClient(),
+        \Katapult\keyValueStore(),
+    );
 
-        // Do we have an existing build running? Is it done?
-        try {
-            $params->service->checkForExistingBuildAttempt();
-
-            // Great, it's done!
-            return 'success';
-        } catch (VirtualMachineBuildNotFound $e) {
-            // This is fine, and normal behaviour.
-        }
-
-        // Hostname?
-        if ($params->service->domain) {
-            // Make it KP friendly..
-            $hostname = str_replace('.', '-', $params->service->domain);
-            $hostname = substr($hostname, 0, 18);
-
-            // Remove trailing dashes from the hostname
-            while (Str::endsWith($hostname, '-')) {
-                $hostname = substr($hostname, 0, -1);
-            }
-
-            if (!$hostname) {
-                $hostname = null;
-            }
-        }
-
-        $vmBuildRequest = new OrganizationsOrganizationVirtualMachinesBuildPostBody();
-        $vmBuildRequest->setOrganization($params->client->managed_organization);
-        $vmBuildRequest->setPackage((new VirtualMachinePackageLookup())->setPermalink($params->package));
-        $vmBuildRequest->setDataCenter((new DataCenterLookup())->setPermalink($params->dataCenter));
-        $vmBuildRequest->setDiskTemplate((new DiskTemplateLookup())->setPermalink($params->diskTemplate));
-
-        if (!is_null($hostname)) {
-            $vmBuildRequest->setHostname($hostname);
-        }
-
-        $apiResult = katapult()->postOrganizationVirtualMachinesBuild($vmBuildRequest);
-
-        if ($apiResult->getStatusCode() !== 200) {
-            $params->service->log(
-                sprintf(
-                    '%s. Status: "%d". Response: "%s"',
-                    'Could not build VM',
-                    $apiResult->getStatusCode(),
-                    $apiResult->getBody()->getContents()
-                )
-            );
-
-            $errorResponseContents = $apiResult->getBody()->getContents();
-            $errorResult = json_decode($errorResponseContents, true);
-
-            // the error should be a json object with a description and a code
-            // return the human-readable description but if it's not there return the raw result
-            if (isset($errorResult['description'])) {
-                return $errorResult['description'];
-            } else {
-                return $errorResponseContents;
-            }
-        } else {
-            // Persist the build ID
-            $params->service->dataStoreWrite(
-                VirtualMachine::DS_VM_BUILD_ID,
-                $apiResult->getBuild()->getId(),
-                $apiResult->getBuild()->getId()
-            );
-            $params->service->dataStoreWrite(VirtualMachine::DS_VM_BUILD_STARTED_AT, Carbon::now());
-
-            // Log it
-            $params->service->log("Started VM build: {$apiResult->getBuild()->getId()}");
-
-            // Trigger a hook
-            $params->service->triggerHook(VirtualMachine::HOOK_BUILD_REQUESTED);
-
-            return 'success';
-        }
-    } catch (\Throwable $e) {
-        return katapultFormatError('Create Account', $e);
-    }
+    return $createAccount->run($params);
 }
 
 /**
@@ -185,23 +94,17 @@ function katapult_CreateAccount(array $params): string
  *
  * @param array $params common module parameters
  *
+ * @throws \WHMCS\Module\Server\Katapult\Exceptions\Exception
  * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  */
 function katapult_ServiceSingleSignOn(array $params): array
 {
-    return KatapultWhmcs::runModuleCommandOnVm($params, function (VmServerModuleParams $params) {
-        $requestBody = new VirtualMachinesVirtualMachineConsoleSessionsPostBody();
+    $serviceSingleSignOn = new ModuleFunction\ServiceSingleSignOn(
+        \Katapult\APIClient(),
+        \Katapult\keyValueStore(),
+    );
 
-        $requestBody->setVirtualMachine($params->service->virtual_machine_lookup);
-        $consoleSession = katapult()->postVirtualMachineConsoleSessions($requestBody)->getConsoleSession();
-
-        $params->service->log('Created console session for VM');
-
-        return [
-            'success' => true,
-            'redirectTo' => $consoleSession->getUrl(),
-        ];
-    });
+    return $serviceSingleSignOn->run($params);
 }
 
 /**
@@ -213,9 +116,10 @@ function katapult_ServiceSingleSignOn(array $params): array
  *
  * @param array $params common module parameters
  *
+ * @return string "success" or an error message
+ * @throws \WHMCS\Module\Server\Katapult\Exceptions\Exception
  * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  *
- * @return string "success" or an error message
  */
 function katapult_SuspendAccount(array $params): string
 {
@@ -231,9 +135,10 @@ function katapult_SuspendAccount(array $params): string
  *
  * @param array $params common module parameters
  *
+ * @return string "success" or an error message
+ * @throws \WHMCS\Module\Server\Katapult\Exceptions\Exception
  * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  *
- * @return string "success" or an error message
  */
 function katapult_UnsuspendAccount(array $params): string
 {
@@ -248,29 +153,19 @@ function katapult_UnsuspendAccount(array $params): string
  *
  * @param array $params common module parameters
  *
+ * @return string "success" or an error message
+ * @throws \WHMCS\Module\Server\Katapult\Exceptions\Exception
  * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  *
- * @return string "success" or an error message
  */
 function katapult_TerminateAccount(array $params): string
 {
-    return KatapultWhmcs::runModuleCommandOnVm($params, function (VmServerModuleParams $params) {
-        KatapultWhmcs::deleteDiskBackupPolciesForVm($params->service);
+    $terminateAccount = new ModuleFunction\TerminateAccount(
+        \Katapult\APIClient(),
+        \Katapult\keyValueStore(),
+    );
 
-        $requestBody = new VirtualMachinesVirtualMachineDeleteBody();
-        $requestBody->setVirtualMachine($params->service->virtual_machine_lookup);
-
-        $deleteVirtualMachineResult = katapult()->deleteVirtualMachine($requestBody);
-
-        \katapultHandleApiResponse(
-            VirtualMachinesVirtualMachineDeleteResponse200::class,
-            $deleteVirtualMachineResult,
-            $params->service,
-            'VM deleted and local data store cleared',
-            'VM failed to be deleted',
-            fn() => $params->service->clearAllDataStoreValues()
-        );
-    }, false);
+    return $terminateAccount->run($params);
 }
 
 /**
@@ -285,30 +180,19 @@ function katapult_TerminateAccount(array $params): string
  *
  * @param array $params common module parameters
  *
+ * @return string "success" or an error message
+ * @throws \WHMCS\Module\Server\Katapult\Exceptions\Exception
  * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  *
- * @return string "success" or an error message
  */
 function katapult_ChangePackage(array $params): string
 {
-    return KatapultWhmcs::runModuleCommandOnVm($params, function (VmServerModuleParams $params) {
-        $requestBody = new VirtualMachinesVirtualMachinePackagePutBody();
-        $virtualMachinePackageLookup = new VirtualMachinePackageLookup();
-        $virtualMachinePackageLookup->setPermalink($params->package);
+    $changePackage = new ModuleFunction\ChangePackage(
+        \Katapult\APIClient(),
+        \Katapult\keyValueStore(),
+    );
 
-        $requestBody->setVirtualMachine($params->service->virtual_machine_lookup);
-        $requestBody->setVirtualMachinePackage($virtualMachinePackageLookup);
-
-        $apiResult = katapult()->putVirtualMachinePackage($requestBody);
-
-        \katapultHandleApiResponse(
-            VirtualMachinesVirtualMachinePackagePutResponse200::class,
-            $apiResult,
-            $params->service,
-            'VM package changed to ' . $params->package,
-            'VM failed to have its package changed',
-        );
-    });
+    return $changePackage->run($params);
 }
 
 /**
@@ -324,29 +208,17 @@ function katapult_ChangePackage(array $params): string
  *
  * @param array $params common module parameters
  *
+ * @throws \WHMCS\Module\Server\Katapult\Exceptions\Exception
  * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  */
 function katapult_TestConnection(array $params): array
 {
-    try {
-        $response = katapult()->getOrganizations();
-
-        if ($response instanceof OrganizationsGetResponse200) {
-            $success = true;
-            $errorMsg = '';
-        } else {
-            $success = false;
-            $errorMsg = $response->getBody()->getContents();
-        }
-    } catch (\Throwable $e) {
-        $success = false;
-        $errorMsg = $e->getMessage();
-    }
-
-    return array(
-        'success' => $success,
-        'error' => $errorMsg,
+    $testConnection = new ModuleFunction\TestConnection(
+        \Katapult\APIClient(),
+        \Katapult\keyValueStore(),
     );
+
+    return $testConnection->run();
 }
 
 /**
@@ -360,26 +232,19 @@ function katapult_TestConnection(array $params): array
  * @param array $params common module parameters
  *
  * @return string "success" or an error message
+ * @throws \WHMCS\Module\Server\Katapult\Exceptions\Exception
+ * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  * @see katapult_AdminCustomButtonArray()
  *
- * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  */
 function katapult_StopVm(array $params): string
 {
-    return KatapultWhmcs::runModuleCommandOnVm($params, function (VmServerModuleParams $params) {
-        $requestBody = new VirtualMachinesVirtualMachineStopPostBody();
-        $requestBody->setVirtualMachine($params->service->virtual_machine_lookup);
+    $stopVM = new ModuleFunction\VM\Stop(
+        \Katapult\APIClient(),
+        \Katapult\keyValueStore(),
+    );
 
-        $apiResult = katapult()->postVirtualMachineStop($requestBody);
-
-        \katapultHandleApiResponse(
-            VirtualMachinesVirtualMachineStopPostResponse200::class,
-            $apiResult,
-            $params->service,
-            'VM stopped',
-            'VM failed to stop',
-        );
-    });
+    return $stopVM->run($params);
 }
 
 /**
@@ -393,26 +258,19 @@ function katapult_StopVm(array $params): string
  * @param array $params common module parameters
  *
  * @return string "success" or an error message
+ * @throws \WHMCS\Module\Server\Katapult\Exceptions\Exception
+ * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  * @see katapult_AdminCustomButtonArray()
  *
- * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  */
 function katapult_ResetVm(array $params): string
 {
-    return KatapultWhmcs::runModuleCommandOnVm($params, function (VmServerModuleParams $params) {
-        $requestBody = new VirtualMachinesVirtualMachineResetPostBody();
-        $requestBody->setVirtualMachine($params->service->virtual_machine_lookup);
+    $resetVM = new ModuleFunction\VM\Reset(
+        \Katapult\APIClient(),
+        \Katapult\keyValueStore(),
+    );
 
-        $apiResult = katapult()->postVirtualMachineReset($requestBody);
-
-        \katapultHandleApiResponse(
-            VirtualMachinesVirtualMachineResetPostResponse200::class,
-            $apiResult,
-            $params->service,
-            'VM reset',
-            'VM failed to reset',
-        );
-    });
+    return $resetVM->run($params);
 }
 
 /**
@@ -426,26 +284,19 @@ function katapult_ResetVm(array $params): string
  * @param array $params common module parameters
  *
  * @return string "success" or an error message
+ * @throws \WHMCS\Module\Server\Katapult\Exceptions\Exception
+ * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  * @see katapult_AdminCustomButtonArray()
  *
- * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  */
 function katapult_StartVm(array $params): string
 {
-    return KatapultWhmcs::runModuleCommandOnVm($params, function (VmServerModuleParams $params) {
-        $requestBody = new VirtualMachinesVirtualMachineStartPostBody();
-        $requestBody->setVirtualMachine($params->service->virtual_machine_lookup);
+    $startVM = new ModuleFunction\VM\Start(
+        \Katapult\APIClient(),
+        \Katapult\keyValueStore(),
+    );
 
-        $apiResult = katapult()->postVirtualMachineStart($requestBody);
-
-        \katapultHandleApiResponse(
-            VirtualMachinesVirtualMachineStartPostResponse200::class,
-            $apiResult,
-            $params->service,
-            'VM started',
-            'VM failed to start',
-        );
-    });
+    return $startVM->run($params);
 }
 
 /**
@@ -459,26 +310,19 @@ function katapult_StartVm(array $params): string
  * @param array $params common module parameters
  *
  * @return string "success" or an error message
+ * @throws \WHMCS\Module\Server\Katapult\Exceptions\Exception
+ * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  * @see katapult_AdminCustomButtonArray()
  *
- * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  */
 function katapult_ShutdownVm(array $params): string
 {
-    return KatapultWhmcs::runModuleCommandOnVm($params, function (VmServerModuleParams $params) {
-        $requestBody = new VirtualMachinesVirtualMachineShutdownPostBody();
-        $requestBody->setVirtualMachine($params->service->virtual_machine_lookup);
+    $shutdownVM = new ModuleFunction\VM\Shutdown(
+        \Katapult\APIClient(),
+        \Katapult\keyValueStore(),
+    );
 
-        $apiResult = katapult()->postVirtualMachineShutdown($requestBody);
-
-        \katapultHandleApiResponse(
-            VirtualMachinesVirtualMachineShutdownPostResponse200::class,
-            $apiResult,
-            $params->service,
-            'VM shutdown',
-            'VM failed to shutdown',
-        );
-    });
+    return $shutdownVM->run($params);
 }
 
 /**
@@ -537,45 +381,17 @@ function katapult_ClientAreaCustomButtonArray(): array
  *
  * @param array $params common module parameters
  *
+ * @throws \WHMCS\Module\Server\Katapult\Exceptions\Exception
  * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  */
 function katapult_AdminServicesTabFields(array $params): array
 {
-    try {
-        $params = new VmServerModuleParams($params);
+    $adminServicesTabFields = new ModuleFunction\AdminServicesTabFields(
+        \Katapult\APIClient(),
+        \Katapult\keyValueStore(),
+    );
 
-        // Do we have an existing build running? Is it done?
-        $params->service->silentlyCheckForExistingBuildAttempt();
-
-        // Generate the public VM JSON
-        $publicServiceJson = json_encode(
-            $params->service->toPublicArray()
-        );
-
-        // State with spaces
-        $humanState = htmlentities(
-            str_replace('_', ' ', $params->service->vm_state)
-        );
-
-        // State escaped. This is unnecessary, until it's not.
-        $vmStateHtml = htmlentities(
-            $params->service->vm_state
-        );
-
-        return [
-            'Virtual Machine State' => <<<HTML
-<script>
-let katapultVmService = {$publicServiceJson};
-</script>
-
-<span class="katapult-vm-state state--{$vmStateHtml}">{$humanState}</span>
-HTML
-        ,];
-    } catch (\Throwable $e) {
-        return [
-            'Error' => katapultFormatError('Admin Services Tab Fields', $e),
-        ];
-    }
+    return $adminServicesTabFields->run($params);
 }
 
 /**
@@ -604,23 +420,15 @@ HTML
  *
  * @param array $params common module parameters
  *
+ * @throws \WHMCS\Module\Server\Katapult\Exceptions\Exception
  * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
  */
 function katapult_ClientArea(array $params): array
 {
-    try {
-        $params = new VmServerModuleParams($params);
+    $clientArea = new ModuleFunction\ClientArea(
+        \Katapult\APIClient(),
+        \Katapult\keyValueStore(),
+    );
 
-        // Do we have an existing build running? Is it done?
-        $params->service->silentlyCheckForExistingBuildAttempt();
-
-        return [
-            'templatefile' => OverrideHelper::view('client/virtual_machines/overview.tpl'),
-            'vars' => [
-                'katapultVmService' => $params->service->toPublicArray(),
-            ],
-        ];
-    } catch (\Throwable $e) {
-        return [];
-    }
+    return $clientArea->run($params);
 }

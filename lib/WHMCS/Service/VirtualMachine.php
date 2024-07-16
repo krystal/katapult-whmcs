@@ -1,22 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WHMCS\Module\Server\Katapult\WHMCS\Service;
 
-use Krystal\Katapult\KatapultAPI\Model\Enum\VirtualMachineStateEnum;
+use Carbon\Carbon;
+use Krystal\Katapult\KatapultAPI\Client as KatapultAPIClient;
 use Krystal\Katapult\KatapultAPI\Model\VirtualMachineLookup;
 use Krystal\Katapult\KatapultAPI\Model\GetVirtualMachine200ResponseVirtualMachine as KatapultVirtualMachine;
+use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesBuildsVirtualMachineBuildGetResponse200;
+use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineGetResponse200;
 use Psr\Http\Message\ResponseInterface;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildFailed;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuilding;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildTimeout;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineExists;
-use Carbon\Carbon;
+use WHMCS\Module\Server\Katapult\Katapult\API\APIException;
 
 /**
- * Class Service
- * @package WHMCS\Module\Server\Katapult\WHMCS\Service
- *
  * @property-read string|null $vm_id
  * @property-read string|null $vm_build_id
  * @property-read Carbon|null $vm_build_started_at
@@ -63,11 +65,14 @@ class VirtualMachine extends Service
     public function getVirtualMachineLookupAttribute(): VirtualMachineLookup
     {
         $virtualMachineLookup = new VirtualMachineLookup();
-        $virtualMachineLookup->setId($this->vm_id);
+        $virtualMachineLookup->setId((string) $this->vm_id);
 
         return $virtualMachineLookup;
     }
 
+    /**
+     * @throws APIException
+     */
     public function getVmAttribute(): ?KatapultVirtualMachine
     {
         if ($this->virtualMachine) {
@@ -75,9 +80,15 @@ class VirtualMachine extends Service
         }
 
         if ($this->vm_id) {
-            $this->virtualMachine = katapult()
-                ->getVirtualMachine(['virtual_machine[id]' => $this->vm_id])
-                ->getVirtualMachine();
+            $virtualMachineResponse = \Katapult\APIClient()->getVirtualMachine([
+                'virtual_machine[id]' => $this->vm_id,
+            ]);
+
+            if (!$virtualMachineResponse instanceof VirtualMachinesVirtualMachineGetResponse200) {
+                throw APIException::new($virtualMachineResponse, VirtualMachinesVirtualMachineGetResponse200::class);
+            }
+
+            $this->virtualMachine = $virtualMachineResponse->getVirtualMachine();
         }
 
         return $this->virtualMachine;
@@ -96,24 +107,26 @@ class VirtualMachine extends Service
         return self::STATE_UNKNOWN;
     }
 
-    public function silentlyCheckForExistingBuildAttempt(): void
+    public function silentlyCheckForExistingBuildAttempt(KatapultAPIClient $katapultAPI): void
     {
         try {
-            $this->checkForExistingBuildAttempt();
+            $this->checkForExistingBuildAttempt($katapultAPI);
         } catch (\Throwable $e) {
             // We don't care
         }
     }
 
     /**
-     * Will check for an existing VM build and persist it to WHMCS if is has finished building in Katapult
+     * Will check for an existing VM build and persist it to WHMCS if it has finished building in Katapult
+     *
      * @throws VirtualMachineBuildNotFound
      * @throws VirtualMachineBuilding
      * @throws VirtualMachineExists
      * @throws VirtualMachineBuildFailed
      * @throws VirtualMachineBuildTimeout
+     * @throws APIException
      */
-    public function checkForExistingBuildAttempt(): void
+    public function checkForExistingBuildAttempt(KatapultAPIClient $katapultAPI): void
     {
         // Existing VM ID?
         if ($this->vm_id) {
@@ -129,7 +142,7 @@ class VirtualMachine extends Service
         }
 
         // Fetch the build state
-        $apiResult = katapult()->getVirtualMachinesBuildsVirtualMachineBuild([
+        $apiResult = $katapultAPI->getVirtualMachinesBuildsVirtualMachineBuild([
             'virtual_machine_build[id]' => $buildId,
         ]);
 
@@ -139,7 +152,14 @@ class VirtualMachine extends Service
             }
 
             // Do we have a VM?
-            if (!$apiResult->getVirtualMachineBuild()->getVirtualMachine()->getId()) {
+            if (!$apiResult instanceof VirtualMachinesBuildsVirtualMachineBuildGetResponse200) {
+                throw APIException::new($apiResult, VirtualMachinesBuildsVirtualMachineBuildGetResponse200::class);
+            }
+
+            $vmBuild = $apiResult->getVirtualMachineBuild();
+
+            // We have a VM but no ID
+            if (!$vmBuild->getVirtualMachine()?->getId()) {
                 throw new VirtualMachineBuilding('The VM build is queued with Katapult');
             }
 
@@ -152,18 +172,28 @@ class VirtualMachine extends Service
             //   "building"
             // We're after "complete", but it could have permanently failed as well
             // So check for that first
-            if ($apiResult->getVirtualMachineBuild()->getState() === 'failed') {
+            if ($vmBuild->getState() === 'failed') {
                 throw new VirtualMachineBuildFailed('The VM build has failed');
             }
+
             // ...and if it didn't fail, see if it's complete yet
-            if ($apiResult->getVirtualMachineBuild()->getState() !== 'complete') {
+            if ($vmBuild->getState() !== 'complete') {
                 throw new VirtualMachineBuilding('The VM build is still in progress');
             }
 
             // Get the VM
-            $vm = katapult()->getVirtualMachine([
-                'virtual_machine[id]' => $apiResult->getVirtualMachineBuild()->getVirtualMachine()->getId(),
-            ])->getVirtualMachine();
+            $virtualMachineAPIResponse = $katapultAPI->getVirtualMachine([
+                'virtual_machine[id]' => $vmBuild->getVirtualMachine()->getId(),
+            ]);
+
+            if (!$virtualMachineAPIResponse instanceof VirtualMachinesVirtualMachineGetResponse200) {
+                throw APIException::new(
+                    $virtualMachineAPIResponse,
+                    VirtualMachinesVirtualMachineGetResponse200::class,
+                );
+            }
+
+            $vm = $virtualMachineAPIResponse->getVirtualMachine();
 
             // Do we have a root pw?
             if (!$vm->getInitialRootPassword()) {
@@ -176,8 +206,8 @@ class VirtualMachine extends Service
             }
         } catch (VirtualMachineBuilding $e) {
             // Has it timed out?
-            if ($this->vm_build_started_at->diffInSeconds(Carbon::now()) > self::BUILD_TIMEOUT) {
-                // Fire the hook, just once..
+            if ($this->vm_build_started_at && $this->vm_build_started_at->diffInSeconds(Carbon::now()) > self::BUILD_TIMEOUT) {
+                // Fire the hook, just once...
                 if (!$this->dataStoreRead(self::DS_VM_BUILD_TIMEOUT_REACHED_AT)) {
                     $this->triggerHook(self::HOOK_BUILD_TIMED_OUT);
                 }
@@ -193,7 +223,7 @@ class VirtualMachine extends Service
             throw $e;
         }
 
-        // Go..
+        // Go...
         $this->populateServiceWithVm($vm);
 
         // Fire a hook!

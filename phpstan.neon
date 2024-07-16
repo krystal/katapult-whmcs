@@ -1,5 +1,5 @@
-includes:
-    - phpstan-baseline.neon
+#includes:
+#    - phpstan-baseline.neon
 parameters:
     level: 8
     paths:
@@ -9,3 +9,7 @@ parameters:
         - hooks.php
     bootstrapFiles:
         - ide-helper.php
+    ignoreErrors:
+        - identifier: missingType.iterableValue
+        - identifier: missingType.parameter
+        - identifier: missingType.return

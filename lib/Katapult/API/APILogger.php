@@ -1,13 +1,20 @@
 <?php
 
-namespace WHMCS\Module\Server\Katapult\Katapult;
+declare(strict_types=1);
+
+namespace WHMCS\Module\Server\Katapult\Katapult\API;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use WHMCS\Module\Server\Katapult\KatapultWhmcs;
+use WHMCS\Module\Server\Katapult\KatapultWHMCS;
 
-class ApiV1Logger implements LoggerInterface
+class APILogger implements LoggerInterface
 {
+    public function __construct(
+        private readonly string $apiKey
+    ) {
+    }
+
     public function log($level, $message, array $context = [])
     {
         // Split the message up
@@ -17,10 +24,11 @@ class ApiV1Logger implements LoggerInterface
         $reqRes = explode('__KATAPULT_RESPONSE__', $action[1], 2);
 
         // Log it
-        KatapultWhmcs::moduleLog(
+        KatapultWHMCS::moduleLog(
             trim($action[0]),
             trim($reqRes[0]),
-            trim($reqRes[1])
+            trim($reqRes[1]),
+            $this->apiKey,
         );
     }
 

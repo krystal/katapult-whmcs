@@ -1,12 +1,14 @@
 <?php
 
-namespace WHMCS\Module\Server\Katapult\Adaptation;
+declare(strict_types=1);
+
+namespace WHMCS\Module\Server\Katapult\Adaptation\ClientArea;
 
 use WHMCS\Module\Server\Katapult\Helpers\OverrideHelper;
 use WHMCS\Module\Server\Katapult\Helpers\Replay;
 use WHMCS\Utility\Environment\WebHelper;
 
-class ClientArea
+class Assets
 {
     public static function addAssetsToHead(): string
     {
