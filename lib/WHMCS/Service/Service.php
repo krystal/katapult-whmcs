@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WHMCS\Module\Server\Katapult\WHMCS\Service;
 
-use Illuminate\Database\Eloquent\Model;
 use WHMCS\Module\Server\Katapult\Concerns\HasDataStoreValues;
 use WHMCS\Module\Server\Katapult\WHMCS\User\Client;
 
 /**
- * @mixin Model
  * @property Client $client
  */
 class Service extends \Grizzlyware\Salmon\WHMCS\Service\Service

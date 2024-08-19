@@ -1,0 +1,99 @@
+---
+name: Analyse and Test
+
+on:
+  pull_request:
+    paths:
+      - '**.php'
+  push:
+    branches:
+      - main
+    paths:
+      - '**.php'
+
+concurrency:
+  # On the main branch we want all builds to complete, even if new commits are merged.
+  group: ${{ github.ref == 'refs/heads/main' && format('lint-main-{0}', github.run_id) || format('lint-{0}-lint', github.ref) }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Linting
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+
+    - name: Install Composer dependencies
+      run: composer install
+
+    - name: Run PHP CodeSniffer
+      run: composer lint
+
+  phpstan:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: none, Core, ctype, curl, date, dom, fileinfo, filter, gd, hash, iconv, json, libxml, mbstring, mysqlnd, openssl, pcntl, pcre, PDO, Phar, posix, random, readline, Reflection, session, SimpleXML, SPL, standard, tokenizer, xdebug, xml, xmlreader, xmlwriter, zip, zlib
+        ini-values: opcache.save_comments=1
+        coverage: xdebug
+
+    - name: Composer Cache
+      uses: actions/cache@v4
+      with:
+        path: ./.cache-composer
+        key: ${{ runner.os }}-${{ hashFiles('./vendor/composer.lock') }}
+
+    - name: Install Composer dependencies
+      run: composer install
+
+    - name: Show Composer dependencies
+      run: composer show
+
+    - name: PHPStan version
+      run: ./vendor/bin/phpstan --version
+
+    - name: Run PHPStan
+      run: composer stan
+
+  phpunit:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: pdo, zip
+        ini-values: opcache.save_comments=1
+        coverage: xdebug
+
+    - name: Composer Cache
+      uses: actions/cache@v4
+      with:
+        path: ./.cache-composer
+        key: ${{ runner.os }}-${{ hashFiles('./vendor/composer.lock') }}
+
+    - name: Install Composer dependencies
+      run: composer install
+
+    - name: Run PHPUnit
+      run: composer test

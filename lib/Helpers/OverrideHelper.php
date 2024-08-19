@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WHMCS\Module\Server\Katapult\Helpers;
 
 use Illuminate\Support\Str;
+use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 
 class OverrideHelper
 {
@@ -10,7 +13,13 @@ class OverrideHelper
 
     protected static function path(string $file = null): string
     {
-        $path = Str::finish(realpath(__DIR__ . '/../../'), '/');
+        $realpath = realpath(__DIR__ . '/../../');
+
+        if ($realpath === false) {
+            throw new Exception('Directory does not exist: ' . $file);
+        }
+
+        $path = Str::finish($realpath, '/');
 
         if ($file) {
             $path .= self::normaliseFile($file);
@@ -32,7 +41,7 @@ class OverrideHelper
 
     protected static function normaliseFile(string $file): string
     {
-        if (strpos($file, '/') === 0) {
+        if (str_starts_with($file, '/')) {
             $file = substr($file, 1);
         }
 

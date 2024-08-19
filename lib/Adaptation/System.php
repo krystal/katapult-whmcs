@@ -1,33 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WHMCS\Module\Server\Katapult\Adaptation;
 
-use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 use WHMCS\Module\Server\Katapult\Helpers\GeneralHelper;
-use WHMCS\Module\Server\Katapult\Helpers\Replay;
-use WHMCS\Module\Server\Katapult\KatapultWhmcs;
+use WHMCS\Module\Server\Katapult\Katapult\Sync\ConfigurableOptions;
+use WHMCS\Module\Server\Katapult\Katapult\Sync\VMBuilds;
 
 class System
 {
     public static function syncConfigOptions(): void
     {
-        GeneralHelper::attempt([KatapultWhmcs::class, 'syncConfigurableOptions'], 'Sync config options');
+        GeneralHelper::attempt(function () {
+            $configurableOptions = new ConfigurableOptions(
+                \Katapult\keyValueStore(),
+                \Katapult\APIClient(),
+            );
+
+            $configurableOptions->sync();
+        }, 'Sync config options');
     }
 
     public static function syncVmBuilds(): void
     {
-        GeneralHelper::attempt([KatapultWhmcs::class, 'syncVmBuilds'], 'Syncing VM builds');
-    }
+        GeneralHelper::attempt(function () {
+            $vmBuilds = new VMBuilds(
+                \Katapult\APIClient(),
+            );
 
-    /*
-     * Checks if the request has been replayed
-     */
-    public static function validateNoReplayTokenForClientArea(): void
-    {
-        if (Replay::tokenIsValidForClientArea() !== false) {
-            return;
-        }
-
-        throw new Exception("Replay detected, please click the button again. You may need to refresh the page first.");
+            $vmBuilds->sync();
+        }, 'Syncing VM builds');
     }
 }

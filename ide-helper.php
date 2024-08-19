@@ -24,10 +24,10 @@ namespace {
     /**
      * Log activity.
      *
-     * @param string $message The message to log
-     * @param int    $userId  An optional user id to which the log entry relates
+     * @param string $message  The message to log
+     * @param int    $clientId An optional client id to which the log entry relates
      */
-    function logActivity(string $message, int $userId = 0)
+    function logActivity(string $message, int $clientId = 0)
     {
     }
 
@@ -44,8 +44,9 @@ namespace {
     {
     }
 
-    function encrypt(string $text)
+    function encrypt(string|null $text): string
     {
+        return '';
     }
 
     function decrypt(string $text)
@@ -72,6 +73,22 @@ namespace {
         {
             /** @var \Illuminate\Database\Eloquent\Builder $instance */
             return $instance->findOrFail($id, $columns);
+        }
+
+        /**
+         * Find a model by its primary key or return null
+         *
+         * @param mixed $id
+         * @param array $columns
+         *
+         * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|static[]|static|null
+         * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+         * @static
+         */
+        public static function find($id, $columns = [])
+        {
+            /** @var \Illuminate\Database\Eloquent\Builder $instance */
+            return $instance->find($id, $columns);
         }
     }
 }
@@ -106,6 +123,7 @@ namespace WHMCS\Service {
      * @mixin \Eloquent
      *
      * @property string $domain
+     * @property string $domainstatus
      */
     class Service extends Model
     {

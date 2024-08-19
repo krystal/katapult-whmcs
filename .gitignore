@@ -2,3 +2,5 @@
 .idea
 /overrides
 /build
+tests/report
+.phpunit.cache
