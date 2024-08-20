@@ -54,6 +54,12 @@ final class CreateAccount extends APIModuleCommand
             $diskTemplateLookup->setPermalink($params->diskTemplate);
             $vmBuildRequest->setDiskTemplate($diskTemplateLookup);
 
+            // Custom Disk Size @TODO
+            if ($params->customDiskSize > 0) {
+                $params->service->log('Custom disk size placeholder: ' . $params->customDiskSize);
+//                $vmBuildRequest->setCustomDiskSize($params->customDiskSize);
+            }
+
             // Hostname
             $hostname = $params->getHostname();
             if (!is_null($hostname)) {

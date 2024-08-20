@@ -16,6 +16,7 @@ use WHMCS\Module\Server\Katapult\WHMCS\User\Client;
  * @property-read string $package
  * @property-read string $dataCenter
  * @property-read string $diskTemplate
+ * @property-read int $customDiskSize
  */
 class VMServerModuleParams
 {
@@ -56,6 +57,9 @@ class VMServerModuleParams
             ),
             'diskTemplate' => $this->getBasicConfigOptionValueForService(
                 $this->keyValueStore->read(KatapultWHMCS::DS_VM_CONFIG_OPTION_DISK_TEMPLATE_ID)
+            ),
+            'customDiskSize' => $this->getQuantityConfigurableOptionValue(
+                $this->keyValueStore->read(KatapultWHMCS::DS_VM_CONFIG_OPTION_CUSTOM_DISK_SIZE_ID)
             ),
             default => $this->defaultGetter($propertyName),
         };
@@ -104,5 +108,16 @@ class VMServerModuleParams
         }
 
         return $this->rawParams[$propertyName] ?? null;
+    }
+
+    private function getQuantityConfigurableOptionValue(int $configId): int
+    {
+        $value = $this->service->configurableOptionValues()->where('configid', $configId)->first();
+
+        if (is_null($value)) {
+            return 0;
+        }
+
+        return (int) $value->qty;
     }
 }

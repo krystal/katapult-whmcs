@@ -44,6 +44,7 @@ class ConfigurableOptions
 
         $this->syncDataCentersToConfigOptions($configOptionGroup);
         $this->syncDiskTemplatesToConfigOptions($configOptionGroup);
+        $this->createCustomDiskSizeConfigOption($configOptionGroup);
     }
 
     /**
@@ -164,6 +165,36 @@ class ConfigurableOptions
             // Create free pricing for the new option
             $this->createFreePricingForObject($currentOption->id);
         }
+    }
+
+    private function createCustomDiskSizeConfigOption(ConfigOptionGroup $configOptionGroup): void
+    {
+        $option = $this->getOrCreateConfigOption(
+            $configOptionGroup,
+            'Custom Disk Size (GB)',
+            4, // quantity
+            KatapultWHMCS::DS_VM_CONFIG_OPTION_CUSTOM_DISK_SIZE_ID,
+        );
+
+        if (!$this->itemExistsAsSubOption($option, 'price-per-gb')) {
+            $priceLineOption = $this->createNewSubOption(
+                $option,
+                'price-per-gb',
+                'Price Per GB',
+            );
+            $option->subOptions()->save($priceLineOption);
+        }
+
+        // Setting a minimum and maximum causes WHMCS to render it as a slider.
+        // We don't do this by default because the maximum disk size possible
+        // can be very large. This means the realistic used range by end users
+        // would be a small subsection of the slider and thus clunky UX.
+//        $option->qtyminimum = 0;
+//        $option->qtymaximum = 1000;
+//        $option->save();
+
+        // Create free pricing for the new option
+        $this->createFreePricingForObject($option->id);
     }
 
     private function getOrCreateConfigOption(
