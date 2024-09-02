@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "35701b78e370a078a61ebf9997b12488",
+    "content-hash": "cda33fff45b681c855a26c822c4a33e7",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -396,16 +396,16 @@
         },
         {
             "name": "krystal/katapult",
-            "version": "v5.0.0",
+            "version": "dev-feat/kp-2.54.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/krystal/katapult-php.git",
-                "reference": "dc52f9958e9e1b84700a84514568392d78731b92"
+                "reference": "255aad26e4260f77775143a4ce3f661fed6d826d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/krystal/katapult-php/zipball/dc52f9958e9e1b84700a84514568392d78731b92",
-                "reference": "dc52f9958e9e1b84700a84514568392d78731b92",
+                "url": "https://api.github.com/repos/krystal/katapult-php/zipball/255aad26e4260f77775143a4ce3f661fed6d826d",
+                "reference": "255aad26e4260f77775143a4ce3f661fed6d826d",
                 "shasum": ""
             },
             "require": {
@@ -427,9 +427,9 @@
             ],
             "support": {
                 "issues": "https://github.com/krystal/katapult-php/issues",
-                "source": "https://github.com/krystal/katapult-php/tree/v5.0.0"
+                "source": "https://github.com/krystal/katapult-php/tree/feat/kp-2.54.0"
             },
-            "time": "2024-08-29T12:16:16+00:00"
+            "time": "2024-09-02T14:43:18+00:00"
         },
         {
             "name": "league/uri",
@@ -6513,7 +6513,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "krystal/katapult": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

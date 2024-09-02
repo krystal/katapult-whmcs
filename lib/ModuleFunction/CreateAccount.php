@@ -8,6 +8,7 @@ use KatapultAPI\Core\Model\DataCenterLookup;
 use KatapultAPI\Core\Model\DiskTemplateLookup;
 use KatapultAPI\Core\Model\OrganizationsOrganizationVirtualMachinesBuildPostBody;
 use KatapultAPI\Core\Model\OrganizationsOrganizationVirtualMachinesBuildPostResponse201;
+use KatapultAPI\Core\Model\VirtualMachineBuildDiskArguments;
 use KatapultAPI\Core\Model\VirtualMachinePackageLookup;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
 use WHMCS\Module\Server\Katapult\Katapult\API\APIException;
@@ -54,10 +55,14 @@ final class CreateAccount extends APIModuleCommand
             $diskTemplateLookup->setPermalink($params->diskTemplate);
             $vmBuildRequest->setDiskTemplate($diskTemplateLookup);
 
-            // Custom Disk Size @TODO
+            // Custom Disk Size
             if ($params->customDiskSize > 0) {
-                $params->service->log('Custom disk size placeholder: ' . $params->customDiskSize);
-//                $vmBuildRequest->setCustomDiskSize($params->customDiskSize);
+                $systemDisk = new VirtualMachineBuildDiskArguments();
+
+                $systemDisk->setSystem(true);
+                $systemDisk->setSizeInGb($params->customDiskSize);
+
+                $vmBuildRequest->setDisks([$systemDisk]);
             }
 
             // Hostname
