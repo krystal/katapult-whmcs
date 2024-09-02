@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace WHMCS\Module\Server\Katapult\ModuleFunction;
 
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinePackageLookup;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachinePackagePutBody;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachinePackagePutResponse200;
+use KatapultAPI\Core\Model\VirtualMachinePackageLookup;
+use KatapultAPI\Core\Model\VirtualMachinesVirtualMachinePackagePutBody;
+use KatapultAPI\Core\Model\VirtualMachinesVirtualMachinePackagePutResponse200;
 use WHMCS\Module\Server\Katapult\WhmcsModuleParams\VMServerModuleParams;
 
 final class ChangePackage extends APIModuleCommand

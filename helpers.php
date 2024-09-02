@@ -15,7 +15,7 @@
 namespace Katapult;
 
 use Http\Client\Common\Exception\ClientErrorException;
-use Krystal\Katapult\KatapultAPI\Client as KatapultAPIClient;
+use KatapultAPI\Core\Client as KatapultAPIClient;
 use Psr\Http\Message\ResponseInterface;
 use WHMCS\Module\Server\Katapult\Katapult\API\APIException;
 use WHMCS\Module\Server\Katapult\Katapult\API\APIFactory;

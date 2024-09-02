@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Krystal\KatapultTest\Katapult\API;
 
-use Krystal\Katapult\KatapultAPI\Model\OrganizationLookup;
+use KatapultAPI\Core\Model\OrganizationLookup;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WHMCS\Module\Server\Katapult\Katapult\API\ConvertLookup;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace WHMCS\Module\Server\Katapult\WhmcsModuleParams;
 
 use Illuminate\Support\Str;
-use Krystal\Katapult\KatapultAPI\Client as KatapultAPIClient;
+use KatapultAPI\Core\Client as KatapultAPIClient;
 use WHMCS\Module\Server\Katapult\Katapult\ConfigurationOptions;
 use WHMCS\Module\Server\Katapult\Katapult\KeyValueStore\KeyValueStoreInterface;
 use WHMCS\Module\Server\Katapult\KatapultWHMCS;

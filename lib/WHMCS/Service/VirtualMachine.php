@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace WHMCS\Module\Server\Katapult\WHMCS\Service;
 
 use Carbon\Carbon;
-use Krystal\Katapult\KatapultAPI\Client as KatapultAPIClient;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachineLookup;
-use Krystal\Katapult\KatapultAPI\Model\GetVirtualMachine200ResponseVirtualMachine as KatapultVirtualMachine;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesBuildsVirtualMachineBuildGetResponse200;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineGetResponse200;
+use KatapultAPI\Core\Client as KatapultAPIClient;
+use KatapultAPI\Core\Model\VirtualMachineLookup;
+use KatapultAPI\Core\Model\GetVirtualMachine200ResponseVirtualMachine as KatapultVirtualMachine;
+use KatapultAPI\Core\Model\VirtualMachinesBuildsVirtualMachineBuildGetResponse200;
+use KatapultAPI\Core\Model\VirtualMachinesVirtualMachineGetResponse200;
 use Psr\Http\Message\ResponseInterface;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildFailed;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuilding;

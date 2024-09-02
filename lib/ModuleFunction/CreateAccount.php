@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace WHMCS\Module\Server\Katapult\ModuleFunction;
 
-use Krystal\Katapult\KatapultAPI\Model\DataCenterLookup;
-use Krystal\Katapult\KatapultAPI\Model\DiskTemplateLookup;
-use Krystal\Katapult\KatapultAPI\Model\OrganizationsOrganizationVirtualMachinesBuildPostBody;
-use Krystal\Katapult\KatapultAPI\Model\OrganizationsOrganizationVirtualMachinesBuildPostResponse201;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinePackageLookup;
+use KatapultAPI\Core\Model\DataCenterLookup;
+use KatapultAPI\Core\Model\DiskTemplateLookup;
+use KatapultAPI\Core\Model\OrganizationsOrganizationVirtualMachinesBuildPostBody;
+use KatapultAPI\Core\Model\OrganizationsOrganizationVirtualMachinesBuildPostResponse201;
+use KatapultAPI\Core\Model\VirtualMachinePackageLookup;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
 use WHMCS\Module\Server\Katapult\Katapult\API\APIException;
 use WHMCS\Module\Server\Katapult\Katapult\ManagedOrganization;

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace WHMCS\Module\Server\Katapult\Katapult;
 
-use Krystal\Katapult\KatapultAPI\Client as KatapultAPIClient;
-use Krystal\Katapult\KatapultAPI\Model\OrganizationLookup;
-use Krystal\Katapult\KatapultAPI\Model\OrganizationsOrganizationManagedPostBody;
-use Krystal\Katapult\KatapultAPI\Model\OrganizationsOrganizationManagedPostResponse201;
+use KatapultAPI\Core\Client as KatapultAPIClient;
+use KatapultAPI\Core\Model\OrganizationLookup;
+use KatapultAPI\Core\Model\OrganizationsOrganizationManagedPostBody;
+use KatapultAPI\Core\Model\OrganizationsOrganizationManagedPostResponse201;
 use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 use WHMCS\Module\Server\Katapult\Katapult\API\APIException;
 use WHMCS\Module\Server\Katapult\Katapult\KeyValueStore\KeyValueStoreInterface;
