@@ -6,7 +6,7 @@ namespace WHMCS\Module\Server\Katapult\Katapult;
 
 use Illuminate\Support\Str;
 use KatapultAPI\Core\Client as KatapultAPIClient;
-use KatapultAPI\Core\Model\GetVirtualMachinePackages200ResponseVirtualMachinePackages as VirtualMachinePackages;
+use KatapultAPI\Core\Model\VirtualMachinePackage;
 use KatapultAPI\Core\Model\VirtualMachinePackagesGetResponse200;
 use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 use WHMCS\Module\Server\Katapult\Katapult\API\APIException;
@@ -57,7 +57,7 @@ class ConfigurationOptions
 
             $packages = $virtualMachinePackagesResponse->getVirtualMachinePackages();
 
-            $remap = function (VirtualMachinePackages $package) {
+            $remap = function (VirtualMachinePackage $package) {
                 return [
                     $package->getPermalink() => $package->getName(),
                 ];
