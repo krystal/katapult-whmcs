@@ -74,6 +74,8 @@ class BuildWhmcsServerModule extends Command
 				'bin',
 				'vendor',
 				'.gitignore',
+				'tests/report',
+				'.phpunit.cache',
 			);
 
 			// Fetch the composer.json file
@@ -216,4 +218,3 @@ class BuildWhmcsServerModule extends Command
 		$composer->run($input);
 	}
 }
-

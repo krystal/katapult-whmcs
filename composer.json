@@ -30,5 +30,8 @@
         "symfony/filesystem": "^5.2",
         "composer/composer": "^2.0",
         "ext-zip": "*"
+    },
+    "config": {
+        "allow-plugins": false
     }
 }
