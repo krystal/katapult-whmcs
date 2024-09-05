@@ -25,7 +25,7 @@ class ValidateConfiguration
             $productId = $product['pid'];
             $configOptions = $product['configoptions'];
 
-            $errors = array_merge($errors, $this->validateProductInCart($productId, $configOptions));
+            $errors = array_merge($errors, $this->validateProductInCart($productId, $configOptions ?? []));
         }
 
         return empty($errors) ? null: $errors;
@@ -37,19 +37,19 @@ class ValidateConfiguration
      * @param int   $productId
      * @param array $configOptions
      *
-     * @return string[]|null an array of error messages or null if it's fine
+     * @return string[]
      */
-    private function validateProductInCart(int $productId, array $configOptions): ?array
+    private function validateProductInCart(int $productId, array $configOptions): array
     {
         // Does this product belong to our module?
         if (!$this->productIsKatapult($productId)) {
-            return null;
+            return [];
         }
 
         $customDiskSize = $configOptions[$this->customDiskSizeConfigOptionId()];
 
         if ($customDiskSize === 0) {
-            return null;
+            return [];
         }
 
         $diskTemplateConfigOptionId = $this->diskTemplateConfigOptionId();
@@ -74,7 +74,7 @@ class ValidateConfiguration
             ];
         }
 
-        return null;
+        return [];
     }
 
     private function productIsKatapult(int $productId): bool
