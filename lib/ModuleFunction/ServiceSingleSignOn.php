@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace WHMCS\Module\Server\Katapult\ModuleFunction;
 
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineConsoleSessionsPostBody;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineConsoleSessionsPostResponse201;
+use KatapultAPI\Core\Model\VirtualMachinesVirtualMachineConsoleSessionsPostBody;
+use KatapultAPI\Core\Model\VirtualMachinesVirtualMachineConsoleSessionsPostResponse201;
 use WHMCS\Module\Server\Katapult\Katapult\API\APIException;
 use WHMCS\Module\Server\Katapult\WhmcsModuleParams\VMServerModuleParams;
 

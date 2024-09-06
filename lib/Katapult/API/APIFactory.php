@@ -8,8 +8,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
-use Krystal\Katapult\KatapultAPI\Client as KatapultAPIClient;
-use Krystal\Katapult\KatapultAPI\ClientFactory;
+use KatapultAPI\Core\Client as KatapultAPIClient;
+use KatapultAPI\Core\ClientFactory;
 use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 use WHMCS\Module\Server\Katapult\KatapultWHMCS;
 

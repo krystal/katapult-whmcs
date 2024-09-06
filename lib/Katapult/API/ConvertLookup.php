@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace WHMCS\Module\Server\Katapult\Katapult\API;
 
-use Krystal\Katapult\KatapultAPI\Model\OrganizationLookup;
+use KatapultAPI\Core\Model\OrganizationLookup;
 
 class ConvertLookup
 {

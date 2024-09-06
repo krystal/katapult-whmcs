@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace WHMCS\Module\Server\Katapult\ModuleFunction\VM;
 
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineStartPostBody;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineStartPostResponse200;
+use KatapultAPI\Core\Model\VirtualMachinesVirtualMachineStartPostBody;
+use KatapultAPI\Core\Model\VirtualMachinesVirtualMachineStartPostResponse200;
 use WHMCS\Module\Server\Katapult\ModuleFunction\APIModuleCommand;
 use WHMCS\Module\Server\Katapult\WhmcsModuleParams\VMServerModuleParams;
 

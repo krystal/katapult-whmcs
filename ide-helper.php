@@ -1,6 +1,7 @@
 <?php
 
 namespace {
+
     /**
      * Log module call.
      *
@@ -57,6 +58,9 @@ namespace {
     {
     }
 
+    /**
+     * @mixin \Illuminate\Database\Eloquent\Builder
+     */
     class Eloquent extends \Illuminate\Database\Eloquent\Model
     {
         /**
@@ -146,6 +150,7 @@ namespace WHMCS\Product {
     use Illuminate\Database\Eloquent\Model;
 
     /**
+     * @property string $servertype
      * @mixin \Eloquent
      */
     class Product extends Model

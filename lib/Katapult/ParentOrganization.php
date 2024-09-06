@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace WHMCS\Module\Server\Katapult\Katapult;
 
-use Krystal\Katapult\KatapultAPI\Client as KatapultAPIClient;
-use Krystal\Katapult\KatapultAPI\Model\OrganizationLookup;
-use Krystal\Katapult\KatapultAPI\Model\OrganizationsGetResponse200;
+use KatapultAPI\Core\Client as KatapultAPIClient;
+use KatapultAPI\Core\Model\OrganizationLookup;
+use KatapultAPI\Core\Model\OrganizationsGetResponse200;
 use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 use WHMCS\Module\Server\Katapult\Katapult\API\APIException;
 use WHMCS\Module\Server\Katapult\Katapult\KeyValueStore\KeyValueStoreInterface;

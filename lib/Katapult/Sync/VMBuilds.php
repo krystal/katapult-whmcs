@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace WHMCS\Module\Server\Katapult\Katapult\Sync;
 
-use Krystal\Katapult\KatapultAPI\Client as KatapultAPIClient;
+use KatapultAPI\Core\Client as KatapultAPIClient;
 use WHMCS\Module\Server\Katapult\Helpers\Database;
 use WHMCS\Module\Server\Katapult\KatapultWHMCS;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;

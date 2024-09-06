@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace WHMCS\Module\Server\Katapult\WhmcsModuleParams;
 
+use Grizzlyware\Salmon\WHMCS\Product\ConfigurableOptions\Group\Option;
 use Illuminate\Support\Str;
-use Krystal\Katapult\KatapultAPI\Client as KatapultAPIClient;
+use KatapultAPI\Core\Client as KatapultAPIClient;
+use WHMCS\Module\Server\Katapult\Helpers\ConfigurableOption;
 use WHMCS\Module\Server\Katapult\Katapult\ConfigurationOptions;
 use WHMCS\Module\Server\Katapult\Katapult\KeyValueStore\KeyValueStoreInterface;
 use WHMCS\Module\Server\Katapult\KatapultWHMCS;
@@ -16,6 +18,7 @@ use WHMCS\Module\Server\Katapult\WHMCS\User\Client;
  * @property-read string $package
  * @property-read string $dataCenter
  * @property-read string $diskTemplate
+ * @property-read int $customDiskSize
  */
 class VMServerModuleParams
 {
@@ -25,6 +28,7 @@ class VMServerModuleParams
     protected array $rawParams;
     protected KatapultAPIClient $katapultAPIClient;
     protected KeyValueStoreInterface $keyValueStore;
+    protected ConfigurableOption $configurableOption;
 
     public function __construct(
         array $params,
@@ -34,6 +38,8 @@ class VMServerModuleParams
         $this->rawParams = $params;
         $this->katapultAPIClient = $katapultAPIClient;
         $this->keyValueStore = $keyValueStore;
+
+        $this->configurableOption = new ConfigurableOption($this->keyValueStore);
 
         $this->configuration = [];
 
@@ -56,6 +62,9 @@ class VMServerModuleParams
             ),
             'diskTemplate' => $this->getBasicConfigOptionValueForService(
                 $this->keyValueStore->read(KatapultWHMCS::DS_VM_CONFIG_OPTION_DISK_TEMPLATE_ID)
+            ),
+            'customDiskSize' => $this->getCustomDiskSizeConfigurableOptionValue(
+                $this->keyValueStore->read(KatapultWHMCS::DS_VM_CONFIG_OPTION_CUSTOM_DISK_SIZE_ID)
             ),
             default => $this->defaultGetter($propertyName),
         };
@@ -104,5 +113,22 @@ class VMServerModuleParams
         }
 
         return $this->rawParams[$propertyName] ?? null;
+    }
+
+    private function getCustomDiskSizeConfigurableOptionValue(int $configId): int
+    {
+        $value = $this->service->configurableOptionValues()->where('configid', $configId)->first();
+
+        if (is_null($value)) {
+            return 0;
+        }
+
+        $optionType = Option::findOrFail($configId)->type;
+
+        if ($optionType === Option::TYPE_QUANTITY) {
+            return (int) $value->qty;
+        }
+
+        return (int) $this->configurableOption->getChosenValue($configId, $value->optionid)->rawValue;
     }
 }

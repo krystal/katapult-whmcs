@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace WHMCS\Module\Server\Katapult\ModuleFunction;
 
-use Krystal\Katapult\KatapultAPI\Model\DataCenterLookup;
-use Krystal\Katapult\KatapultAPI\Model\DiskTemplateLookup;
-use Krystal\Katapult\KatapultAPI\Model\OrganizationsOrganizationVirtualMachinesBuildPostBody;
-use Krystal\Katapult\KatapultAPI\Model\OrganizationsOrganizationVirtualMachinesBuildPostResponse201;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinePackageLookup;
+use KatapultAPI\Core\Model\DataCenterLookup;
+use KatapultAPI\Core\Model\DiskTemplateLookup;
+use KatapultAPI\Core\Model\OrganizationsOrganizationVirtualMachinesBuildPostBody;
+use KatapultAPI\Core\Model\OrganizationsOrganizationVirtualMachinesBuildPostResponse201;
+use KatapultAPI\Core\Model\VirtualMachineBuildDiskArguments;
+use KatapultAPI\Core\Model\VirtualMachinePackageLookup;
 use WHMCS\Module\Server\Katapult\Exceptions\VirtualMachines\VirtualMachineBuildNotFound;
 use WHMCS\Module\Server\Katapult\Katapult\API\APIException;
 use WHMCS\Module\Server\Katapult\Katapult\ManagedOrganization;
@@ -53,6 +54,16 @@ final class CreateAccount extends APIModuleCommand
             $diskTemplateLookup = new DiskTemplateLookup();
             $diskTemplateLookup->setPermalink($params->diskTemplate);
             $vmBuildRequest->setDiskTemplate($diskTemplateLookup);
+
+            // Custom Disk Size
+            if ($params->customDiskSize > 0) {
+                $systemDisk = new VirtualMachineBuildDiskArguments();
+
+                $systemDisk->setSystem(true);
+                $systemDisk->setSizeInGb($params->customDiskSize);
+
+                $vmBuildRequest->setDisks([$systemDisk]);
+            }
 
             // Hostname
             $hostname = $params->getHostname();
