@@ -28,7 +28,7 @@ class ValidateConfiguration
             $errors = array_merge($errors, $this->validateProductInCart($productId, $configOptions ?? []));
         }
 
-        return empty($errors) ? null: $errors;
+        return empty($errors) ? null : $errors;
     }
 
     /**
