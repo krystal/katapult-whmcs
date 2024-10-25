@@ -1,25 +1,28 @@
-<p align="center"><a href="https://github.com/krystal/katapult-whmcs"><img src="./build/katapult-logo.png" alt="Katapult logo" /></a></p>
-
 # Katapult WHMCS Module
 
-Full documentation for this module can be found at [Katapult Developer Docs](https://developers.katapult.io/docs/category/whmcs).
-    
+Access the full documentation for this module at [Katapult Developer Docs](https://developers.katapult.io/docs/category/whmcs).
+
 ## Requirements
-* PHP >= 8.1
-* WHMCS >= 8.0
-* A Katapult account with access to managed organizations
-* A Katapult organization API key
+
+* **PHP:** Version 8.1 or higher
+* **WHMCS:** Version 8.0 or higher
+* **Katapult account:** Must have access to managed organizations
+* **API Key:** Katapult organization API key
 
 ## Versioning
-This module follows [semantic versioning](https://semver.org/).
+
+This module uses [semantic versioning](https://semver.org/).
 
 ## Security
-If you discover any security related issues, please email contact@krystal.uk instead of using the issue tracker.
+
+If you find any security related issues, please email [contact@krystal.io](mailto:contact@krystal.io) instead of using the issue tracker.
 
 ## Installing and upgrading
-Download the [latest katapult.zip](https://github.com/krystal/katapult-whmcs/releases) and extract it to `/whmcs/modules/servers/katapult`. The resulting file structure should look similar to this:
 
-```
+1. Download the [latest `katapult.zip`](https://github.com/krystal/katapult-whmcs/releases).
+2. Extract it to `/whmcs/modules/servers/katapult`. Your file structure should look like this:
+
+```plain
 ├── /whmcs/modules/servers/katapult
 │   ├── assets
 │   ├── helpers.php
@@ -32,9 +35,10 @@ Download the [latest katapult.zip](https://github.com/krystal/katapult-whmcs/rel
 │   └── views
 ```
 
-The Katapult module will then be available for you to use inside WHMCS.
+You can now use the Katapult module in WHMCS.
 
 ## Development
+
 You can clone this repository directly into your development WHMCS installation, for example using [this Vagrant box](https://github.com/grizzlyware/whmcs-dev/):
 
 ```shell
@@ -47,21 +51,21 @@ composer install
 ```
 
 ### Building the module for distribution
-When changes have been made to the module, and a new release is being published, a new ZIP file will need to be created to attach to the release. These ZIP files are used to distribute and install the module into WHMCS.
 
-The module has a few require-dev dependencies which aren't required for use within WHMCS. Guzzle being one which has been known to cause conflicts with WHMCS, and is required by [krystal/katapult-php](https://github.com/krystal/katapult-php). Because WHMCS has Guzzle installed, we don't need to include it the distribution of this module.
+After making changes to the module, you need to create a new ZIP file to attach to the release for distribution.
 
-Things to consider when packaging the module up:
+There are a few dev dependencies, which are not required for releases.
 
-* Installing the required Composer dependencies
-* Removing development and untracked files
-* Adding special files such as `.htaccess` in `/vendor` (WHMCS restriction with it being in the docroot)
-* Zipping it up consistently between versions.
+Steps to package the module:
 
-To build the module automatically:
+* Install Composer dependencies (with `--no-dev`)
+* Remove untracked files
+* Deny access to `vendor` with `.htaccess`
+
+The `build:server-module` command does all this for you.
 
 ```shell
-$ ./bin/katapult build:server-module
+./bin/katapult build:server-module
 ```
 
-This will result in a `katapult.zip` file in your `build` directory, the full path will be outputted by the command.
+This creates a `katapult.zip` file in your `build` directory and outputs the full path.

@@ -4,3 +4,4 @@
 /build
 tests/report
 .phpunit.cache
+vale-styles/
