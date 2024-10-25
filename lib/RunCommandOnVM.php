@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace WHMCS\Module\Server\Katapult;
 
-use Krystal\Katapult\KatapultAPI\Client as KatapultAPIClient;
+use KatapultAPI\Core\Client as KatapultAPIClient;
 use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 use WHMCS\Module\Server\Katapult\Helpers\Replay;
 use WHMCS\Module\Server\Katapult\Katapult\KeyValueStore\KeyValueStoreInterface;

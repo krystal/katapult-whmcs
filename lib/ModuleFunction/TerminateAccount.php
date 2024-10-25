@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace WHMCS\Module\Server\Katapult\ModuleFunction;
 
-use Krystal\Katapult\KatapultAPI\Model\DiskBackupPoliciesDiskBackupPolicyDeleteBody;
-use Krystal\Katapult\KatapultAPI\Model\DiskBackupPoliciesDiskBackupPolicyDeleteResponse200;
-use Krystal\Katapult\KatapultAPI\Model\DiskBackupPolicyLookup;
-use Krystal\Katapult\KatapultAPI\Model\DisksDiskDiskBackupPoliciesGetResponse200;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineDeleteBody;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineDeleteResponse200;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineDisksGetResponse200;
+use KatapultAPI\Core\Model\DiskBackupPoliciesDiskBackupPolicyDeleteBody;
+use KatapultAPI\Core\Model\DiskBackupPoliciesDiskBackupPolicyDeleteResponse200;
+use KatapultAPI\Core\Model\DiskBackupPolicyLookup;
+use KatapultAPI\Core\Model\DisksDiskDiskBackupPoliciesGetResponse200;
+use KatapultAPI\Core\Model\VirtualMachinesVirtualMachineDeleteBody;
+use KatapultAPI\Core\Model\VirtualMachinesVirtualMachineDeleteResponse200;
+use KatapultAPI\Core\Model\VirtualMachinesVirtualMachineDisksGetResponse200;
 use WHMCS\Module\Server\Katapult\Katapult\API\APIException;
 use WHMCS\Module\Server\Katapult\WHMCS\Service\VirtualMachine;
 use WHMCS\Module\Server\Katapult\WhmcsModuleParams\VMServerModuleParams;

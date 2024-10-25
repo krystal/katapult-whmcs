@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Krystal\KatapultTest\Katapult\API;
 
-use Krystal\Katapult\KatapultAPI\Client;
+use KatapultAPI\Core\Client;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\Attributes\Test;

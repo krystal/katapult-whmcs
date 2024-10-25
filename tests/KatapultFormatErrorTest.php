@@ -7,7 +7,7 @@ namespace Krystal\KatapultTest;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Http\Client\Common\Exception\ClientErrorException;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineGetResponse200;
+use KatapultAPI\Core\Model\VirtualMachinesVirtualMachineGetResponse200;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use WHMCS\Module\Server\Katapult\Katapult\API\APIException;
@@ -31,7 +31,7 @@ class KatapultFormatErrorTest extends TestCase
     {
         $e = APIException::new(null, VirtualMachinesVirtualMachineGetResponse200::class);
 
-        $this->assertEquals('K [http: 0]: Response is type NULL but was expected to be Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineGetResponse200.', \Katapult\formatError('K', $e));
+        $this->assertEquals('K [http: 0]: Response is type NULL but was expected to be KatapultAPI\Core\Model\VirtualMachinesVirtualMachineGetResponse200.', \Katapult\formatError('K', $e));
     }
 
     #[Test]

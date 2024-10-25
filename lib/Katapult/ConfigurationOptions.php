@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace WHMCS\Module\Server\Katapult\Katapult;
 
 use Illuminate\Support\Str;
-use Krystal\Katapult\KatapultAPI\Client as KatapultAPIClient;
-use Krystal\Katapult\KatapultAPI\Model\GetVirtualMachinePackages200ResponseVirtualMachinePackages as VirtualMachinePackages;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinePackagesGetResponse200;
+use KatapultAPI\Core\Client as KatapultAPIClient;
+use KatapultAPI\Core\Model\VirtualMachinePackage;
+use KatapultAPI\Core\Model\VirtualMachinePackagesGetResponse200;
 use WHMCS\Module\Server\Katapult\Exceptions\Exception;
 use WHMCS\Module\Server\Katapult\Katapult\API\APIException;
 use WHMCS\Module\Server\Katapult\KatapultWHMCS;
@@ -57,7 +57,7 @@ class ConfigurationOptions
 
             $packages = $virtualMachinePackagesResponse->getVirtualMachinePackages();
 
-            $remap = function (VirtualMachinePackages $package) {
+            $remap = function (VirtualMachinePackage $package) {
                 return [
                     $package->getPermalink() => $package->getName(),
                 ];

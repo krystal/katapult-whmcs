@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace WHMCS\Module\Server\Katapult\ModuleFunction\VM;
 
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineShutdownPostBody;
-use Krystal\Katapult\KatapultAPI\Model\VirtualMachinesVirtualMachineShutdownPostResponse200;
+use KatapultAPI\Core\Model\VirtualMachinesVirtualMachineShutdownPostBody;
+use KatapultAPI\Core\Model\VirtualMachinesVirtualMachineShutdownPostResponse200;
 use WHMCS\Module\Server\Katapult\ModuleFunction\APIModuleCommand;
 use WHMCS\Module\Server\Katapult\WhmcsModuleParams\VMServerModuleParams;
 

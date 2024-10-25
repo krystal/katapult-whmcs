@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace WHMCS\Module\Server\Katapult\ModuleFunction;
 
-use Krystal\Katapult\KatapultAPI\Model\OrganizationsGetResponse200;
+use KatapultAPI\Core\Model\OrganizationsGetResponse200;
 use Psr\Http\Message\ResponseInterface;
 
 final class TestConnection extends APIModuleCommand

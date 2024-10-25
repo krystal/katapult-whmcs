@@ -10,6 +10,7 @@ class KatapultWHMCS
     public const DS_VM_CONFIG_OPTION_GROUP_ID = 'vm_config_option_group_id';
     public const DS_VM_CONFIG_OPTION_DATACENTER_ID = 'vm_config_option_datacenter_id';
     public const DS_VM_CONFIG_OPTION_DISK_TEMPLATE_ID = 'vm_config_option_disk_template_id';
+    public const DS_VM_CONFIG_OPTION_CUSTOM_DISK_SIZE_ID = 'vm_config_option_custom_disk_size_id';
 
     public static function log(string $message, int $clientId = 0): void
     {

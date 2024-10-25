@@ -4,6 +4,7 @@ use WHMCS\Module\Server\Katapult\Adaptation\AdminArea;
 use WHMCS\Module\Server\Katapult\Adaptation\ClientArea;
 use WHMCS\Module\Server\Katapult\Adaptation\System as SystemAdaptation;
 use WHMCS\Module\Server\Katapult\Katapult\ParentOrganization;
+use WHMCS\Module\Server\Katapult\Katapult\ValidateConfiguration;
 
 if (!defined('WHMCS')) {
     die('This file cannot be accessed directly');
@@ -14,6 +15,16 @@ require(__DIR__ . '/vendor/autoload.php');
 // System
 \add_hook('DailyCronJob', 0, [SystemAdaptation::class, 'syncConfigOptions']);
 \add_hook('AfterCronJob', 0, [SystemAdaptation::class, 'syncVmBuilds']);
+
+// Client checkout
+\add_hook('ShoppingCartValidateProductUpdate', 0, function () {
+    $validator = new ValidateConfiguration(
+        \Katapult\APIClient(),
+        \Katapult\keyValueStore(),
+    );
+
+    return $validator->validateCartProducts($_SESSION['cart']['products']);
+});
 
 // Admin area
 \add_hook('AdminProductConfigFields', 0, function ($vars) {
