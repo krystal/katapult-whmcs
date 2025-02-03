@@ -39,4 +39,3 @@ jobs:
           echo "Release created: ${{ needs.release-please.outputs.release_created }}"
           echo "Tag name: ${{ needs.release-please.outputs.tag_name }}"
           echo "Version: ${{ needs.release-please.outputs.version }}"
-          echo '${{ needs.release-please.outputs.all }}' | jq
