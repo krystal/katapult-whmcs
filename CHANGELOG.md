@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/krystal/katapult-whmcs/compare/v2.0.0...v2.0.1) (2025-02-03)
+
+
+### Miscellaneous Chores
+
+* **CI:** build the zip and attch to release ([9225057](https://github.com/krystal/katapult-whmcs/commit/9225057f5fe0521dd18fef04a75618396f7a5a9b)), closes [#29](https://github.com/krystal/katapult-whmcs/issues/29)
+
 ## [2.0.0](https://github.com/krystal/katapult-whmcs/compare/v1.2.1...v2.0.0) (2024-10-25)
 
 
