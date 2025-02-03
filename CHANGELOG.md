@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.2](https://github.com/krystal/katapult-whmcs/compare/v2.0.1...v2.0.2) (2025-02-03)
+
+
+### Bug Fixes
+
+* don't auto-install a psr7, remove guzzle on build ([b29721e](https://github.com/krystal/katapult-whmcs/commit/b29721e57fc1d7c96b77c51dd088ce8cb76b8e98))
+* lock psr/http-message to v1.0.1 ([dc85484](https://github.com/krystal/katapult-whmcs/commit/dc85484f43288e9637c9c156255013d1a739e1ce))
+
+
+### Miscellaneous Chores
+
+* **build:** remove .github directory from built zip ([2846e7b](https://github.com/krystal/katapult-whmcs/commit/2846e7bef9fb644eec609a678c0f5cc838d7c693))
+* **docs:** update link to docs ([b962281](https://github.com/krystal/katapult-whmcs/commit/b9622816c87cc3df7a537fda90b17a131f9b1b2b))
+* Stan baseline ([e3a77ce](https://github.com/krystal/katapult-whmcs/commit/e3a77ce683366a41a5d3a8c7a3cff874799cf78f))
+* update formatting and remove some additional files from the zip ([c9a3c9e](https://github.com/krystal/katapult-whmcs/commit/c9a3c9e2af6bffc5d29da52295dd420c3e5bff4b))
+* use nyholm psr7 in dev ([f6b1655](https://github.com/krystal/katapult-whmcs/commit/f6b16552a780fa922c456df37ee53e7070607e2e))
+
 ## [2.0.1](https://github.com/krystal/katapult-whmcs/compare/v2.0.0...v2.0.1) (2025-02-03)
 
 
