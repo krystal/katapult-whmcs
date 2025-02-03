@@ -69,6 +69,7 @@ class BuildWhmcsServerModule extends Command
 			$this->removeTempFiles(
 				'.idea',
 				'.git',
+				'.github',
 				'build',
 				'dev',
 				'bin',
