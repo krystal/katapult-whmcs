@@ -5,9 +5,10 @@
     "require": {
         "php": "^8.1",
         "ext-pdo": "*",
-        "krystal/katapult": "^5.1.0",
         "grizzlyware/salmon-whmcs": "^1.1",
-        "guzzlehttp/psr7": "^2.6"
+        "krystal/katapult": "^5.3.0",
+        "nyholm/psr7": "^1.6",
+        "psr/http-message": "1.0.1"
     },
     "license": "MIT",
     "authors": [
@@ -16,6 +17,13 @@
             "email": "josh@grizzlyware.com"
         }
     ],
+    "support": {
+        "email": "contact@krystal.io",
+        "source": "https://github.com/krystal/katapult-whmcs",
+        "issues": "https://github.com/krystal/katapult-whmcs/issues",
+        "docs": "https://docs.katapult.io/docs/dev/whmcs/overview",
+        "chat": "https://discord.com/channels/899710864716857384/899713986633818163"
+    },
     "autoload": {
         "files": [
             "helpers.php"
