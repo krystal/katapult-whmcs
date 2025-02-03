@@ -21,198 +21,213 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class BuildWhmcsServerModule extends Command
 {
-	protected static $defaultName = 'build:server-module';
+    protected static $defaultName = 'build:server-module';
 
-	protected ? string $buildDirectory = null;
-	protected ? string $tmpBuildDirectory = null;
+    protected ? string $buildDirectory = null;
+    protected ? string $tmpBuildDirectory = null;
 
-	const ZIP_FILENAME = 'katapult.zip';
-	
-	protected function configure()
-	{
-		$this->setDescription('Builds the server module ready to be installed into WHMCS');
-	}
+    const ZIP_FILENAME = 'katapult.zip';
+    
+    protected function configure()
+    {
+        $this->setDescription('Builds the server module ready to be installed into WHMCS');
+    }
 
-	protected function execute(InputInterface $input, OutputInterface $output)
-	{
-		try {
-			$this->input = $input;
-			$this->output = $output;
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        try {
+            // Illuminate/Support v7 has deprecation warnings on PHP 8.1+
+            // WHMCS will at some point update - we can only depend on their
+            // specified version
+            error_reporting(error_reporting() & ~E_DEPRECATED);
 
-			$this->logo();
-			$this->line();
-			$this->info('Starting Katapult WHMCS server module build process');
+            $this->input = $input;
+            $this->output = $output;
 
-			$filesystem = new Filesystem();
+            $this->logo();
+            $this->line();
+            $this->info('Starting Katapult WHMCS server module build process');
 
-			// Find the build dir
-			$this->buildDirectory = realpath(__DIR__ . '/../../../build');
+            $filesystem = new Filesystem();
 
-			if (!$this->buildDirectory) {
-				throw new Exception('Could not find build directory');
-			}
+            // Find the build dir
+            $this->buildDirectory = realpath(__DIR__ . '/../../../build');
 
-			// Cap it
-			$this->buildDirectory = Str::finish($this->buildDirectory, '/');
+            if (!$this->buildDirectory) {
+                throw new Exception('Could not find build directory');
+            }
 
-			// Prep the temp build directory
-			$tmpBuildFile = $filesystem->tempnam($this->buildDirectory, 'tmp_katapult_');
-			$filesystem->remove($tmpBuildFile);
-			$this->tmpBuildDirectory = Str::finish($tmpBuildFile, '/');
-			$this->info("Building module from temp build directory: {$this->tmpBuildDirectory}");
+            // Cap it
+            $this->buildDirectory = Str::finish($this->buildDirectory, '/');
 
-			// Create a temp directory to store the module
-			$filesystem->mirror($this->buildDirectory . '../', $this->tmpBuildDirectory);
-			$this->info("Copied module over to build directory");
+            // Prep the temp build directory
+            $tmpBuildFile = $filesystem->tempnam($this->buildDirectory, 'tmp_katapult_');
+            $filesystem->remove($tmpBuildFile);
+            $this->tmpBuildDirectory = Str::finish($tmpBuildFile, '/');
+            $this->info("Building module from temp build directory: {$this->tmpBuildDirectory}");
 
-			// Remove files we don't want in the final build
-			$this->removeTempFiles(
-				'.idea',
-				'.git',
-				'build',
-				'dev',
-				'bin',
-				'vendor',
-				'.gitignore',
-			);
-/*
-			// Fetch the composer.json file
-			$this->info("Modifying composer.json to satisfy WHMCS issue with Guzzle being pre-installed");
-			$composerJson = Utils::jsonDecode(file_get_contents($this->tmpBuildDirectory . 'composer.json'));
+            // Create a temp directory to store the module
+            $filesystem->mirror($this->buildDirectory . '../', $this->tmpBuildDirectory);
+            $this->info("Copied module over to build directory");
 
-			// Modify the composer.json file to exclude Guzzle
-			$composerJson->replace = [
-				'guzzlehttp/guzzle' => '*'
-			];
+            // Remove files we don't want in the final build
+            $this->removeTempFiles(
+                '.idea',
+                '.git',
+                '.github',
+                'build',
+                'dev',
+                'bin',
+                'vendor',
+                '.gitignore',
+                'ide-helper.php',
+                'Dockerfile',
+                '.vale.ini',
+                '.release-please-manifest.json',
+                'release-please-config.json',
+                'phpcs.xml',
+                'phpunit.xml',
+                'phpstan.neon',
+                'phpstan-baseline.neon',
+            );
 
-			// Put it back on disk
-			file_put_contents($this->tmpBuildDirectory . 'composer.json', Utils::jsonEncode($composerJson));*/
-/*
-			// This updates the lockfile with a version happy without Guzzle.
-			$this->info("Removing Guzzle as dependency to force removal from composer.lock");
-			$this->runComposer([
-				'command' => 'remove',
-				'packages' =>['guzzlehttp/guzzle'],
-				'--no-install' => true
-			]);*/
+            // Fetch the composer.json file
+            $this->info("Modifying composer.json to satisfy WHMCS issue with Guzzle being pre-installed");
+            $composerJson = Utils::jsonDecode(file_get_contents($this->tmpBuildDirectory . 'composer.json'));
 
-			// Install composer dependencies
-			$this->info("Installing composer dependencies");
-			$this->runComposer([
-				'command' => 'install',
-				'--no-dev' => true
-			]);
+            // Modify the composer.json file to exclude Guzzle
+            $composerJson->replace = [
+                'guzzlehttp/guzzle' => '*'
+            ];
 
-			// Remove unnecessary composer files.
-			// They can get them from the repo, they don't need to be public in WHMCS leaking version information
-			$this->removeTempFiles(
-				'composer.lock',
-				'composer.json',
-			);
+            // Put it back on disk
+            file_put_contents($this->tmpBuildDirectory . 'composer.json', Utils::jsonEncode($composerJson));
 
-			// Add .htaccess to vendor dir as WHMCS has it in the doc root
-			$this->info("Adding .htaccess deny file to vendor directory");
-			$filesystem->appendToFile($this->tmpBuildDirectory . 'vendor/.htaccess', 'deny from all');
+            // This updates the lockfile with a version happy without Guzzle.
+            $this->info("Removing Guzzle as dependency to force removal from composer.lock");
+            $this->runComposer([
+                'command' => 'remove',
+                'packages' =>['guzzlehttp/guzzle'],
+                '--no-install' => true
+            ]);
 
-			// Zip it up!
-			$this->info("Starting ZIP archive");
-			$zip = new \ZipArchive();
-			$zipFilename = $this->buildDirectory . self::ZIP_FILENAME;
-			$this->info("Removing final ZIP file if it already exists");
-			$this->removeBuildFiles(self::ZIP_FILENAME);
+            // Install composer dependencies
+            $this->info("Installing composer dependencies");
+            $this->runComposer([
+                'command' => 'install',
+                '--no-dev' => true,
+            ]);
 
-			// Can we open it?
-			if ($zip->open($zipFilename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
-				throw new \Exception('Cannot open zip file: ' . $zipFilename);
-			}
+            // Remove unnecessary composer files.
+            // They can get them from the repo, they don't need to be public in WHMCS leaking version information
+            $this->removeTempFiles(
+                'composer.lock',
+                'composer.json',
+            );
 
-			// Create recursive directory iterator
-			$files = new \RecursiveIteratorIterator(
-				new \RecursiveDirectoryIterator($this->tmpBuildDirectory),
-				\RecursiveIteratorIterator::LEAVES_ONLY
-			);
+            // Add .htaccess to vendor dir as WHMCS has it in the doc root
+            $this->info("Adding .htaccess deny file to vendor directory");
+            $filesystem->appendToFile($this->tmpBuildDirectory . 'vendor/.htaccess', 'deny from all');
 
-			// Loop the files and build the ZIP
-			$this->info("Looping files and adding them to the ZIP");
-			$filesAdded = 0;
-			foreach($files as $name => $file) {
-				// Skip directories
-				if (!$file->isDir()) {
-					// Get real and relative path for current file
-					$filePath = $file->getRealPath();
-					$relativePath = substr($filePath, strlen($this->tmpBuildDirectory));
+            // Zip it up!
+            $this->info("Starting ZIP archive");
+            $zip = new \ZipArchive();
+            $zipFilename = $this->buildDirectory . self::ZIP_FILENAME;
+            $this->info("Removing final ZIP file if it already exists");
+            $this->removeBuildFiles(self::ZIP_FILENAME);
 
-					// Is it a .DS_Store from a soon to be Linux user? :troll:
-					if (Str::endsWith($filePath, '.DS_Store')) {
-						continue;
-					}
+            // Can we open it?
+            if ($zip->open($zipFilename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+                throw new \Exception('Cannot open zip file: ' . $zipFilename);
+            }
 
-					// Add current file to archive
-					$zip->addFile($filePath, $relativePath);
-					$filesAdded++;
-				}
-			}
+            // Create recursive directory iterator
+            $files = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($this->tmpBuildDirectory),
+                \RecursiveIteratorIterator::LEAVES_ONLY
+            );
 
-			// Close the ZIP
-			$this->info("Files added: " . number_format($filesAdded));
-			$this->info("Closing ZIP file");
-			$zip->close();
+            // Loop the files and build the ZIP
+            $this->info("Looping files and adding them to the ZIP");
+            $filesAdded = 0;
+            foreach($files as $name => $file) {
+                // Skip directories
+                if (!$file->isDir()) {
+                    // Get real and relative path for current file
+                    $filePath = $file->getRealPath();
+                    $relativePath = substr($filePath, strlen($this->tmpBuildDirectory));
 
-			// All done
-			$this->comment("Success! The ZIP file has been created successfully:");
-			$this->question($zipFilename);
+                    // Is it a .DS_Store from a soon to be Linux user? :troll:
+                    if (Str::endsWith($filePath, '.DS_Store')) {
+                        continue;
+                    }
 
-			return Command::SUCCESS;
-		} catch (\Throwable $e) {
-			$this->error($e->getMessage());
-			return Command::FAILURE;
-		} finally {
-			// Delete the temp directory
-			if($this->tmpBuildDirectory) {
-				(new Filesystem())->remove($this->tmpBuildDirectory);
-			}
-		}
-	}
+                    // Add current file to archive
+                    $zip->addFile($filePath, $relativePath);
+                    $filesAdded++;
+                }
+            }
 
-	protected function removeTempFiles(string ...$files)
-	{
-		$this->info("Removing temp build files:");
+            // Close the ZIP
+            $this->info("Files added: " . number_format($filesAdded));
+            $this->info("Closing ZIP file");
+            $zip->close();
 
-		foreach($files as $file) {
-			$this->comment($file);
-		}
+            // All done
+            $this->comment("Success! The ZIP file has been created successfully:");
+            $this->question($zipFilename);
 
-		(new Filesystem())->remove(collect($files)->map(function($path) {
-			return $this->tmpBuildDirectory . $path;
-		}));
+            return Command::SUCCESS;
+        } catch (\Throwable $e) {
+            $this->error($e->getMessage());
+            return Command::FAILURE;
+        } finally {
+            // Delete the temp directory
+            if($this->tmpBuildDirectory) {
+                (new Filesystem())->remove($this->tmpBuildDirectory);
+            }
+        }
+    }
 
-		$this->info("Finished removing files");
-	}
+    protected function removeTempFiles(string ...$files)
+    {
+        $this->info("Removing temp build files:");
 
-	protected function removeBuildFiles(string ...$files)
-	{
-		$this->info("Removing build files:");
+        foreach($files as $file) {
+            $this->comment($file);
+        }
 
-		foreach($files as $file) {
-			$this->comment($file);
-		}
+        (new Filesystem())->remove(collect($files)->map(function($path) {
+            return $this->tmpBuildDirectory . $path;
+        }));
 
-		(new Filesystem())->remove(collect($files)->map(function($path) {
-			return $this->buildDirectory . $path;
-		}));
+        $this->info("Finished removing files");
+    }
 
-		$this->info("Finished removing files");
-	}
+    protected function removeBuildFiles(string ...$files)
+    {
+        $this->info("Removing build files:");
 
-	protected function runComposer(array $input)
-	{
-		$input['--working-dir'] = $this->tmpBuildDirectory;
+        foreach($files as $file) {
+            $this->comment($file);
+        }
 
-		$input = new ArrayInput($input);
+        (new Filesystem())->remove(collect($files)->map(function($path) {
+            return $this->buildDirectory . $path;
+        }));
 
-		$composer = new Composer();
-		$composer->setAutoExit(false);
+        $this->info("Finished removing files");
+    }
 
-		$composer->run($input);
-	}
+    protected function runComposer(array $input)
+    {
+        $input['--working-dir'] = $this->tmpBuildDirectory;
+
+        $input = new ArrayInput($input);
+
+        $composer = new Composer();
+        $composer->setAutoExit(false);
+
+        $composer->run($input);
+    }
 }

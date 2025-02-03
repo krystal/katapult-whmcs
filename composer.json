@@ -5,9 +5,9 @@
     "require": {
         "php": "^8.1",
         "ext-pdo": "*",
-        "krystal/katapult": "^5.1.0",
         "grizzlyware/salmon-whmcs": "^1.1",
-        "guzzlehttp/psr7": "^2.6"
+        "krystal/katapult": "^5.3",
+        "psr/http-message": "1.0.1"
     },
     "license": "MIT",
     "authors": [
@@ -16,6 +16,13 @@
             "email": "josh@grizzlyware.com"
         }
     ],
+    "support": {
+        "email": "contact@krystal.io",
+        "source": "https://github.com/krystal/katapult-whmcs",
+        "issues": "https://github.com/krystal/katapult-whmcs/issues",
+        "docs": "https://docs.katapult.io/docs/dev/whmcs/overview",
+        "chat": "https://discord.com/channels/899710864716857384/899713986633818163"
+    },
     "autoload": {
         "files": [
             "helpers.php"
@@ -35,6 +42,7 @@
         "illuminate/database": "^7",
         "illuminate/support": "^7",
         "nesbot/carbon": "^2.46",
+        "nyholm/psr7": "^1.6",
         "phpstan/phpstan": "^1.11",
         "phpunit/phpunit": "^10",
         "squizlabs/php_codesniffer": "^3.8",
@@ -42,9 +50,12 @@
         "symfony/filesystem": "^5.2"
     },
     "config": {
+        "platform": {
+            "php": "8.1"
+        },
         "sort-packages": true,
         "allow-plugins": {
-            "php-http/discovery": true
+            "php-http/discovery": false
         }
     },
     "scripts": {

@@ -1,6 +1,6 @@
 # Katapult WHMCS Module
 
-Access the full documentation for this module at [Katapult Developer Docs](https://developers.katapult.io/docs/category/whmcs).
+Access the full documentation for this module at [Katapult Developer Docs](https://docs.katapult.io/docs/dev/whmcs/overview).
 
 ## Requirements
 

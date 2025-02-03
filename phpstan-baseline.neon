@@ -131,7 +131,7 @@ parameters:
 			path: lib/WhmcsModuleParams/VMServerModuleParams.php
 
 		-
-			message: "#^Property WHMCS\\\\Module\\\\Server\\\\Katapult\\\\WhmcsModuleParams\\\\VMServerModuleParams\\:\\:\\$client \\(WHMCS\\\\Module\\\\Server\\\\Katapult\\\\WHMCS\\\\User\\\\Client\\) does not accept \\(Illuminate\\\\Database\\\\Eloquent\\\\Collection&iterable\\<Eloquent\\>\\)\\|Illuminate\\\\Database\\\\Eloquent\\\\Model\\.$#"
+			message: "#^Property WHMCS\\\\Module\\\\Server\\\\Katapult\\\\WhmcsModuleParams\\\\VMServerModuleParams\\:\\:\\$client \\(WHMCS\\\\Module\\\\Server\\\\Katapult\\\\WHMCS\\\\User\\\\Client\\) does not accept Grizzlyware\\\\Salmon\\\\WHMCS\\\\User\\\\Client\\.$#"
 			count: 1
 			path: lib/WhmcsModuleParams/VMServerModuleParams.php
 
