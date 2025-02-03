@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.3](https://github.com/krystal/katapult-whmcs/compare/v2.0.2...v2.0.3) (2025-02-03)
+
+
+### Miscellaneous Chores
+
+* **CI:** fix release-please CI output ([b561291](https://github.com/krystal/katapult-whmcs/commit/b561291b8688124388dd7e12e0afcd1d4625900d))
+
 ## [2.0.2](https://github.com/krystal/katapult-whmcs/compare/v2.0.1...v2.0.2) (2025-02-03)
 
 
