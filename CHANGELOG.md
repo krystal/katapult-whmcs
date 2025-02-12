@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.4](https://github.com/krystal/katapult-whmcs/compare/v2.0.3...v2.0.4) (2025-02-12)
+
+
+### Miscellaneous Chores
+
+* improve error handling in Test Connection and add signposting ([26647e6](https://github.com/krystal/katapult-whmcs/commit/26647e6d09a81ad3679d9aa1133144bf5bd4a5a8))
+
 ## [2.0.3](https://github.com/krystal/katapult-whmcs/compare/v2.0.2...v2.0.3) (2025-02-03)
 
 
