@@ -69,3 +69,23 @@ The `build:server-module` command does all this for you.
 ```
 
 This creates a `katapult.zip` file in your `build` directory and outputs the full path.
+
+### Running tests
+
+See the Makefile for details. First, build the docker image:
+
+```shell
+make build
+```
+
+Install composer dependencies:
+
+```shell
+make install
+```
+
+Then you can run the test suite:
+
+```shell
+make test
+```
