@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: en-GB
+
+reviews:
+  high_level_summary: false
+  review_status: false
+  commit_status: false
+  changed_files_summary: false
+  request_changes_workflow: false
+  sequence_diagrams: false
+  suggested_labels: false
+  suggested_reviewers: false
+  in_progress_fortune: false
+  poem: false
+  enable_prompt_for_ai_agents: true
+  pre_merge_checks:
+    title:
+      mode: 'off'
+    description:
+      mode: 'off'
+  path_instructions:
+    - path: '**/*'
+      instructions: |
+        - Do not mark the PR as request changes for nitpick level comments.
+
+chat:
+  art: false
+
+code_generation:
+  docstrings:
+    language: en-GB
