@@ -6,25 +6,23 @@ use Illuminate\Support\Str;
 
 class Replay
 {
-    public static bool $hasBooted = false;
-    public static ?string $previousToken = null;
-
-    /**
-     * @return string
-     *
-     * Generates a new token
-     */
-    protected static function generateToken(): string
+    private static function generateToken(): string
     {
         return sha1(Str::random() . microtime());
     }
 
-    /**
-     * @param string|null $token
-     * @return bool|null
-     *
-     * Checks the token is valid, but only for the client area. Else, null is returned.
-     */
+    private static function currentToken(): ?string
+    {
+        return $_SESSION['knrp_token'] ?? null;
+    }
+
+    private static function issueToken(): string
+    {
+        $_SESSION['knrp_token'] = self::generateToken();
+
+        return $_SESSION['knrp_token'];
+    }
+
     public static function tokenIsValidForClientArea(string $token = null): ?bool
     {
         if (!defined('CLIENTAREA')) {
@@ -39,57 +37,47 @@ class Replay
     }
 
     /**
-     * @param string $token
-     * @return bool
+     * Checks if a token is valid and consumes it, issuing a new one, if it was.
      *
-     * Checks whether a supplied token is valid
+     * WHMCS bootstraps the client area on 404, which means a 404 could rotate
+     * the token if we issue it on request vs clearing it when checked/consumed.
+     *
+     * This'd also be true for users loading other tabs in between attempting to
+     * run an action against this module.
      */
     public static function tokenIsValid(string $token = null): bool
     {
-        self::init();
-
-        if (!self::$previousToken) {
-            return false;
-        }
-
         if ($token === null) {
-            $token = trim($_REQUEST['knrp']) ?? null;
+            $requestToken = $_REQUEST['knrp'] ?? '';
+
+            // If a user supplies an array for the token, reject it.
+            if (is_array($requestToken)) {
+                return false;
+            }
+
+            $token = trim($requestToken);
         }
 
         if (!$token) {
             return false;
         }
 
-        return $token === self::$previousToken;
-    }
-
-    /**
-     * @return string
-     *
-     * Initialises the new and previous replay tokens, returns the new token
-     */
-    public static function init(): string
-    {
-        if (self::$hasBooted) {
-            return $_SESSION['knrp_token'];
+        if ($token !== self::currentToken()) {
+            return false;
         }
 
-        self::$previousToken = $_SESSION['knrp_token'] ?? null;
+        // Issuing a new token consumes the current one. The next request will
+        // use the newly issued token.
+        self::issueToken();
 
-        $token = self::generateToken();
-
-        $_SESSION['knrp_token'] = $token;
-
-        self::$hasBooted = true;
-
-        return $token;
+        return true;
     }
 
     /**
-     * Fetches the current token
+     * The current token if there was one, or issue a new one and return it.
      */
     public static function getToken(): string
     {
-        return self::init();
+        return self::currentToken() ?? self::issueToken();
     }
 }

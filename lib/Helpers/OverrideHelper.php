@@ -62,6 +62,17 @@ class OverrideHelper
         return self::file($file);
     }
 
+    /**
+     * Make use of the file's modified time for a pseudo-version.
+     */
+    public static function version(string $file): string
+    {
+        // Emits an E_WARNING on failure, so we suppress:
+        $mtime = @filemtime(self::path($file));
+
+        return (string) ($mtime !== false ? $mtime : '1');
+    }
+
     public static function file(string $file): string
     {
         $file = self::normaliseFile($file);

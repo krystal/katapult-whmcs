@@ -17,10 +17,12 @@ class Assets
 
         $cssPath = OverrideHelper::asset('dist/css/client.css');
         $jsPath = OverrideHelper::asset('dist/js/client.js');
+        $cssVersion = OverrideHelper::version($cssPath);
+        $jsVersion = OverrideHelper::version($jsPath);
 
         return <<<HTML
-<link href="{$baseUrl}/modules/servers/katapult/{$cssPath}?1617183192" rel="stylesheet" type="text/css" />
-<script type="text/javascript" defer src="{$baseUrl}/modules/servers/katapult/{$jsPath}?1617183192"></script>
+<link href="{$baseUrl}/modules/servers/katapult/{$cssPath}?{$cssVersion}" rel="stylesheet" type="text/css" />
+<script type="text/javascript" defer src="{$baseUrl}/modules/servers/katapult/{$jsPath}?{$jsVersion}"></script>
 <script type="text/javascript">const knrpToken = "{$replayToken}";</script>
 HTML;
     }

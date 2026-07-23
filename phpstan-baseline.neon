@@ -11,11 +11,6 @@ parameters:
 			path: lib/Helpers/ConfigurableOption.php
 
 		-
-			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
-			count: 1
-			path: lib/Helpers/Replay.php
-
-		-
 			message: "#^If condition is always true\\.$#"
 			count: 1
 			path: lib/Katapult/ParentOrganization.php

@@ -62,6 +62,7 @@
         "lint": "phpcs --standard=phpcs.xml -p",
         "lint-fix": "phpcbf --standard=phpcs.xml -p",
         "stan": "phpstan --memory-limit=1G",
+        "stan-baseline": "phpstan --generate-baseline --memory-limit=1G",
         "test": "phpunit -c phpunit.xml --testdox --display-warnings"
     }
 }

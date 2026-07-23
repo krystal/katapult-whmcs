@@ -54,7 +54,7 @@ final class TestConnection extends APIModuleCommand
         return <<<HTML
 <p>Are you...</p>
 <p>creating a new server for the first time?<br>&nbsp;&nbsp;Ignore this message and proceed to Continue Anyway.</p>
-<p>configuring an existing server?<br>&nbsp;&nbsp;You may need to configure <a href="https://docs.katapult.io/docs/dev/whmcs/Configuration/intial-setup#create-the-first-product">Katapult's API token</a>.</p>
+<p>configuring an existing server?<br>&nbsp;&nbsp;You may need to configure <a href="https://docs.katapult.io/docs/dev/whmcs/configuration/initial-setup#create-the-first-product">Katapult's API token</a>.</p>
 HTML;
     }
 }
