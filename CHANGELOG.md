@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.5](https://github.com/krystal/katapult-whmcs/compare/v2.0.4...v2.0.5) (2026-07-23)
+
+
+### Bug Fixes
+
+* **docs:** update link to config help, closes [#49](https://github.com/krystal/katapult-whmcs/issues/49) ([7172d12](https://github.com/krystal/katapult-whmcs/commit/7172d12908325a6dab68a53eb40cff651cc8c68b))
+* replay token consumed by missing favicon ([c042d4d](https://github.com/krystal/katapult-whmcs/commit/c042d4d07135cc3607628ce9aff60f1accf6282d))
+* use file mod time over hard-coded cache-buster string ([7255f66](https://github.com/krystal/katapult-whmcs/commit/7255f664d47df067820dc99cb08d0d5c828a1303))
+* workaround iframe cutting off UI controls, add view full screen option ([81e1ada](https://github.com/krystal/katapult-whmcs/commit/81e1ada55295ddd4dcdeb5e7c59979e5730bb028))
+
+
+### Miscellaneous Chores
+
+* coderabbit config ([80db7c3](https://github.com/krystal/katapult-whmcs/commit/80db7c373a603f251d04263d0239c45e813d0675))
+* handle bad user input for request token (no arrays) ([3cb164d](https://github.com/krystal/katapult-whmcs/commit/3cb164d9d4fc0b3d64eb2e44ce980cf7df6532dc))
+* phpstan update baseline ([899ba9b](https://github.com/krystal/katapult-whmcs/commit/899ba9be870e5c207cba5017fb7207194d0d0f1a))
+
 ## [2.0.4](https://github.com/krystal/katapult-whmcs/compare/v2.0.3...v2.0.4) (2025-02-12)
 
 
