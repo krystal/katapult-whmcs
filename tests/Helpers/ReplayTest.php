@@ -113,6 +113,17 @@ class ReplayTest extends TestCase
     }
 
     #[Test]
+    public function an_array_valued_request_token_is_rejected(): void
+    {
+        // A crafted request such as ?knrp[]=x yields an array; it must be
+        // rejected rather than fatally passed to trim().
+        Replay::getToken();
+        $_REQUEST['knrp'] = ['abc', 'def'];
+
+        $this->assertFalse(Replay::tokenIsValid());
+    }
+
+    #[Test]
     public function validation_fails_when_no_token_has_been_issued(): void
     {
         // No getToken() call, so the session holds nothing to match against.

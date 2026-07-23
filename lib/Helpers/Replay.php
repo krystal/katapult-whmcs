@@ -48,7 +48,14 @@ class Replay
     public static function tokenIsValid(string $token = null): bool
     {
         if ($token === null) {
-            $token = trim($_REQUEST['knrp'] ?? '');
+            $requestToken = $_REQUEST['knrp'] ?? '';
+
+            // If a user supplies an array for the token, reject it.
+            if (is_array($requestToken)) {
+                return false;
+            }
+
+            $token = trim($requestToken);
         }
 
         if (!$token) {
