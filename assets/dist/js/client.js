@@ -134,6 +134,21 @@ if(typeof kvmService === 'object') {
             const launchForm = document.getElementById('kvm-console-launcher')
             const launchButton = launchForm.querySelector('button')
 
+            // The console page enforces a min-width of 1200px. In the inline
+            // box it renders 1:1 with a scrollbar (see client.css); fullscreen
+            // gives it the whole viewport so nothing needs scrolling.
+            const kvmConsole = document.getElementById('kvm-console');
+            const fullscreenButton = document.getElementById('kvm-console-fullscreen')
+            if (fullscreenButton) {
+                fullscreenButton.addEventListener('click', () => {
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen();
+                    } else {
+                        kvmConsole.requestFullscreen();
+                    }
+                })
+            }
+
             // This function determines how the console will launch.
             // Right now it's pretty basic, just checking against the available width of the window.
             // If the console was inlined on a small screen, it would cause bad UX.
@@ -198,4 +213,3 @@ if(typeof kvmService === 'object') {
 
     })(kvmService);
 }
-

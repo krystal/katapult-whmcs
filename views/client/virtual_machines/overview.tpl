@@ -78,6 +78,8 @@
 
             <h5 style="margin-top: 2rem">Console</h5>
 
+            <button class="btn btn-secondary btn-sm" type="button" id="kvm-console-fullscreen" style="margin-bottom: 0.5rem">View full screen</button>
+
             <div id="kvm-console">
 
                 <iframe title="Console" name="kvm_console"></iframe>
