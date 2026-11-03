@@ -5,7 +5,7 @@ Access the full documentation for this module at [Katapult Developer Docs](https
 ## Requirements
 
 * **PHP:** Version 8.1 or higher
-* **WHMCS:** Version 8.0 or higher
+* **WHMCS:** Version 9.0 or higher. For WHMCS 8, use a 2.x release.
 * **Katapult account:** Must have access to managed organizations
 * **API Key:** Katapult organization API key
 
