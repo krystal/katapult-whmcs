@@ -7,7 +7,7 @@
         "ext-pdo": "*",
         "grizzlyware/salmon-whmcs": "^1.1",
         "krystal/katapult": "^5.3",
-        "psr/http-message": "1.0.1"
+        "psr/http-message": "^1.1"
     },
     "license": "MIT",
     "authors": [
