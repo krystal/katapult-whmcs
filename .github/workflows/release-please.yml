@@ -8,6 +8,8 @@ on:
       - main
       - master
 
+permissions: {}
+
 jobs:
 
   release-please:
@@ -35,7 +37,11 @@ jobs:
     needs: [ release-please ]
     if: needs.release-please.outputs.release_created
     steps:
-      - run: |
-          echo "Release created: ${{ needs.release-please.outputs.release_created }}"
-          echo "Tag name: ${{ needs.release-please.outputs.tag_name }}"
-          echo "Version: ${{ needs.release-please.outputs.version }}"
+      - env:
+          RELEASE_CREATED: ${{ needs.release-please.outputs.release_created }}
+          TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
+          VERSION: ${{ needs.release-please.outputs.version }}
+        run: |
+          echo "Release created: $RELEASE_CREATED"
+          echo "Tag name: $TAG_NAME"
+          echo "Version: $VERSION"

@@ -11,6 +11,9 @@ on:
       - 'composer.json'
       - 'composer.lock'
 
+permissions:
+  contents: read
+
 concurrency:
   # On the main branch we want all builds to complete, even if new commits are merged.
   group: ${{ github.ref == 'refs/heads/main' && format('lint-main-{0}', github.run_id) || format('lint-{0}-lint', github.ref) }}
@@ -24,6 +27,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
 
     - name: Set up PHP
       uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
@@ -43,6 +48,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
 
     - name: Set up PHP
       uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
@@ -77,6 +84,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
 
     - name: Set up PHP
       uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
