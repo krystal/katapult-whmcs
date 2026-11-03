@@ -5,11 +5,15 @@ on:
   pull_request:
     paths:
       - '**.php'
+      - 'composer.json'
+      - 'composer.lock'
   push:
     branches:
       - main
     paths:
       - '**.php'
+      - 'composer.json'
+      - 'composer.lock'
 
 concurrency:
   # On the main branch we want all builds to complete, even if new commits are merged.
