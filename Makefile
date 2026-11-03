@@ -1,4 +1,4 @@
-DOCKER_IMAGE=composer-php8.1
+DOCKER_IMAGE=composer-php8.3
 USER_ID=$(shell id -u)
 GROUP_ID=$(shell id -g)
 CURRENT_DIR=$(shell pwd)

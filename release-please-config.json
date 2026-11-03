@@ -4,7 +4,8 @@
     ".": {
       "release-type": "php",
       "changelog-path": "CHANGELOG.md",
-      "draft": false,
+      "draft": true,
+      "force-tag-creation": true,
       "prerelease": false
     }
   },
