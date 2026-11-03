@@ -19,11 +19,11 @@ jobs:
       version: ${{ steps.release-please.outputs.version }}
       all: ${{ toJSON(steps.release-please.outputs) }}
     steps:
-      - uses: tibdex/github-app-token@v1
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         id: generate-github-token
         with:
-          app_id: ${{ vars.RELEASE_PLEASE_GITHUB_APP_ID }}
-          private_key: ${{ secrets.RELEASE_PLEASE_GITHUB_APP_PRIVATE_KEY }}
+          client-id: ${{ vars.RELEASE_PLEASE_GITHUB_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_PLEASE_GITHUB_APP_PRIVATE_KEY }}
       - uses: google-github-actions/release-please-action@v3
         id: release-please
         with:
