@@ -70,5 +70,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
         run: |
-          gh release upload "$TAG_NAME" build/katapult.zip --repo "$GITHUB_REPOSITORY"
+          gh release upload "$TAG_NAME" build/katapult.zip --clobber --repo "$GITHUB_REPOSITORY"
           gh release edit "$TAG_NAME" --draft=false --repo "$GITHUB_REPOSITORY"
