@@ -3,10 +3,6 @@ name: Analyse and Test
 
 on:
   pull_request:
-    paths:
-      - '**.php'
-      - 'composer.json'
-      - 'composer.lock'
   push:
     branches:
       - main
