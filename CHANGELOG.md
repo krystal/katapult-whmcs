@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.0.1](https://github.com/krystal/katapult-whmcs/compare/v3.0.0...v3.0.1) (2026-11-03)
+
+
+### Miscellaneous Chores
+
+* **build:** build the module image on PHP 8.3 ([95eb3b0](https://github.com/krystal/katapult-whmcs/commit/95eb3b016c2661e429cdc9f6e3ef35aeb6196dfb))
+* **ci:** limit GITHUB_TOKEN to what each job needs ([06345f3](https://github.com/krystal/katapult-whmcs/commit/06345f33f25883db25eba3ea7564de6691190bcd))
+* **ci:** trigger CI for any PR [skip ci] ([4a9593f](https://github.com/krystal/katapult-whmcs/commit/4a9593fe1052595a6d17102417d3f325672b3b5c))
+* release 3.0.1 ([4c9c1b0](https://github.com/krystal/katapult-whmcs/commit/4c9c1b09626d4409937bf830d6f60421044492e2))
+
 ## [3.0.0](https://github.com/krystal/katapult-whmcs/compare/v2.0.5...v3.0.0) (2026-11-03)
 
 
