@@ -24,11 +24,10 @@ jobs:
         with:
           client-id: ${{ vars.RELEASE_PLEASE_GITHUB_CLIENT_ID }}
           private-key: ${{ secrets.RELEASE_PLEASE_GITHUB_APP_PRIVATE_KEY }}
-      - uses: google-github-actions/release-please-action@v3
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         id: release-please
         with:
           token: ${{ steps.generate-github-token.outputs.token }}
-          command: manifest
 
   release:
     runs-on: [ ubuntu-latest ]
