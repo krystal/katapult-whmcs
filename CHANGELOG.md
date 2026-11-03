@@ -1,5 +1,27 @@
 # Changelog
 
+## [3.0.0](https://github.com/krystal/katapult-whmcs/compare/v2.0.5...v3.0.0) (2026-11-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* WHMCS v9 upgraded psr/http-message to 1.1
+
+### Bug Fixes
+
+* **ci:** release needs the environment ([630524f](https://github.com/krystal/katapult-whmcs/commit/630524f8ac621e43d7338dede5401353bf4842d9))
+* **ci:** release needs the environment ([de9cea6](https://github.com/krystal/katapult-whmcs/commit/de9cea6e49e09b79e8053c4e9dacd89e039c5839))
+* **ci:** trigger CI checks from Composer changes ([081dff8](https://github.com/krystal/katapult-whmcs/commit/081dff81d263f5fc9dcef983cc2f63fecfa707d1))
+* **ci:** Update GHA and release please vars ([a8264c7](https://github.com/krystal/katapult-whmcs/commit/a8264c7006a92eaf8b0bbf5c8c30f3c15079e5db))
+* WHMCS v9 upgraded psr/http-message to 1.1 ([114fe88](https://github.com/krystal/katapult-whmcs/commit/114fe884a2a85dc20f8516d3e1ae745f4d6e104b))
+
+
+### Miscellaneous Chores
+
+* **ci:** update and pin actions versions ([489bfc1](https://github.com/krystal/katapult-whmcs/commit/489bfc15d23aa8fe5dac7249710c7e81d51ed5e7))
+* **ci:** update release-please action ([f8c5264](https://github.com/krystal/katapult-whmcs/commit/f8c5264a6a69497cb351302fb9ec2aa72befadad))
+* **docs:** tie our versions to WHMCS versions supported ([394ca90](https://github.com/krystal/katapult-whmcs/commit/394ca90663550c628aba4380760197d4c1580423))
+
 ## [2.0.5](https://github.com/krystal/katapult-whmcs/compare/v2.0.4...v2.0.5) (2026-07-23)
 
 
